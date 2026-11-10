@@ -3,7 +3,7 @@ import { CONTENT_MATCH_PATTERNS } from './src/shared/platform-ids.ts';
 const manifest = {
   manifest_version: 3,
   name: 'Shielded',
-  version: '0.1.0',
+  version: '0.1.1',
   description:
     'Sembunyikan isi obrolan di WhatsApp, Telegram, Instagram, Facebook, X, Threads, dan TikTok dari layar. Semua diproses lokal.',
   minimum_chrome_version: '110',
