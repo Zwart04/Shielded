@@ -1,0 +1,21 @@
+{
+  "name": "shielded",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Ekstensi privasi visual untuk web chat (Manifest V3)",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/build.mjs --watch",
+    "test": "node --test tests/unit/*.test.ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "verify:privacy": "node scripts/verify-privacy.mjs",
+    "zip": "node scripts/build-zip.mjs"
+  },
+  "devDependencies": {
+    "@types/chrome": "0.3.7",
+    "@types/node": "^26.6.6",
+    "esbuild": "0.28.2",
+    "typescript": "5.9.3"
+  }
+}
