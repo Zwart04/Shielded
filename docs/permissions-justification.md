@@ -16,7 +16,7 @@ Tidak ada izin lain.
 
 ### 2.1 `storage`
 
-**Dipakai untuk:** menyimpan mode, toggle per platform, intensitas blur, tema, status onboarding.
+**Dipakai untuk:** menyimpan level, toggle per platform, pilihan zona, intensitas blur, dan tema.
 
 **Tidak dipakai untuk:** menyimpan konten halaman, riwayat, atau data pribadi.
 
@@ -32,11 +32,11 @@ Daftar domain:
 - `https://web.whatsapp.com/*`
 - `https://web.telegram.org/*`
 - `https://www.instagram.com/*`
-- `https://www.facebook.com/*` (P1)
-- `https://x.com/*` (P1)
-- `https://twitter.com/*` (P1)
-- `https://www.threads.net/*`, `https://www.threads.com/*` (P2)
-- `https://www.tiktok.com/*` (P2)
+- `https://www.facebook.com/*`
+- `https://x.com/*`
+- `https://twitter.com/*`
+- `https://www.threads.net/*`, `https://www.threads.com/*`
+- `https://www.tiktok.com/*`
 
 **Dipakai untuk:** menyuntikkan content script yang menambahkan lapisan visual.
 

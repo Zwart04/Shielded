@@ -7,13 +7,15 @@
 ![7 platform](https://img.shields.io/badge/platform-7-8b5cf6?style=flat-square)
 ![Tanpa telemetri](https://img.shields.io/badge/telemetri-tidak%20ada-c98a52?style=flat-square)
 
-Shielded bekerja **per item**, bukan memblur seluruh halaman. Nama kontak, avatar, preview, gelembung pesan, dan tombol kirim masing-masing bisa diatur. Saat kursor diarahkan ke satu item, hanya item itu yang terbuka — sisanya tetap terlindungi.
+Shielded bekerja **per item**, bukan memblur seluruh halaman. Nama kontak, avatar, preview, gelembung pesan, dan kotak ketik masing-masing bisa diatur. Saat kursor diarahkan ke satu item, hanya item itu yang terbuka — sisanya tetap terlindungi.
 
-Semua pemrosesan terjadi di perangkat Anda. Tidak ada server, tidak ada akun, tidak ada pengumpulan data.
+Semua pemrosesan terjadi di perangkat Anda. Tidak ada server, akun, atau telemetri.
 
 <br>
 
-<img src="docs/images/popup.png" alt="Popup Shielded dengan kontrol per zona dan tombol Buy me a coffee" width="340">
+<img src="docs/images/popup.png" alt="Popup Shielded dengan kartu platform, level, dan daftar zona" width="340">
+
+> **Bawaan: semua platform nonaktif.** Shielded tidak menyentuh halaman apa pun sampai Anda menyalakannya. Setelan, level, dan pilihan zona semuanya ada di popup — tidak ada halaman pengaturan kedua.
 
 ---
 
@@ -37,8 +39,10 @@ Semua pemrosesan terjadi di perangkat Anda. Tidak ada server, tidak ada akun, ti
 
 ## Fitur
 
+- **Satu panel, tanpa halaman kedua** — semua kontrol ada di popup: pilih platform, nyalakan proteksi, atur level, dan tentukan zona.
+- **Nonaktif secara bawaan** — pemasangan baru tidak mengubah tampilan situs sampai Anda menyalakan sebuah platform.
 - **Proteksi per item** — 9 zona independen: isi pesan, baris chat, preview, nama, avatar, preview media, galeri media, konten feed, dan kotak ketik.
-- **Hover membuka satu item** — item lain di sekitarnya tetap kabur. Bisa dimatikan bila Anda ingin semua tetap tertutup.
+- **Hover membuka satu item** — item lain di sekitarnya tetap kabur. Bisa dimatikan di opsi lanjutan.
 - **Konten feed terpisah** — unggahan di feed Instagram, Facebook, dan Threads tidak ikut terblur kecuali Anda menyalakan zona **Konten feed**.
 - **Pengaturan per platform** — aktifkan proteksi hanya di platform yang Anda pakai, lalu atur zonanya sendiri.
 - **Tiga level siap pakai** — Normal, Privasi, Maksimum. Berlaku langsung tanpa reload.
@@ -98,27 +102,38 @@ Lalu pada langkah 5 di atas, pilih folder **`dist/`**. Setelah mengubah kode, ja
 
 ### 1. Buka popup
 
-Klik ikon Shielded di toolbar. Popup menampilkan platform yang sedang dibuka, status proteksi, dan seluruh zona dalam satu layar.
+Klik ikon Shielded di toolbar. Saat pertama dipasang, semua platform **nonaktif** dan tidak ada yang berubah di halaman mana pun:
 
-<img src="docs/images/popup.png" alt="Popup Shielded: tombol utama, pilihan level, daftar zona, dan tombol Buy me a coffee" width="340">
+<img src="docs/images/popup-default.png" alt="Popup Shielded saat pertama dibuka: semua platform nonaktif, zona belum ditampilkan" width="340">
 
-- **Tombol utama** — menyalakan atau mematikan proteksi untuk platform di tab aktif.
-- **Normal / Privasi / Maksimum** — menerapkan preset ke semua zona sekaligus.
-- **Daftar zona** — setiap baris punya sakelar sendiri; perubahan langsung terlihat di halaman.
-- **Pengaturan lengkap** — membuka dashboard untuk pengaturan per platform, tampilan, dan pintasan.
-- **Buy me a coffee** — tautan dukungan (opsional, tidak mengubah fitur).
+### 2. Pilih platform dan nyalakan
 
-### 2. Atur per platform di dashboard
+Deretan logo di kartu atas adalah pemilih platform. Logo dengan latar terang adalah platform yang sedang dibuka; titik kecil di bawah logo menandakan platform yang sudah aktif.
 
-Buka **Pengaturan lengkap** → **Platform**. Setiap platform punya sakelar utama dan daftar zona yang bisa dibuka satu per satu.
+1. Ketuk logo platform yang ingin diatur.
+2. Nyalakan sakelar di sebelah nama platform.
+3. Daftar zona langsung muncul dan proteksi langsung berlaku di tab platform tersebut.
 
-<img src="docs/images/dashboard-platforms.png" alt="Dashboard Shielded halaman Platform dengan daftar platform dan zona yang dapat diatur" width="820">
+<img src="docs/images/popup.png" alt="Popup Shielded dengan WhatsApp aktif dan daftar sembilan zona" width="340">
 
-- Mematikan sebuah platform membuat Shielded tidak menyentuh halaman platform itu sama sekali.
-- Zona yang tidak relevan (misalnya **Konten feed** di WhatsApp) tetap tampil, tetapi tidak berdampak.
-- **Konten feed** nonaktif secara bawaan: teks dan gambar di feed tetap terlihat. Nyalakan bila Anda ingin unggahan feed ikut dikaburkan.
+### 3. Atur level dan zona
 
-### 3. Pahami cara kerjanya
+- **Normal** — tidak ada yang disembunyikan.
+- **Privasi** — pesan, preview, nama, avatar, media, dan kotak ketik dikaburkan.
+- **Maksimum** — pesan, preview, dan media ditutup; nama dan avatar disembunyikan.
+
+Level berlaku untuk semua platform, tetapi status aktif/nonaktif tiap platform tetap dipertahankan. Setelah memilih level, Anda masih bisa menyalakan atau mematikan zona satu per satu.
+
+### 4. Opsi lanjutan
+
+Buka **Opsi lanjutan** di bagian bawah popup:
+
+- **Kekuatan blur** — Ringan, Sedang, atau Kuat untuk semua platform.
+- **Hover membuka item** — matikan bila ingin semua tetap tertutup sampai pintasan ditekan.
+- **Pintasan keyboard** — membuka `chrome://extensions/shortcuts` untuk mengubah kombinasi tombol.
+- **Kebijakan privasi** — ringkasan data dan izin.
+
+### 5. Pahami cara kerjanya
 
 Halaman tetap terlihat normal, tetapi setiap item terlindungi sendiri-sendiri:
 
@@ -129,10 +144,6 @@ Arahkan kursor ke satu item — hanya item itu yang terbuka:
 <img src="docs/images/demo-hover.png" alt="Hanya gelembung pesan yang disorot yang terbuka; item lain tetap kabur" width="820">
 
 > Dua gambar di atas memakai percakapan contoh (DOM sintetis) agar tidak menampilkan data pribadi siapa pun. Tampilan asli tetap memakai antarmuka platform masing-masing.
-
-### 4. Pakai pintasan saat perlu
-
-Tekan `Alt+Shift+R` untuk membuka semua zona selama beberapa detik, atau `Alt+Shift+S` untuk menyalakan/mematikan proteksi. Daftar lengkap ada di [Pintasan Keyboard](#pintasan-keyboard).
 
 ---
 
@@ -162,7 +173,7 @@ Zona yang saling bertumpuk tidak digandakan: elemen di dalam item yang sudah ter
 | **Privasi** | Pesan, preview, nama, avatar, preview media, galeri media, dan kotak ketik dikaburkan. |
 | **Maksimum** | Pesan, preview, dan media ditutup; nama dan avatar disembunyikan. Tampilkan lewat hover atau pintasan. |
 
-Preset bisa diubah per zona setelah diterapkan. Pilihan level disimpan per platform, bukan global.
+Preset bisa diubah per zona setelah diterapkan. Pilihan level disimpan bersama preferensi lain di perangkat.
 
 ---
 
@@ -184,7 +195,7 @@ Shielded gratis, tanpa iklan, dan tanpa telemetri. Jika ekstensi ini membantu, A
 
 [☕ **Buy me a coffee**](https://tako.id/Zwart04/gift)
 
-Dukungan bersifat opsional dan tidak membuka fitur tambahan. Tautan juga tersedia di popup, sidebar dashboard, dan halaman **Tentang**.
+Dukungan bersifat opsional dan tidak membuka fitur tambahan. Tautan juga tersedia sebagai kartu di bagian bawah popup.
 
 ---
 
@@ -228,7 +239,7 @@ npm install          # pasang dependensi
 npm run dev          # build mode watch
 npm run build        # build ke dist/
 npm run typecheck    # TypeScript (aplikasi + tes)
-npm test             # 45 tes unit
+npm test             # 46 tes unit
 npm run verify:privacy  # audit bundle: tidak ada URL jaringan / src=
 npm run zip          # paket rilis shielded-0.1.0.zip
 ```
@@ -243,7 +254,11 @@ src/
 ├─ adapters/       # whatsapp, telegram, instagram, facebook, x, threads, tiktok
 ├─ content/        # bootstrap content script
 ├─ background/     # service worker (commands, badge, relay)
-└─ ui/             # popup, dashboard, onboarding, privacy, styles
+└─ ui/
+   ├─ popup/       # satu-satunya panel pengaturan
+   ├─ privacy/     # halaman kebijakan privasi
+   ├─ components/  # ikon, logo, sakelar, segmented, toast
+   └─ styles/      # token, base, komponen, popup
 tests/unit/        # pengujian logika murni
 tools/             # selector-probe.js (alat manual DevTools)
 scripts/           # build, zip, audit privasi
@@ -261,11 +276,12 @@ Detail teknis: [Arsitektur](docs/07-arsitektur-teknis.md) dan [Struktur Proyek](
 | Pemeriksaan | Hasil |
 |---|---|
 | Typecheck | Bersih |
-| Tes unit | 45/45 lulus |
+| Tes unit | 46/46 lulus |
 | Build produksi | Berhasil |
-| Audit privasi | Lolos (5 berkas JS, 19 host permission) |
+| Audit privasi | Lolos (3 berkas JS, 19 host permission) |
 | Verifikasi selector live | 6 platform lolos, X sebagian |
-| Audit manual tampilan | Popup, dashboard, feed, dan DM |
+| Uji bawaan nonaktif | 0 zona saat platform mati; 8 zona saat diaktifkan |
+| Audit manual tampilan | Popup terang/gelap, keadaan aktif/nonaktif, opsi lanjutan |
 
 Yang belum tercakup: pengujian otomatis end-to-end pada halaman platform asli (DOM platform berubah-ubah), verifikasi penuh X, dan uji di Firefox/Safari (ekstensi ini khusus Chromium MV3).
 

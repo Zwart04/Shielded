@@ -10,17 +10,13 @@ import {
   ZONE_IDS,
 } from '../../src/shared/defaults.ts';
 
-test('default settings memakai preset Privasi dan mengaktifkan semua platform', () => {
+test('default settings memakai preset Privasi dan mematikan semua platform', () => {
   const settings = createDefaultSettings();
 
   assert.equal(settings.level, 'privacy');
-  assert.equal(settings.platforms.whatsapp.enabled, true);
-  assert.equal(settings.platforms.telegram.enabled, true);
-  assert.equal(settings.platforms.instagram.enabled, true);
-  assert.equal(settings.platforms.tiktok.enabled, true);
-  assert.equal(settings.platforms.facebook.enabled, true);
-  assert.equal(settings.platforms.x.enabled, true);
-  assert.equal(settings.platforms.threads.enabled, true);
+  for (const platform of Object.values(settings.platforms)) {
+    assert.equal(platform.enabled, false);
+  }
 });
 
 test('preset Privasi melindungi pesan, preview, nama, dan foto per item', () => {
@@ -70,13 +66,13 @@ test('applyPreset mengganti level dan menimpa zona semua platform tanpa memutasi
 
 test('applyPreset mempertahankan status aktif/nonaktif platform', () => {
   const original = createDefaultSettings();
-  original.platforms.whatsapp.enabled = false;
+  original.platforms.telegram.enabled = true;
 
   const next = applyPreset(original, 'maximum');
 
   assert.equal(next.platforms.whatsapp.enabled, false);
   assert.equal(next.platforms.telegram.enabled, true);
-  assert.equal(next.platforms.tiktok.enabled, true);
+  assert.equal(next.platforms.tiktok.enabled, false);
 });
 
 test('label level lengkap', () => {

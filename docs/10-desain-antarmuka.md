@@ -1,247 +1,112 @@
-# 10 — Desain Antarmuka per Layar
+# 10 — Desain Antarmuka
 
 > Semua layar memakai token dari `09-design-system.md`. Tidak ada warna, radius, atau spasi di luar skala.
+
+Ada **dua** permukaan UI di versi 0.1.0: popup (satu-satunya panel pengaturan) dan halaman kebijakan privasi statis. Dashboard dan onboarding sudah dihapus; jangan menambahkannya kembali tanpa alasan produk yang kuat.
 
 ---
 
 ## 10.1 Browser Popup
 
 ### Ukuran & Struktur
-- Lebar tetap **320px**; tinggi mengikuti konten, maksimum 560px.
-- Satu kolom, padding `--sp-4`.
-- Tanpa scroll kecuali daftar zona melebihi 5 baris.
+- Lebar tetap **372px** (`--popup-w`), tinggi mengikuti konten.
+- Satu kolom, padding 14px, jarak antar-kartu 12px.
+- Saat platform nonaktif, tinggi popup ± 629px sehingga tidak perlu scroll.
+- Saat platform aktif, daftar zona muncul dan popup memanjang (scroll di dalam popup).
 
 ### Layout (atas ke bawah)
 
-1. **Header status**
-   - Tile ikon brand platform (34px, latar warna brand lembut) di kiri judul.
-   - Nama platform aktif, mis. "WhatsApp Web" (`--text-lg`, semibold).
-   - Status: titik 6px + teks kecil (`--text-sm`, `--text-2`): "Terlindungi · 3 zona" / "Nonaktif".
-   - Bila situs tidak didukung, tile memakai logo Shielded (ghost dengan bar sensor).
-
-2. **Segmented preset** — Normal / Privasi / Maksimum.
-   - Penuh lebar.
-   - Perubahan langsung disimpan.
-
-3. **Toggle utama** — "Perlindungan di situs ini".
-   - Baris `Row` dengan switch di kanan.
-   - Sub-teks: ringkasan efek aktif, mis. "Blur 2 zona".
-
-4. **Daftar zona** (maks. 5 baris + media)
-   - Setiap baris memakai ikon zona 26px: Isi pesan, Seluruh baris chat, Preview pesan, Nama kontak, Foto profil.
-   - Masing-masing switch kecil dan berdiri sendiri; tidak ada penggabungan nama+avatar atau baris+preview.
-   - Media ditandai "Segera" dan "Belum tersedia" → **badge, bukan switch mati**.
-
-5. **Footer**
-   - Ghost button dengan ikon gear: "Pengaturan lengkap" (membuka dashboard).
-   - Teks kecil: "Reveal sementara: Alt+Shift+R".
+1. **Header brand** — logo Shielded 24px di tile 32px, teks "Shielded", dan tombol tema bulat 34px (ikon matahari/bulan sesuai tema yang akan dipilih).
+2. **Sapaan** — "Hai 👋" (`26px`, semibold, letter-spacing negatif) dan subtitle italic serif: "Atur apa yang terlihat hari ini."
+3. **Kartu platform**
+   - Tile logo platform 42px, nama platform, status kecil ("Nonaktif" / "Aktif · N zona terlindungi"), switch master di kanan.
+   - Baris chip berisi **7 logo platform** dengan pemisah garis di atasnya. Chip terpilih memakai latar `--surface-2`; chip yang platformnya aktif menampilkan titik kecil `--ink` di bawah logo.
+4. **Segmented level** — Normal / Privasi / Maksimum dalam kartu putih. Pilihan aktif memakai latar `--ink` (hitam di tema terang, putih di tema gelap) dengan teks `--on-ink`.
+5. **Kartu zona** — 9 baris berikon: Isi pesan, Seluruh baris chat, Preview pesan, Nama kontak, Foto profil, Preview media, Galeri media, Konten feed, Kotak ketik. Setiap baris punya switch sendiri dan sub-teks "Dilindungi" / "Terlihat".
+   - Bila platform nonaktif, daftar baris **disembunyikan** dan diganti satu catatan: "Nyalakan platform di atas untuk memilih bagian yang ingin disembunyikan."
+6. **Opsi lanjutan** (`<details>`) — kekuatan blur (Ringan/Sedang/Kuat), hover membuka item, tautan pintasan keyboard, tautan kebijakan privasi. Ikon chevron berputar 180° saat terbuka.
+7. **Kartu support** — latar hangat, ikon kopi, "Suka Shielded?" / "Traktir kopi lewat Tako", tombol pil "Buka" menuju `https://tako.id/Zwart04/gift`.
+8. **Footer** — "Privasi lokal · Tanpa telemetri" (`10.5px`, `--text-3`, rata tengah).
 
 ### Interaksi
-- Semua perubahan langsung tersimpan dan diterapkan.
-- Toggle utama mematikan/menyalakan proteksi untuk platform di tab aktif saja.
+- Semua perubahan langsung disimpan ke `chrome.storage.local` dan diterapkan tanpa reload.
+- Switch master mengaktifkan/menonaktifkan proteksi hanya untuk platform yang dipilih di kartu, bukan seluruh platform.
+- Klik chip mengganti platform yang sedang diatur tanpa menutup popup.
+- Tombol tema menulis preferensi eksplisit `light`/`dark` (bukan `system`) agar pilihan tidak berubah sendiri.
 - Klik di luar popup menutup popup (perilaku browser).
 
 ### State
 
 | State | Tampilan |
 |---|---|
-| **Normal** | Seperti di atas |
-| **Tab bukan platform** | Pesan 2 baris: "Situs ini tidak didukung." + tombol sekunder "Buka daftar platform" |
-| **Platform dinonaktifkan** | Segmented dan daftar zona disabled; teks "Aktifkan untuk mengubah aturan" |
-| **Loading** | Skeleton 2 baris; muncul < 150 ms |
-| **Error storage** | Banner inline merah: "Preferensi tidak dapat dibaca" + tombol "Muat ulang" |
+| **Bawaan (semua nonaktif)** | 7 chip tanpa titik, status "Nonaktif", kartu zona berisi catatan singkat |
+| **Platform aktif** | Status "Aktif · 9 zona terlindungi", 9 baris zona dengan switch aktif |
+| **Loading** | Tiga skeleton (kartu lebar, baris, baris pendek); muncul < 150 ms |
+| **Error storage** | Kartu banner "Preferensi tidak dapat dibaca." + tombol "Muat ulang" |
 
 ### Desktop
-- Popup selalu 320px; tidak ada adaptasi khusus.
+- Popup selalu 372px; tidak ada adaptasi khusus.
 
 ---
 
-## 10.2 Dashboard (halaman penuh)
+## 10.2 Halaman Privasi
 
-### Layout Desktop (≥ 720px)
-- **Sidebar kiri** 216px: nama produk, nav vertikal (Privasi, Platform, Tampilan, Pintasan, Tentang).
-- **Konten** maksimum 720px, rata kiri, padding `--sp-6`.
-- **Tanpa topbar dekoratif.** Judul halaman langsung di konten.
-
-### Layout Sempit (< 720px)
-- Sidebar berubah menjadi segmented horizontal di atas konten.
-- Konten padding `--sp-4`.
-
-### Hirarki
-1. Judul halaman (`--text-2xl`, semibold).
-2. Deskripsi satu baris (`--text-md`, `--text-2`).
-3. Maksimal 2–3 kartu per halaman.
-
-### Navigasi
-- Item aktif: latar `--surface-2`, teks `--text`, radius `--r-md`.
-- Item non-aktif: teks `--text-2`, hover `--surface-2`.
-- Setiap item memakai ikon garis 16–17px (shield, platform, tampilan, keyboard, info) + label; brand memakai logo Shielded (ghost + bar sensor, vektor).
-- Ikon brand platform berwarna lembut di tile 34px (WhatsApp hijau, Telegram biru, Instagram merah muda), bukan warna teks penuh.
+- Halaman statis `ui/privacy/index.html`, tanpa JavaScript.
+- Kolom maksimum 720px, padding `--sp-7`/`--sp-4`.
+- Isi: ringkasan, data yang disimpan, data yang tidak diakses, izin (`storage` + host platform + `commands`), batas perlindungan.
+- Tidak ada banner, toast, atau state dinamis.
 
 ---
 
-## 10.3 Privacy Settings
+## 10.3 Zona Per Item
 
-### Kartu 1 — Mode dasar
-- Segmented preset (sama seperti popup).
-- Di bawahnya, satu kalimat penjelasan per tier, berubah sesuai pilihan:
-  - Normal: "Tidak ada yang disembunyikan."
-  - Privasi: "Pesan, preview, dan nama kontak dikaburkan per item."
-  - Maksimum: "Semua zona ditutup. Tampilkan hanya lewat pintasan."
+Sembilan zona, masing-masing berdiri sendiri:
 
-### Kartu 2 — Otomatis
-- Toggle: "Lindungi saat pindah tab" (default aktif).
-- Toggle: "Lindungi saat jendela kehilangan fokus" (default aktif).
-- Select: "Saat kembali ke tab" → Pulihkan otomatis / Tetap terlindung.
-- Toggle (P1): "Tampilkan indikator mini di halaman".
-
-### Kartu 3 — Reveal
-- Toggle: "Tampilkan saat hover" (default aktif).
-- Toggle: "Tampilkan saat klik-tahan" (default nonaktif).
-- Slider: durasi reveal otomatis 1–10 detik (default 3), dengan nilai numerik di kanan.
-
-### State
-- Tidak ada empty state (selalu ada default).
-- Error: banner di atas kartu + tombol "Coba lagi".
-
----
-
-## 10.4 Platform Management
-
-### Struktur
-Satu kartu berisi daftar baris platform.
-
-Setiap baris (`PlatformRow`):
-- Tile ikon brand 34px di kiri.
-- Nama platform (`--text-md`, medium).
-- Status kecil di bawah: "Aktif · 3 zona" atau "Nonaktif" atau "Segera".
-- Switch di kanan.
-- Chevron untuk memperluas aturan (hanya jika platform tersedia).
-
-### Panel yang diperluas
-- Panel berlatar `--bg`, radius `--r-md`, menjorok sejajar teks (bukan di bawah ikon).
-- Enam baris zona berikon: Isi pesan, Seluruh baris chat, Preview pesan, Nama kontak, Foto profil, Media.
-- Setiap baris menjelaskan status "Dilindungi" / "Terlihat"; media memakai badge "Segera".
-- Select efek: Blur / Selimut (cover). Intensitas blur diatur di halaman Tampilan.
-
-### Daftar platform
-| Urutan | Platform | Status MVP |
+| Zona | Ikon | Perilaku bawaan (Privasi) |
 |---|---|---|
-| 1 | WhatsApp | Aktif |
-| 2 | Telegram | Aktif |
-| 3 | Instagram | Aktif |
-| 4 | Facebook | Segera (P1) |
-| 5 | X | Segera (P1) |
-| 6 | Threads | Segera (P2) |
-| 7 | TikTok | Segera (P2) |
+| Isi pesan | balon pesan | Blur |
+| Seluruh baris chat | daftar | Terlihat |
+| Preview pesan | balon dengan garis | Blur |
+| Nama kontak | pengguna | Blur |
+| Foto profil | gambar | Blur (intensitas lebih kuat) |
+| Preview media | gambar kecil | Blur |
+| Galeri media | gambar besar | Blur |
+| Konten feed | feed | Terlihat (feed bukan percakapan) |
+| Kotak ketik | kotak teks | Blur |
 
-### Interaksi
-- Switch platform → aktif/nonaktif total, langsung diterapkan.
-- Perubahan aturan → disimpan instan; efek terlihat di tab platform yang terbuka.
-- Baris "Segera" disabled dengan tooltip "Belum tersedia".
-
-### State
-- **Empty:** tidak berlaku.
-- **Error:** toast "Gagal menyimpan" + nilai kembali ke sebelumnya.
+Aturan:
+- Zona yang bertumpuk tidak digandakan; elemen di dalam item terlindungi tidak diproses ulang.
+- Hover hanya membuka item yang disorot, bukan seluruh zona.
+- Menonaktifkan platform menghapus semua kelas efek dan menghentikan observer.
 
 ---
 
-## 10.5 Appearance Settings
+## 10.4 Level Perlindungan
 
-### Kartu 1 — Tema
-- Segmented: Sistem / Terang / Gelap.
-- Default: Sistem.
-- Perubahan langsung diterapkan ke seluruh UI ekstensi.
+| Level | Ringkasan |
+|---|---|
+| Normal | Tidak ada zona yang dilindungi |
+| Privasi | 7 zona: pesan, preview, nama, avatar, preview media, galeri media, kotak ketik |
+| Maksimum | Pesan/preview/media memakai cover; nama dan avatar disembunyikan |
 
-### Kartu 2 — Intensitas blur (P1)
-- Segmented: Ringan (8px) / Normal (12px) / Kuat (20px).
-- Berlaku pada semua platform yang memakai efek blur.
-- Pada MVP, nilai tetap 12px dan kontrol ini berstatus disabled dengan keterangan "Segera".
-
-### Kartu 3 — Warna selimut
-- Segmented: Netral / Gelap.
-- Hanya memengaruhi efek `cover`, bukan UI.
-
-### Tidak ada
-- Pilihan font.
-- Pilihan ukuran UI.
-- Warna aksen kustom.
-
-Alasan: konsistensi dan anti-slop.
+- Segmented di popup menerapkan preset ke **semua** platform, tetapi status aktif/nonaktif tiap platform dipertahankan.
+- Setelah preset diterapkan, pengguna masih bisa menyalakan/mematikan zona satu per satu.
 
 ---
 
-## 10.6 Keyboard Shortcuts
+## 10.5 Pengaturan Lanjutan (di dalam popup)
 
-### Struktur
-Tabel 3 baris:
-
-| Aksi | Pintasan | Tombol |
+| Kontrol | Nilai | Catatan |
 |---|---|---|
-| Aktif/nonaktifkan proteksi | Alt+Shift+S | Ubah |
-| Tampilkan semua sementara | Alt+Shift+R | Ubah |
-| Panic blur (P1) | — | Ubah |
+| Kekuatan blur | Ringan / Sedang / Kuat | Berlaku semua platform |
+| Hover membuka item | aktif/nonaktif | Bila mati, item hanya terbuka lewat pintasan |
+| Pintasan keyboard | membuka `chrome://extensions/shortcuts` | Chrome tidak mengizinkan remap programatik |
+| Kebijakan privasi | membuka `ui/privacy/index.html` | Halaman statis |
 
-### Perilaku tombol "Ubah"
-- Membuka `chrome://extensions/shortcuts` di tab baru.
-- **[Fakta]** Chrome tidak mengizinkan ekstensi mengubah shortcut secara programatik; UI harus menjelaskan ini.
-
-### Catatan bawah
-- "Pintasan harus unik. Jika bentrok, Chrome akan menandainya."
-
-### State
-- **Error:** jika `chrome.commands.getAll` gagal, tampilkan baris "Tidak dapat membaca pintasan" + tombol "Coba lagi".
+Auto-protect (tab tersembunyi, jendela kehilangan fokus) tetap aktif dan disimpan di preferensi, tetapi tidak diekspos sebagai kontrol popup agar panel tetap ringkas.
 
 ---
 
-## 10.7 About & Privacy
+## 10.6 Prinsip Error
 
-### Struktur
-1. **Identitas:** nama, versi, tautan situs (jika ada).
-2. **Dua kolom teks:**
-   - "Yang Shielded lakukan" (✓): memblur elemen di layar; menyimpan pengaturan secara lokal; bekerja tanpa server.
-   - "Yang Shielded tidak lakukan" (✗): membaca isi pesan; mengirim data; mengubah pengiriman pesan; melindungi dari screenshot/screen sharing/screen reader.
-3. **Daftar izin:** setiap permission + satu kalimat alasan.
-4. **Tautan:** Kebijakan Privasi, Lisensi, Sumber kode (jika open source).
-5. **Batas perlindungan:** paragraf eksplisit.
-
-### State
-- Statis; tidak ada loading/error kecuali tautan gagal dibuka (tangani dengan pesan kecil).
-
----
-
-## 10.8 Onboarding
-
-### Langkah 1 — Pilih mode
-- Judul: "Pilih tingkat perlindungan".
-- Tiga kartu pilihan (Normal / Privasi / Maksimum) dengan satu kalimat masing-masing.
-- Default terpilih: Privasi.
-- Tombol primary: "Lanjut".
-
-### Langkah 2 — Ringkasan
-- Daftar platform yang aktif.
-- Tiga baris penjelasan: "Aktif otomatis di tab ini", "Hover untuk melihat", "Alt+Shift+R untuk reveal".
-- Tombol primary: "Mulai".
-- Tautan ghost: "Lewati".
-
-### Aturan
-- Tidak ada langkah akun.
-- Tidak ada layar marketing.
-- Maksimal 2 langkah.
-
----
-
-## 10.9 Ringkasan State Semua Layar
-
-| Layar | Empty | Loading | Error |
-|---|---|---|---|
-| Popup | Tab non-platform | Skeleton 2 baris | Banner storage |
-| Dashboard | — | — | Toast simpan |
-| Privacy | — | — | Banner storage |
-| Platforms | — | — | Toast simpan |
-| Appearance | — | — | Toast simpan |
-| Shortcuts | — | — | Baris error commands |
-| About | — | — | Toast tautan |
-| Onboarding | — | — | Banner storage |
-
-Prinsip: error **lokal**, tidak pernah modal penuh yang memblokir seluruh UI.
+Error selalu **lokal** di dalam popup (toast atau banner), tidak pernah modal penuh yang memblokir seluruh UI.

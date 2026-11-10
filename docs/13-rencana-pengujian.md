@@ -55,13 +55,13 @@ Durasi minimum: 30 menit pemakaian nyata per platform, termasuk scroll, kirim pe
 | ID | Kriteria | Bukti |
 |---|---|---|
 | AC-01 | Ekstensi terpasang dan popup terbuka | Screenshot + log |
-| AC-02 | Onboarding ≤ 2 langkah, dapat dilewati | Rekaman |
-| AC-03 | Proteksi aktif di 3 platform P0 | Uji manual |
+| AC-02 | Semua platform nonaktif setelah instal | Rekaman |
+| AC-03 | Proteksi aktif di 7 platform | Uji manual |
 | AC-04 | Hover reveal bekerja | Rekaman + E2E |
 | AC-05 | Shortcut toggle & reveal bekerja | Uji manual |
 | AC-06 | Auto-protect tab hidden & window blur | Uji manual |
 | AC-07 | Popup toggle mengubah efek tanpa reload | E2E |
-| AC-08 | Dashboard mengubah aturan tanpa reload | E2E |
+| AC-08 | Popup mengubah aturan tanpa reload | E2E |
 | AC-09 | Nonaktifkan platform menghapus semua efek | Uji manual |
 | AC-10 | Fail-open: situs tetap normal jika selector gagal | Uji dengan selector rusak |
 | AC-11 | Tidak ada `fetch`/`<all_urls>`/`eval` | CI hijau |

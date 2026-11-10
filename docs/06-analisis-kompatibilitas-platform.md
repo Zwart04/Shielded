@@ -113,7 +113,7 @@ Dijalankan manual sebelum adapter dinyatakan selesai:
 
 Jika DM web tidak tersedia atau struktur tidak stabil:
 
-1. Tandai platform sebagai **"Segera"** di dashboard (disabled, dengan penjelasan).
+1. Tandai platform sebagai **"Segera"** di popup (disabled, dengan penjelasan).
 2. Jangan rilis adapter setengah jadi.
 3. Catat temuan di `selectors-runbook.md`.
 
@@ -125,7 +125,7 @@ Langkah menambahkan platform:
 2. Buat folder `src/adapters/<platform>/` berisi `index.ts`, `selectors.ts`, `rules.ts`.
 3. Daftarkan di `src/adapters/registry.ts`.
 4. Tambahkan pola host di `manifest.config.ts`.
-5. Tambahkan baris platform di `src/ui/dashboard/sections/platforms.ts`.
+5. Tambahkan logo platform di `src/ui/components/icons.ts` dan kartu platform di `src/ui/popup/main.ts`.
 6. Tambahkan fixture DOM di `tests/fixtures/dom/<platform>/`.
 
 Tidak ada perubahan pada `src/core/` — ini kriteria utama keberhasilan arsitektur.

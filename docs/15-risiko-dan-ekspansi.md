@@ -84,7 +84,7 @@ Kriteria menerima platform baru:
 1. **Fokus pada keandalan selektor** — ini yang menentukan reputasi jangka panjang.
 2. **Jangan menambah platform terlalu cepat** — lebih baik 3 platform solid daripada 7 rapuh.
 3. **Pertahankan kesederhanaan UI** — godaan menambah toggle harus dilawan.
-4. **Dokumentasikan batasan di setiap titik kontak** — toko, About, onboarding.
+4. **Dokumentasikan batasan di setiap titik kontak** — toko, popup, halaman privasi.
 5. **Bangun komunitas kecil** — pengguna teknis dapat membantu verifikasi selector.
 
 ## 15.7 Kriteria Berhenti / Pivot

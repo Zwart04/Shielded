@@ -22,6 +22,8 @@ export type IconName =
   | 'settings'
   | 'keyboard'
   | 'info'
+  | 'sun'
+  | 'moon'
   | 'chevron';
 
 interface IconPart {
@@ -126,6 +128,13 @@ const UI_ICONS: Record<IconName, IconPart[]> = {
     part('path', { d: 'M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7.5 14h9' }),
   ],
   info: [part('circle', { cx: 12, cy: 12, r: 9 }), part('path', { d: 'M12 11v5M12 7.8h.01' })],
+  sun: [
+    part('circle', { cx: 12, cy: 12, r: 4.2 }),
+    part('path', {
+      d: 'M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6',
+    }),
+  ],
+  moon: [part('path', { d: 'M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.7 8.7 0 1 0 11.1 11.1Z' })],
   chevron: [part('path', { d: 'M6 9l6 6 6-6' })],
 };
 

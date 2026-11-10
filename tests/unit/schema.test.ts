@@ -20,7 +20,6 @@ test('normalizeSettings mempertahankan nilai valid', () => {
     unblurOnAppHover: true,
     idleBlurMinutes: 15,
     coverTone: 'dark',
-    onboardingDone: true,
   };
   const normalized = normalizeSettings(custom);
   assert.equal(normalized.level, 'maximum');
@@ -31,7 +30,6 @@ test('normalizeSettings mempertahankan nilai valid', () => {
   assert.equal(normalized.unblurOnAppHover, true);
   assert.equal(normalized.idleBlurMinutes, 15);
   assert.equal(normalized.coverTone, 'dark');
-  assert.equal(normalized.onboardingDone, true);
 });
 
 test('nilai tidak valid jatuh ke default', () => {
@@ -76,7 +74,7 @@ test('zona tidak valid memakai fallback platform', () => {
   assert.equal(normalized.platforms.whatsapp.enabled, false);
   assert.equal(normalized.platforms.whatsapp.zones.messages.protected, false);
   assert.equal(normalized.platforms.whatsapp.zones.messages.effect, 'blur');
-  assert.equal(normalized.platforms.telegram.enabled, true);
+  assert.equal(normalized.platforms.telegram.enabled, false);
 });
 
 test('schema v1: conversationList dipetakan ke preview dan nama', () => {
@@ -166,7 +164,7 @@ test('schemaVersion selalu diisi versi saat ini', () => {
   assert.equal(normalized.schemaVersion, createDefaultSettings().schemaVersion);
 });
 
-test('skema lama memakai ulang preset terbaru dan mengaktifkan platform baru', () => {
+test('skema lama memakai preset terbaru dan mematikan semua platform', () => {
   const normalized = normalizeSettings({
     schemaVersion: 3,
     level: 'privacy',
@@ -176,9 +174,22 @@ test('skema lama memakai ulang preset terbaru dan mengaktifkan platform baru', (
     },
   });
 
-  assert.equal(normalized.platforms.whatsapp.enabled, false);
+  for (const platform of Object.values(normalized.platforms)) {
+    assert.equal(platform.enabled, false);
+  }
   assert.equal(normalized.platforms.whatsapp.zones.media.protected, true);
   assert.equal(normalized.platforms.telegram.zones.textInput.protected, true);
-  assert.equal(normalized.platforms.threads.enabled, true);
-  assert.equal(normalized.platforms.tiktok.enabled, true);
+});
+
+test('schema v8 mempertahankan pilihan platform pengguna', () => {
+  const normalized = normalizeSettings({
+    schemaVersion: 8,
+    platforms: {
+      whatsapp: { enabled: true },
+      telegram: { enabled: false },
+    },
+  });
+
+  assert.equal(normalized.platforms.whatsapp.enabled, true);
+  assert.equal(normalized.platforms.telegram.enabled, false);
 });

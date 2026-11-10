@@ -20,14 +20,14 @@ Produk ini **tidak** mengklaim melindungi dari: malware lokal, akses fisik ke pe
 | **Host permission berlebihan** | Hanya 7 pola domain; tanpa `<all_urls>`; justifikasi tertulis |
 | **Prompt injection dari halaman** | String dari halaman diperlakukan sebagai data; tidak ada `eval`; tidak ada aksi otomatis berbasis teks halaman |
 | **Remote code** | Dilarang MV3; semua JS dibundel |
-| **Resource eksternal di popup/dashboard** | Tidak ada font/CDN; semua aset lokal |
+| **Resource eksternal di popup** | Tidak ada font/CDN; semua aset lokal |
 | **Update tamper** | Distribusi via Web Store (ditandatangani); checksum rilis untuk audit |
 | **Storage bocor** | Hanya preferensi; tidak ada konten; sync opt-in |
 
 ## 12.3 Prinsip Privasi
 
 1. **Local-first absolut** — tidak ada endpoint jaringan.
-2. **Data minimization** — yang disimpan: mode, toggle per platform, intensitas blur, preferensi tema, status onboarding.
+2. **Data minimization** — yang disimpan: level, toggle per platform, pilihan zona, intensitas blur, preferensi tema.
 3. **No telemetry** — tidak ada analytics, crash reporting, atau remote config.
 4. **Transparansi** — kode dapat diaudit; dokumen ini menjelaskan batas.
 

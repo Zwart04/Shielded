@@ -23,7 +23,7 @@
 └──────────────────────────│──────────────────────────────────┘
                            ▼
 ┌───────────────────────────────┐    ┌─────────────────────────┐
-│ Background Service Worker     │◀──▶│ Popup / Dashboard       │
+│ Background Service Worker     │◀──▶│ Popup                   │
 │ (commands, badge, relay)      │    │ (halaman ekstensi)      │
 └───────────────────────────────┘    └───────────┬─────────────┘
                                                  ▼
@@ -38,7 +38,7 @@
   - menerima perintah keyboard (`chrome.commands`),
   - memperbarui badge ikon,
   - meneruskan pesan popup ↔ content script.
-- **Popup & dashboard** adalah halaman ekstensi biasa. Mereka membaca/menulis preferensi dan mengirim perintah, tanpa logika proteksi.
+- **Popup** adalah halaman ekstensi biasa. Popup membaca/menulis preferensi dan mengirim perintah, tanpa logika proteksi.
 
 ## 7.3 Peran Setiap Modul
 

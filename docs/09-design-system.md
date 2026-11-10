@@ -5,10 +5,10 @@
 ## 9.1 Prinsip
 
 1. **Hirarki lewat tipografi & ruang**, bukan kotak berwarna-warni.
-2. **Satu aksen biru.** Selebihnya netral.
-3. **Komponen sedikit, konsisten.** Button, Toggle, Segmented, Select, Row, Card, Toast.
+2. **Satu aksen tinta.** Kontrol aktif (switch, pill, tombol support) memakai `--ink`; biru hanya untuk tautan.
+3. **Komponen sedikit, konsisten.** Button, Switch, Segmented, Toast, Icon.
 4. **Motion halus dan singkat** (150–240 ms) dengan easing yang sama.
-5. **Anti-slop:** tanpa gradien dekoratif, tanpa glassmorphism, tanpa glow, tanpa ikon hias, tanpa metrik palsu, tanpa dashboard "bento" kosong.
+5. **Anti-slop:** tanpa glassmorphism, tanpa glow, tanpa ikon hias, tanpa metrik palsu, tanpa kartu "bento" kosong.
 
 Setiap elemen UI harus menjawab: *fungsi apa yang dijalankannya?* Jika tidak ada, hapus.
 
@@ -19,212 +19,102 @@ Setiap elemen UI harus menjawab: *fungsi apa yang dijalankannya?* Jika tidak ada
   color-scheme: light dark;
 
   /* Light */
-  --bg: #f5f5f7;
+  --bg: #f3f3f5;
   --surface: #ffffff;
-  --surface-2: #f2f2f4;
-  --surface-3: #e8e8ed;
-  --text: #1d1d1f;
-  --text-2: #6e6e73;
-  --text-3: #8e8e93;
-  --separator: rgba(0, 0, 0, 0.08);
-  --accent: #0071e3;
-  --accent-press: #0058b0;
-  --accent-soft: rgba(0, 113, 227, 0.10);
-  --success: #2e7d32;
-  --warn: #b25000;
-  --danger: #c0392b;
-  --overlay-tint: rgba(28, 28, 30, 0.18);
+  --surface-2: #f1f1f4;
+  --surface-3: #e5e5ea;
+  --text: #151518;
+  --text-2: #6c6c75;
+  --text-3: #8d8d96;
+  --separator: rgba(18, 18, 22, 0.07);
+  --ink: #161619;          /* kontrol aktif */
+  --on-ink: #ffffff;       /* teks di atas --ink */
+  --card-shadow: 0 1px 2px rgba(18, 18, 22, 0.04), 0 10px 26px rgba(18, 18, 22, 0.05);
+  --support-bg: linear-gradient(135deg, #f8ebe0, #f0dcc6);
+  --support-ink: #5c3a22;
+  --accent: #0071e3;       /* hanya tautan */
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #1c1c1e;
-    --surface: #2c2c2e;
-    --surface-2: #3a3a3c;
-    --surface-3: #48484a;
-    --text: #f5f5f7;
-    --text-2: #a1a1a6;
-    --text-3: #8e8e93;
-    --separator: rgba(255, 255, 255, 0.12);
-    --accent: #0a84ff;
-    --accent-press: #339cff;
-    --accent-soft: rgba(10, 132, 255, 0.16);
-    --overlay-tint: rgba(0, 0, 0, 0.35);
-  }
-}
-
-/* Override manual: atribut data-theme pada <html> */
-:root[data-theme="light"] { /* nilai yang sama seperti light */ }
-:root[data-theme="dark"]  { /* nilai yang sama seperti dark */ }
 ```
 
-**Aturan pemakaian:**
-- Aksen hanya untuk tindakan utama, state aktif, dan tautan.
-- Merah hanya untuk tindakan destruktif (menonaktifkan total) dan error.
-- Jangan memakai lebih dari dua warna aksen pada satu layar.
+Tema gelap membalik `--ink` menjadi `#f5f5f7` dan `--on-ink` menjadi `#141416`, dengan latar `#121214`, permukaan `#1d1d20`, dan bayangan lebih dalam. Palet lengkap ada di `src/ui/styles/tokens.css`.
+
+`color-scheme` mengikuti tema yang dipilih: `:root[data-theme="light"]` → `light`, `:root[data-theme="dark"]` → `dark`. Tanpa ini, kontrol native (scrollbar, chevron `<details>`) tetap terang di tema gelap.
 
 ## 9.3 Tipografi
 
-```css
-:root {
-  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, system-ui, sans-serif;
-  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+| Token | Nilai | Penggunaan |
+|---|---|---|
+| `--text-xs` | 11px | Footer, nilai tautan |
+| `--text-sm` | 12px | Sub-teks baris, status |
+| `--text-md` | 13px | Teks utama popup |
+| `--text-lg` | 15px | Judul kecil |
+| `--text-xl` | 17px | Judul bagian |
+| `--text-2xl` | 21px | Judul halaman privasi |
 
-  --text-xs: 11px;   /* label kecil, badge */
-  --text-sm: 12px;   /* metadata */
-  --text-md: 13px;   /* body utama ekstensi */
-  --text-lg: 15px;   /* subjudul, tombol besar */
-  --text-xl: 17px;   /* judul seksi */
-  --text-2xl: 21px;  /* judul halaman */
+Sapaan popup memakai 26px/600 dengan letter-spacing −0.035em. Subtitle sapaan memakai **Georgia italic 14.5px** — satu-satunya tempat serif dipakai, sebagai aksen lembut.
 
-  --weight-regular: 400;
-  --weight-medium: 500;
-  --weight-semibold: 600;
+## 9.4 Spasi, Radius, Bayangan
 
-  --lh-tight: 1.25;
-  --lh-normal: 1.45;
-}
-```
+- Spasi: `--sp-1` 4px … `--sp-7` 48px (skala 4/8/12/16/24/32/48).
+- Radius: `--r-sm` 6px, `--r-md` 10px, `--r-lg` 14px, `--r-full` 999px.
+- Kartu popup memakai radius 18–20px dengan `--card-shadow`, bukan border.
+- Bayangan hanya untuk memisahkan kartu dari latar; tidak ada shadow berwarna.
 
-**Aturan:**
-- Maksimal tiga ukuran font per layar.
-- Judul memakai `semibold`; body `regular`; label `medium`.
-- Tidak memakai huruf kapital semua untuk teks panjang.
-- Tidak ada letter-spacing dekoratif.
+## 9.5 Motion
 
-## 9.4 Spasi (grid 4pt)
+- Perubahan kontrol: `--dur-1` (150 ms).
+- Buka/tutup panel: `--dur-2` (240 ms).
+- Pressed: `scale(0.94–0.98)`.
+- Hormati `prefers-reduced-motion`: animasi skeleton dimatikan.
 
-```css
-:root {
-  --sp-1: 4px;
-  --sp-2: 8px;
-  --sp-3: 12px;
-  --sp-4: 16px;
-  --sp-5: 24px;
-  --sp-6: 32px;
-  --sp-7: 48px;
-}
-```
-
-Padding kartu: `--sp-5` (24px). Jarak antar-kartu: `--sp-5`. Jarak label-ke-kontrol: `--sp-2`. Tidak ada nilai acak di luar skala.
-
-## 9.5 Radius
-
-```css
-:root {
-  --r-sm: 6px;    /* badge, chip kecil */
-  --r-md: 10px;   /* tombol, input */
-  --r-lg: 14px;   /* kartu, panel */
-  --r-full: 999px;
-}
-```
-
-Satu elemen hanya memakai satu radius. Jangan mencampur 8/12/16 secara acak.
-
-## 9.6 Bayangan
-
-```css
-:root {
-  --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.10), 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-pop: 0 8px 24px rgba(0, 0, 0, 0.18);
-}
-```
-
-Hanya dua level. Kartu memakai border `--separator`, bukan bayangan besar.
-
-## 9.7 Motion
-
-```css
-:root {
-  --ease: cubic-bezier(0.2, 0, 0, 1);
-  --dur-1: 150ms;
-  --dur-2: 240ms;
-}
-```
-
-- Toggle: `--dur-1`.
-- Buka/tutup panel: `--dur-2`.
-- Hormati `prefers-reduced-motion`: nonaktifkan transisi non-esensial.
-
-## 9.8 Ukuran Komponen
+## 9.6 Ukuran Komponen
 
 ```css
 :root {
   --ctl-h: 32px;        /* tinggi kontrol */
   --ctl-h-lg: 36px;
-  --popup-w: 320px;
-  --sidebar-w: 216px;
-  --content-max: 720px;
+  --popup-w: 372px;     /* lebar tetap popup */
 }
 ```
 
-## 9.9 Komponen
+## 9.7 Komponen
 
-### Button
+### Button (`.btn`)
 | Varian | Latar | Teks | Penggunaan |
 |---|---|---|---|
-| Primary | `--accent` | putih | Tindakan utama (1 per layar) |
-| Secondary | `--surface-2` | `--text` | Tindakan alternatif |
-| Ghost | transparan | `--accent` | Tautan tindakan |
-| Destructive | `--danger` | putih | Nonaktifkan total |
+| Default | `--surface-2` | `--text` | Tindakan sekunder (mis. "Muat ulang") |
+| `.btn-sm` | — | — | Tinggi 26px untuk banner |
 
-State: default / hover (gelap 4%) / pressed (scale 0.98) / disabled (opacity 0.4, cursor not-allowed) / loading (teks diganti "Menyimpan…", tombol disabled).
+Tidak ada tombol primary berwarna di popup: aksi utama adalah switch dan segmented. State: default / hover (`--surface-3`) / pressed (scale 0.98) / disabled (opacity 0.45).
 
-### Toggle
+### Switch (`.switch`)
 - Ukuran 40×24, knob 20, radius `--r-full`.
-- Aktif: `--accent`.
-- `role="switch"`, `aria-checked`.
-- Label dapat diklik.
+- Popup memakai 42×25 dengan knob 21 dan travel 17px.
+- Aktif: `--ink`, knob putih.
+- Aksen biru `--accent` hanya dipakai bila switch berada di luar popup.
 
-### Segmented Control
-- Tiga opsi (Normal / Privasi / Maksimum).
-- Item aktif: `--surface` + `--shadow-1`.
-- `role="radiogroup"`, navigasi panah.
+### Segmented (`.segmented`)
+- Wadah `--surface-2`, tinggi tombol 28px (34px di popup), radius 12–14px.
+- Item aktif: `--ink` + `--on-ink`, tanpa bayangan.
+- Item non-aktif: `--text-2`, hover `--text`.
 
-### Select
-- Memakai `<select>` asli yang di-style. Tidak membuat dropdown kustom.
-- Alasan: konsisten dengan platform, aksesibel, tanpa bug positioning.
+### Chip platform (`.po-chip`)
+- 38×38, radius 12px, logo SVG 19px berwarna `currentColor`.
+- Terpilih: latar `--surface-2` + inset border.
+- Platform aktif: titik 4px `--ink` di bawah logo.
 
-### Row
-- Tinggi minimum 44px.
-- Label kiri + deskripsi sekunder + kontrol kanan.
-- Pemisah `--separator` antar baris.
+### Toast (`.toast`)
+- Muncul di bawah tengah, latar `--text`, teks `--bg`, radius `--r-lg`.
+- Hanya untuk kegagalan menyimpan; tidak ada toast sukses.
 
-### Card
-- `--surface`, radius `--r-lg`, border `--separator`, padding `--sp-5`.
-- Dipakai hemat: satu kartu per topik.
+### Icon (`.icon`)
+- Ikon garis 24×24 viewBox, stroke 1.6, `stroke-linecap: round`.
+- Logo platform memakai path brand resmi berwarna asli (WhatsApp hijau, Telegram biru, dst.).
+- Ukuran pemakaian: 14–22px.
 
-### Toast
-- Muncul di bawah, radius `--r-lg`, auto-hide 3 detik.
-- Hanya untuk konfirmasi penting.
+## 9.8 Aksesibilitas
 
-## 9.10 State Standar
-
-| State | Aturan |
-|---|---|
-| **Empty** | Satu kalimat + satu tindakan utama. Tanpa ilustrasi dekoratif. |
-| **Loading** | Skeleton baris (bukan spinner besar) untuk data lokal; jarang terlihat. |
-| **Error** | Pesan inline di tempat kejadian + tombol "Coba lagi". Tidak memblokir seluruh halaman. |
-| **Disabled** | Opacity 0.45 + tooltip alasan (mis. "Segera hadir"). |
-| **Success** | Toast singkat; tanpa animasi berlebihan. |
-
-## 9.11 Aksesibilitas
-
-- Kontras teks ≥ 4.5:1; teks sekunder ≥ 4.5:1 pada surface.
-- Semua kontrol dapat dijangkau Tab; urutan logis.
-- Fokus terlihat jelas (outline 2px `--accent` dengan offset 2px).
-- `aria-live="polite"` untuk perubahan status.
-- Tidak ada informasi yang disampaikan hanya lewat warna.
-
-## 9.12 Anti-Slop Checklist (wajib sebelum rilis UI)
-
-- [ ] Tidak ada gradien dekoratif.
-- [ ] Tidak ada glassmorphism / blur dekoratif pada panel UI.
-- [ ] Tidak ada ikon tanpa fungsi.
-- [ ] Tidak ada metrik/angka palsu.
-- [ ] Semua radius konsisten dengan skala.
-- [ ] Semua spasi dari skala 4pt.
-- [ ] Maksimal satu tombol primary per layar.
-- [ ] Tidak ada tombol tanpa aksi.
-- [ ] Teks tidak dipotong tanpa alasan.
-- [ ] Dark mode diuji di semua layar.
+- Semua kontrol memakai elemen native (`button`, `summary`) atau `role` + `aria-checked` / `aria-pressed` / `aria-selected`.
+- `:focus-visible` memakai outline `--accent` 2px dengan offset 2px.
+- Label switch menjelaskan aksi, mis. "Aktifkan perlindungan di WhatsApp Web".
+- Kontras teks minimal mengikuti `--text-2` pada `--surface`; teks footer memakai `--text-3` hanya untuk informasi non-esensial.

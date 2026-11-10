@@ -42,40 +42,31 @@ shielded/
 │  │  ├─ registry.ts               # daftar adapter aktif
 │  │  ├─ whatsapp/index.ts
 │  │  ├─ telegram/index.ts
-│  │  └─ instagram/index.ts
+│  │  ├─ instagram/index.ts
+│  │  ├─ facebook/index.ts
+│  │  ├─ x/index.ts
+│  │  ├─ threads/index.ts
+│  │  └─ tiktok/index.ts
 │  ├─ content/
 │  │  └─ main.ts                   # bootstrap content script
 │  ├─ background/
 │  │  └─ service-worker.ts         # commands, badge, relay
 │  └─ ui/
 │     ├─ styles/
-│     │  ├─ tokens.css
+│     │  ├─ tokens.css            # palet terang/gelap, --ink, --popup-w
 │     │  ├─ base.css
-│     │  ├─ components.css
-│     │  └─ layout.css
+│     │  ├─ components.css        # btn, switch, segmented, toast, icon
+│     │  └─ popup.css             # seluruh desain popup
 │     ├─ components/
 │     │  ├─ dom.ts                 # helper el(), clear(), applyTheme()
-│     │  ├─ shell.ts               # layout dashboard + nav
+│     │  ├─ logo.ts                # logo Shielded (SVG)
 │     │  ├─ toggle.ts
 │     │  ├─ segmented.ts
 │     │  ├─ toast.ts
-│     │  └─ icons.ts
+│     │  └─ icons.ts               # ikon garis + logo 7 platform
 │     ├─ popup/
 │     │  ├─ index.html
-│     │  └─ main.ts
-│     ├─ dashboard/
-│     │  ├─ index.html
-│     │  ├─ main.ts
-│     │  └─ sections/
-│     │     ├─ shared.ts
-│     │     ├─ privacy.ts
-│     │     ├─ platforms.ts
-│     │     ├─ appearance.ts
-│     │     ├─ shortcuts.ts
-│     │     └─ about.ts
-│     ├─ onboarding/
-│     │  ├─ index.html
-│     │  └─ main.ts
+│     │  └─ main.ts               # satu-satunya panel pengaturan
 │     └─ privacy/
 │        └─ index.html            # kebijakan privasi statis
 ├─ tests/
@@ -84,6 +75,7 @@ shielded/
 │     ├─ schema.test.ts
 │     ├─ selector-resolver.test.ts
 │     ├─ messaging.test.ts
+│     ├─ contract.test.ts
 │     └─ platform-ids.test.ts
 │  └─ (rencana) e2e/ + fixtures/dom/
 ├─ scripts/
@@ -92,8 +84,6 @@ shielded/
 │  └─ build-zip.mjs               # paket rilis (ZIP ditulis via node:zlib)
 ├─ tools/
 │  └─ selector-probe.js           # alat manual DevTools
-├─ design/
-│  └─ preview.html                # mockup statis popup + dashboard
 └─ docs/                          # dokumen perencanaan & operasional
    ├─ 00-daftar-isi.md
    ├─ 01-ringkasan-eksekutif.md

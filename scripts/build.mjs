@@ -12,11 +12,9 @@ const ENTRIES = [
   { input: 'src/content/main.ts', output: 'content.js', format: 'iife' },
   { input: 'src/background/service-worker.ts', output: 'background.js', format: 'esm' },
   { input: 'src/ui/popup/main.ts', output: 'ui/popup/popup.js', format: 'iife' },
-  { input: 'src/ui/dashboard/main.ts', output: 'ui/dashboard/dashboard.js', format: 'iife' },
-  { input: 'src/ui/onboarding/main.ts', output: 'ui/onboarding/onboarding.js', format: 'iife' },
 ];
 
-const PAGES = ['popup', 'dashboard', 'onboarding', 'privacy'];
+const PAGES = ['popup', 'privacy'];
 
 function optionsFor(entry) {
   return {

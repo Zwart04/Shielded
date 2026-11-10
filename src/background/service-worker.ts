@@ -33,14 +33,11 @@ async function refreshActiveBadge(): Promise<void> {
   if (tab?.id) await refreshBadgeForTab(tab.id);
 }
 
-chrome.runtime.onInstalled.addListener((details) => {
+chrome.runtime.onInstalled.addListener(() => {
   void (async () => {
     const settings = await loadSettings();
     await saveSettings(settings);
 
-    if (details.reason === 'install' && !settings.onboardingDone) {
-      await chrome.tabs.create({ url: chrome.runtime.getURL('ui/onboarding/index.html') });
-    }
     await refreshActiveBadge();
   })();
 });

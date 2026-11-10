@@ -5,6 +5,7 @@ import { createDefaultSettings } from '../../src/shared/defaults.ts';
 
 test('describeProtection menghitung hanya zona MVP saat preset Maksimum', () => {
   const settings = createDefaultSettings();
+  settings.platforms.whatsapp.enabled = true;
   settings.level = 'maximum';
   for (const zone of Object.values(settings.platforms.whatsapp.zones)) {
     zone.protected = true;
@@ -21,6 +22,7 @@ test('describeProtection menyatakan nonaktif saat platform dimatikan', () => {
 
 test('describeProtection menyatakan tidak ada zona bila semua zona MVP terbuka', () => {
   const settings = createDefaultSettings();
+  settings.platforms.whatsapp.enabled = true;
   for (const zone of Object.values(settings.platforms.whatsapp.zones)) {
     zone.protected = false;
   }

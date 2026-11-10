@@ -54,7 +54,6 @@ export interface Settings {
   blurIntensity: BlurIntensity;
   coverTone: 'neutral' | 'dark';
   theme: ThemePreference;
-  onboardingDone: boolean;
   platforms: Record<PlatformId, PlatformSettings>;
 }
 

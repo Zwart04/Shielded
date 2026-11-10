@@ -46,20 +46,18 @@
 - Fixture DOM untuk ketiga platform.
 - Runbook selektor.
 
-**Deliverable:** 3 platform P0 beroperasi.
+**Deliverable:** 7 platform beroperasi.
 
 **Dependensi:** Fase 2.
 
 **Kriteria selesai:**
-- Checklist verifikasi `06` lolos di 3 platform.
+- Checklist verifikasi `06` lolos di 7 platform.
 - Regresi selektor ter-cover test.
 
 ## 14.4 Fase 4 — UI/UX Lengkap
 
 **Isi:**
-- Popup final.
-- Dashboard 5 halaman.
-- Onboarding 2 langkah.
+- Popup final sebagai satu-satunya panel pengaturan.
 - Design system diterapkan penuh.
 - Dark/light mode.
 - Halaman About & Privacy.

@@ -6,9 +6,6 @@ const EFFECTS: readonly EffectKind[] = ['blur', 'cover', 'hide'];
 const INTENSITIES: readonly BlurIntensity[] = ['light', 'normal', 'strong'];
 const THEMES: readonly ThemePreference[] = ['system', 'light', 'dark'];
 
-/** Platform yang baru masuk pada skema v6 dan perlu dinyalakan saat migrasi. */
-const NEW_PLATFORMS: readonly PlatformId[] = ['facebook', 'x', 'threads', 'tiktok'];
-
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -92,8 +89,6 @@ export function normalizeSettings(raw: unknown): Settings {
   }
 
   // v4/v5: preset Privasi/Maksimum berubah (media + kotak ketik ikut dilindungi).
-  // v6: empat platform baru ikut diaktifkan; di data lama nilainya masih false
-  // karena saat itu belum didukung, bukan karena pilihan pengguna.
   // Zona lama diganti preset terbaru sekali agar perlindungan baru aktif.
   const storedVersion = typeof raw.schemaVersion === 'number' ? raw.schemaVersion : 0;
   if (storedVersion >= 3 && storedVersion < SCHEMA_VERSION) {
@@ -103,9 +98,12 @@ export function normalizeSettings(raw: unknown): Settings {
       for (const zone of ZONE_IDS) zones[zone] = { ...preset[zone] };
       platforms[id].zones = zones;
     }
-    for (const id of NEW_PLATFORMS) {
-      if (defaults.platforms[id].enabled) platforms[id].enabled = true;
-    }
+  }
+
+  // v8: bawaan baru = semua platform nonaktif. Data lama yang dulu otomatis
+  // aktif ikut dimatikan sekali, lalu pengguna menyalakan pilihannya sendiri.
+  if (storedVersion < 8) {
+    for (const id of PLATFORM_IDS) platforms[id].enabled = false;
   }
 
   const blurIntensity =
@@ -133,7 +131,6 @@ export function normalizeSettings(raw: unknown): Settings {
     blurIntensity,
     coverTone: raw.coverTone === 'dark' ? 'dark' : 'neutral',
     theme,
-    onboardingDone: bool(raw.onboardingDone, defaults.onboardingDone),
     platforms,
   };
 }

@@ -18,7 +18,7 @@
 
 Zona baru skema v7: **Konten feed** (`feedContent`). Post feed Instagram/Facebook/Threads
 dipisah dari zona percakapan dan **nonaktif secara bawaan**, jadi teks/gambar feed
-terlihat sampai pengguna menyalakannya di Dashboard → Platform → zona "Konten feed".
+terlihat sampai pengguna menyalakannya di popup → kartu platform → zona "Konten feed".
 Bila dinyalakan, seluruh post dikaburkan 3x (kelas `psx-zone--heavy`).
 
 Ambang elemen kecil `multi`: `width > 8 && height > 10` (nama pendek tetap terlindungi).

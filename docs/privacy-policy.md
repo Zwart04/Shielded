@@ -15,7 +15,6 @@ Shielded menyimpan **preferensi tampilan** di penyimpanan lokal browser (`chrome
 - Pilihan elemen yang dilindungi.
 - Intensitas blur dan warna selimut.
 - Preferensi tema.
-- Status penyelesaian onboarding.
 
 Data ini tidak pernah dikirim ke server mana pun. Data ini tidak berisi isi pesan, nama kontak, atau informasi akun.
 
@@ -69,7 +68,7 @@ Preferensi disimpan sampai pengguna menghapus ekstensi atau menghapus data ekste
 
 Pengguna dapat:
 
-- Melihat dan mengubah semua preferensi di dashboard.
+- Melihat dan mengubah semua preferensi lewat popup ekstensi.
 - Menghapus semua data dengan menghapus ekstensi.
 - Menggunakan ekstensi tanpa akun.
 

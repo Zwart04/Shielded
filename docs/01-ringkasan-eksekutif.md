@@ -39,12 +39,11 @@ Shielded adalah ekstensi Chromium (Manifest V3) yang:
 - Efek blur/cover/hide pada isi pesan dan daftar percakapan.
 - Reveal: hover, shortcut, pemulihan otomatis.
 - Auto-protect: tab tersembunyi + jendela kehilangan fokus.
-- Popup + dashboard satu halaman + onboarding 2 langkah.
+- Satu popup sebagai satu-satunya panel pengaturan. Semua platform nonaktif saat instalasi.
 - Penyimpanan lokal untuk preferensi.
 
 **Tidak termasuk MVP:**
 
-- Facebook, Threads, TikTok, X (masuk P1/P2).
 - Element picker kustom (P2).
 - Sinkronisasi lintas perangkat (P2, opt-in).
 - Dukungan Firefox (P3).
@@ -62,7 +61,7 @@ Klaim ini harus muncul di halaman *About & Privacy* dan deskripsi Chrome Web Sto
 
 Karena produk tanpa telemetri, keberhasilan diukur dari sinyal yang tersedia secara lokal/komunitas:
 
-- Rasio penyelesaian onboarding (diukur manual lewat sesi uji terbatas).
+- Rasio penyiapan awal (menyalakan platform pertama) diukur manual lewat sesi uji terbatas.
 - Jumlah laporan bug selektor per platform per rilis (semakin sedikit semakin baik).
 - Ulasan toko yang menyebut "tidak mengganggu" vs "tidak berfungsi".
 - Retensi 7 hari pada kelompok beta terbatas (survei, bukan tracking).

@@ -49,13 +49,13 @@ Lihat `02-konsep-dan-posisi-produk.md` bagian 2.5. Ringkasnya: kebocoran visual 
 
 | ID | Sebagai | Saya ingin | Sehingga | Acceptance Criteria |
 |---|---|---|---|---|
-| US-01 | pengguna baru | diarahkan ke pengaturan singkat setelah instal | tidak membuang waktu | Onboarding maksimal 2 langkah; selesai < 1 menit; dapat dilewati |
+| US-01 | pengguna baru | langsung bisa mengatur dari popup setelah instal | tidak membuang waktu | Semua platform nonaktif setelah instal; popup terbuka < 1 detik; tidak ada halaman pengaturan kedua |
 | US-02 | pengguna WA Web | isi pesan otomatis blur saat halaman dibuka | tanpa klik | ≤ 5 detik setelah load, zona isi pesan terlindungi pada mode Privasi |
 | US-03 | pengguna | melihat sementara dengan hover | tanpa klik | Reveal < 150 ms; kembali blur ≤ 400 ms setelah pointer keluar |
 | US-04 | pengguna | konten terlindungi saat pindah tab | tidak terlihat sekilas | Setelah `visibilitychange → hidden`, proteksi aktif sebelum frame berikutnya; diverifikasi dengan uji screenshot terjadwal |
 | US-05 | pengguna | toggle manual satu klik | kendali total | Klik ikon → popup → toggle; badge berubah; efek berubah tanpa reload |
 | US-06 | pengguna | shortcut reveal & toggle | tanpa mouse | Dua command terdaftar; berfungsi di tab platform aktif; remap lewat halaman Chrome |
-| US-07 | pengguna | mengelola aturan per platform | fleksibel | Dashboard menampilkan 7 baris platform; 3 aktif, 4 ditandai "Segera" |
+| US-07 | pengguna | mengelola aturan per platform | fleksibel | Popup menampilkan 7 logo platform; platform aktif ditandai titik; zona diatur per platform |
 | US-08 | pengguna | proteksi tidak mengganggu mengetik/klik | pekerjaan normal | Fokus masuk ke composer; klik tidak terblokir; navigasi SPA normal |
 | US-09 | pengguna | data tidak dikirim ke mana pun | tenang | Manifest tanpa `<all_urls>`; tidak ada `fetch`/XHR; lolos audit CI |
 | US-10 | pengguna | memahami batas perlindungan | ekspektasi realistis | Halaman Tentang menyebut screenshot, screen sharing, screen reader, perangkat fisik |
@@ -69,7 +69,7 @@ Lihat `02-konsep-dan-posisi-produk.md` bagian 2.5. Ringkasnya: kebocoran visual 
 | FR-03 | Reveal: hover (P0), shortcut (P0), klik-tahan (P1) | P0/P1 |
 | FR-04 | Auto-protect pada `visibilitychange` & `window blur`, dengan opsi pulih | P0 |
 | FR-05 | Popup: status + toggle cepat | P0 |
-| FR-06 | Dashboard: global, per platform, tampilan, pintasan, tentang | P0 |
+| FR-06 | Popup: platform, level, zona, tampilan, pintasan, tentang | P0 |
 | FR-07 | Persistensi via `chrome.storage.local`; sync opt-in (P2) | P0/P2 |
 | FR-08 | Nonaktifkan proteksi per platform | P0 |
 | FR-09 | Indikator mini di halaman | P1 |
@@ -116,13 +116,13 @@ Lihat `02-konsep-dan-posisi-produk.md` bagian 2.5. Ringkasnya: kebocoran visual 
 
 | Platform | URL | Risiko DOM | Status |
 |---|---|---|---|
-| WhatsApp Web | `web.whatsapp.com` | Tinggi (class ter-obfuscate) | MVP |
-| Telegram Web | `web.telegram.org` | Sedang (dua basis klien) | MVP |
-| Instagram DM | `instagram.com/direct/*` | Sedang | MVP |
-| Facebook Messenger | `facebook.com` | Tinggi | P1 |
-| X / Twitter DM | `x.com`, `twitter.com` | Sedang-rendah | P1 |
-| Threads DM | `threads.net`, `threads.com` | Sedang | P2 |
-| TikTok DM | `tiktok.com` | Sedang-tinggi | P2 |
+| WhatsApp Web | `web.whatsapp.com` | Tinggi (class ter-obfuscate) | Tersedia |
+| Telegram Web | `web.telegram.org` | Sedang (dua basis klien) | Tersedia |
+| Instagram (feed + DM) | `instagram.com` | Sedang | Tersedia |
+| Facebook (feed + Messenger) | `facebook.com` | Tinggi | Tersedia |
+| X / Twitter DM | `x.com`, `twitter.com` | Sedang-rendah | Tersedia (verifikasi sebagian) |
+| Threads DM | `threads.net`, `threads.com` | Sedang | Tersedia |
+| TikTok DM | `tiktok.com` | Sedang-tinggi | Tersedia |
 
 Detail risiko & checklist verifikasi ada di `06-analisis-kompatibilitas-platform.md`.
 
@@ -130,13 +130,13 @@ Detail risiko & checklist verifikasi ada di `06-analisis-kompatibilitas-platform
 
 Lihat `05-lingkup-mvp-dan-prioritas.md` untuk rincian P0/P1/P2.
 
-Ringkas: 7 platform, efek blur/cover/hide, reveal hover + shortcut, auto-protect, popup, dashboard, onboarding, storage lokal.
+Ringkas: 7 platform, efek blur/cover/hide, reveal hover + shortcut, auto-protect, satu popup, storage lokal.
 
 ## 4.13 Rencana Versi
 
 | Versi | Isi |
 |---|---|
-| **1.0 (MVP)** | 7 platform, fitur inti, popup + dashboard |
+| **1.0 (MVP)** | 7 platform, fitur inti, popup (tanpa halaman pengaturan kedua) |
 | **1.1** | Facebook + X, nama/avatar/media, i18n, indikator halaman, panic |
 | **1.2** | Threads + TikTok, element picker, sync opt-in |
 | **2.0** | Port Firefox, evaluasi platform lain (Discord Web) |
@@ -155,6 +155,6 @@ Lihat `15-risiko-dan-ekspansi.md`. Risiko tertinggi: perubahan DOM platform, per
 
 ## 4.16 Prioritas Pengembangan
 
-Urutan eksekusi: **core engine → adapter WhatsApp → UX toggle & reveal → adapter Instagram → adapter Telegram → popup/dashboard → hardening → rilis beta**.
+Urutan eksekusi: **core engine → adapter WhatsApp → UX toggle & reveal → adapter Instagram → adapter Telegram → popup → hardening → rilis beta**.
 
 Alasan: WhatsApp adalah kasus tersulit (class ter-obfuscate). Jika arsitektur bertahan di sana, platform lain lebih mudah. Namun untuk validasi cepat, adapter Telegram (DOM lebih stabil) dapat dikerjakan lebih dulu sebagai proof-of-concept engine.

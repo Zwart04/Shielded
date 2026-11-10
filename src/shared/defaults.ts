@@ -7,9 +7,9 @@ import type {
   PlatformId,
   BlurIntensity,
 } from './types.ts';
-import { PLATFORM_IDS, MVP_PLATFORMS } from './platform-ids.ts';
+import { PLATFORM_IDS } from './platform-ids.ts';
 
-export const SCHEMA_VERSION = 7;
+export const SCHEMA_VERSION = 8;
 
 export const ZONE_IDS: readonly ZoneId[] = [
   'messages',
@@ -138,8 +138,10 @@ function platformDefaults(level: ProtectionLevel): Record<PlatformId, PlatformSe
   const zones = zonesForLevel(level);
   const result = {} as Record<PlatformId, PlatformSettings>;
   for (const id of PLATFORM_IDS) {
+    // Bawaan: tidak ada platform yang aktif. Pengguna memilih sendiri
+    // platform mana yang boleh disentuh Shielded.
     result[id] = {
-      enabled: MVP_PLATFORMS.includes(id),
+      enabled: false,
       zones: cloneZones(zones),
     };
   }
@@ -162,7 +164,6 @@ export function createDefaultSettings(): Settings {
     blurIntensity: 'normal',
     coverTone: 'neutral',
     theme: 'system',
-    onboardingDone: false,
     platforms: platformDefaults('privacy'),
   };
 }
@@ -178,7 +179,7 @@ export function applyPreset(settings: Settings, level: ProtectionLevel): Setting
 
   for (const id of PLATFORM_IDS) {
     platforms[id] = {
-      enabled: settings.platforms[id]?.enabled ?? MVP_PLATFORMS.includes(id),
+      enabled: settings.platforms[id]?.enabled ?? false,
       zones: cloneZones(zones),
     };
   }

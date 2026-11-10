@@ -9,19 +9,19 @@ Semua diagram memakai Mermaid. Setiap langkah dijelaskan setelah diagram.
 ```mermaid
 flowchart TD
     A["Pengguna instal ekstensi"] --> B["Service worker: event onInstalled"]
-    B --> C["Tulis preferensi default: mode Privasi, auto-protect aktif"]
-    C --> D["Buka halaman onboarding"]
-    D --> E["Langkah 1: pilih preset"]
-    E --> F["Langkah 2: ringkasan platform + tombol Mulai"]
-    F --> G["Onboarding selesai"]
-    G --> H["Pengguna membuka platform web"]
+    B --> C["Tulis preferensi default: mode Privasi, semua platform nonaktif"]
+    C --> D["Pengguna membuka platform web"]
+    D --> E["Tidak ada perubahan tampilan"]
+    E --> F["Klik ikon Shielded di toolbar"]
+    F --> G["Popup: pilih platform lalu nyalakan switch"]
+    G --> H["Proteksi langsung aktif di tab platform"]
 ```
 
 **Penjelasan:**
-1. `onInstalled` menulis default sekali. Jika ini update (bukan instal baru), migrasi skema dijalankan, bukan onboarding.
-2. Onboarding dibuka di tab baru, bukan popup — agar tidak hilang saat pengguna klik di luar.
+1. `onInstalled` menulis default sekali dan tidak membuka tab apa pun. Jika ini update, migrasi skema dijalankan.
+2. Tidak ada onboarding: popup adalah satu-satunya panel pengaturan dan langsung bisa dipakai.
 3. Tidak ada permintaan izin tambahan di luar yang sudah dideklarasikan manifest.
-4. Setelah "Mulai", onboarding menutup diri dan pengguna kembali ke tab sebelumnya.
+4. Karena semua platform nonaktif, instalasi baru tidak mengubah halaman apa pun sampai pengguna menyalakannya.
 
 ---
 
@@ -123,7 +123,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A["Dashboard → Platform"] --> B["Matikan switch platform"]
+    A["Popup → kartu platform"] --> B["Matikan switch platform"]
     B --> C["Simpan enabled=false"]
     C --> D["Content script menerima perubahan"]
     D --> E["Hapus semua kelas efek"]

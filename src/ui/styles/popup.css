@@ -1,0 +1,558 @@
+/* ============================================================
+   Popup Shielded — satu panel, tanpa halaman kedua.
+   Gaya: kartu lembut, radius besar, aksen tinta (bukan biru).
+   ============================================================ */
+
+body.popup {
+  width: var(--popup-w);
+  background: var(--bg);
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-3) transparent;
+}
+
+.popup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 14px 16px;
+  font-size: 13px;
+}
+
+/* ---------- Header ---------- */
+.po-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 2px 2px 0;
+}
+
+.po-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13.5px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
+}
+
+.po-brand-logo {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
+}
+
+.po-brand-logo img {
+  display: block;
+}
+
+.po-theme {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--separator);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+  transition: transform var(--dur-1) var(--ease), background var(--dur-1) var(--ease);
+}
+
+.po-theme:hover {
+  background: var(--surface-2);
+}
+
+.po-theme:active {
+  transform: scale(0.94);
+}
+
+/* ---------- Greeting ---------- */
+.po-greeting {
+  padding: 4px 4px 2px;
+}
+
+.po-greeting h1 {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+}
+
+.po-greeting p {
+  margin-top: 3px;
+  color: var(--text-2);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14.5px;
+  font-style: italic;
+  letter-spacing: 0.005em;
+}
+
+/* ---------- Cards ---------- */
+.po-card {
+  background: var(--surface);
+  border-radius: 20px;
+  box-shadow: var(--card-shadow);
+}
+
+/* ---------- Platform ---------- */
+.po-platform {
+  padding: 12px 12px 10px;
+}
+
+.po-platform-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.po-platform-logo {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: var(--surface-2);
+  flex: none;
+}
+
+.po-platform-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.po-platform-meta strong {
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.po-platform-meta span {
+  font-size: 11.5px;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.po-chips {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2px;
+  margin-top: 11px;
+  padding-top: 11px;
+  border-top: 1px solid var(--separator);
+}
+
+.po-chip {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: background var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
+}
+
+.po-chip:hover {
+  background: var(--surface-2);
+}
+
+.po-chip:active {
+  transform: scale(0.94);
+}
+
+.po-chip[aria-selected="true"] {
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--separator);
+}
+
+.po-chip[data-on="true"]::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--ink);
+  transform: translateX(-50%);
+}
+
+.po-chip .platform-icon {
+  display: block;
+}
+
+/* ---------- Level segmented ---------- */
+.po-level {
+  padding: 5px;
+  background: var(--surface);
+  border-radius: 18px;
+  box-shadow: var(--card-shadow);
+}
+
+.popup .segmented {
+  gap: 2px;
+  padding: 0;
+  border-radius: 14px;
+  background: transparent;
+}
+
+.popup .segmented button {
+  height: 34px;
+  border-radius: 12px;
+  color: var(--text-2);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.popup .segmented button:hover {
+  color: var(--text);
+}
+
+.popup .segmented button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--on-ink);
+  box-shadow: none;
+}
+
+/* ---------- Zones ---------- */
+.po-zones {
+  padding: 4px 12px 8px;
+}
+
+.po-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 2px 4px;
+}
+
+.po-card-head h2 {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.po-card-head span {
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.po-zone {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 43px;
+  padding: 5px 2px;
+}
+
+.po-zone + .po-zone {
+  border-top: 1px solid var(--separator);
+}
+
+.po-zone-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--surface-2);
+  color: var(--text-2);
+  flex: none;
+}
+
+.po-zone-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.po-zone-text strong {
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+.po-zone-text span {
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+
+.po-note {
+  margin: 4px 0 6px;
+  padding: 9px 11px;
+  border-radius: 11px;
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-size: 11.5px;
+  line-height: 1.4;
+}
+
+/* ---------- Switch override ---------- */
+.popup .switch {
+  width: 42px;
+  height: 25px;
+  background: var(--surface-3);
+}
+
+.popup .switch::after {
+  width: 21px;
+  height: 21px;
+}
+
+.popup .switch[aria-checked="true"] {
+  background: var(--ink);
+}
+
+.popup .switch[aria-checked="true"]::after {
+  transform: translateX(17px);
+}
+
+.popup .switch:disabled {
+  opacity: 0.35;
+}
+
+/* ---------- Advanced ---------- */
+.po-details {
+  padding: 0 12px;
+  background: var(--surface);
+  border-radius: 18px;
+  box-shadow: var(--card-shadow);
+}
+
+.po-details summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 44px;
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  list-style: none;
+}
+
+.po-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.po-sum-icon {
+  display: grid;
+  place-items: center;
+  color: var(--text-3);
+  transition: transform var(--dur-2) var(--ease);
+}
+
+.po-details[open] .po-sum-icon {
+  transform: rotate(180deg);
+}
+
+.po-adv {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 2px 0 12px;
+  border-top: 1px solid var(--separator);
+}
+
+.po-adv-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 10px;
+}
+
+.po-adv-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.po-adv-title span:first-child {
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.po-adv-title span:last-child {
+  font-size: 10.5px;
+  color: var(--text-3);
+}
+
+.po-adv-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--separator);
+}
+
+.po-adv-row .po-adv-title {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+}
+
+.po-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 0 0;
+  border: 0;
+  border-top: 1px solid var(--separator);
+  background: transparent;
+  color: var(--text);
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.po-link:hover {
+  color: var(--accent);
+}
+
+.po-link-value {
+  color: var(--text-3);
+  font-size: 10.5px;
+}
+
+/* ---------- Support ---------- */
+.po-support {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 18px;
+  background: var(--support-bg);
+  color: var(--support-ink);
+  text-decoration: none;
+  transition: transform var(--dur-1) var(--ease), filter var(--dur-1) var(--ease);
+}
+
+.po-support:hover {
+  filter: brightness(0.98);
+  text-decoration: none;
+}
+
+.po-support:active {
+  transform: scale(0.99);
+}
+
+.po-support-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.55);
+  color: #8a5a33;
+  flex: none;
+}
+
+.po-support-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.po-support-text strong {
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.po-support-text span {
+  font-size: 11px;
+  opacity: 0.78;
+}
+
+.po-support-go {
+  margin-left: auto;
+  padding: 6px 11px;
+  border-radius: var(--r-full);
+  background: #161619;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  flex: none;
+}
+
+/* ---------- Footer ---------- */
+.po-foot {
+  margin: 0;
+  padding: 1px 0 2px;
+  color: var(--text-3);
+  font-size: 10.5px;
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+
+/* ---------- Loading / error ---------- */
+.po-skeleton {
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, var(--surface-2), var(--surface), var(--surface-2));
+  background-size: 200% 100%;
+  animation: po-shimmer 1.4s ease-in-out infinite;
+}
+
+.po-skeleton--wide {
+  height: 96px;
+  border-radius: 20px;
+}
+
+.po-skeleton--short {
+  height: 30px;
+}
+
+@keyframes po-shimmer {
+  0% {
+    background-position: 0% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.po-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
+  font-size: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .po-skeleton {
+    animation: none;
+  }
+}
