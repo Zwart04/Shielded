@@ -217,6 +217,21 @@ function mergeZone(
   };
 }
 
+/**
+ * Buang elemen yang sama dengan, berada di dalam, atau membungkus elemen nama.
+ * Tanpa ini, selector preview yang longgar (mis. `span[dir="auto"]`) ikut
+ * mengaburkan nama kontak padahal zona Nama sedang dimatikan.
+ */
+export function withoutNames(
+  elements: readonly Element[],
+  names: readonly Element[],
+): Element[] {
+  if (names.length === 0) return [...elements];
+  return elements.filter(
+    (element) => !names.some((name) => name === element || name.contains(element) || element.contains(name)),
+  );
+}
+
 export function detectChatArea(adapter: PlatformAdapter, root: ParentNode = document): ResolvedChatArea {
   const messages = resolveZone('messages', adapter.selectors.messages, root);
   const media = resolveZone('media', adapter.selectors.media, root);
@@ -240,6 +255,7 @@ export function detectChatArea(adapter: PlatformAdapter, root: ParentNode = docu
   const parts = deriveRowParts(rows);
 
   const names = mergeZone('names', resolveZone('names', adapter.selectors.names, root), parts.names);
+  const nameElements = names?.elements ?? [];
   const mediaPreview = mergeZone(
     'mediaPreview',
     resolveZone('mediaPreview', adapter.selectors.mediaPreview, root),
@@ -252,10 +268,15 @@ export function detectChatArea(adapter: PlatformAdapter, root: ParentNode = docu
     resolveZone('avatars', adapter.selectors.avatars, root),
     parts.avatars,
   );
+  // Zona preview tidak boleh menyentuh nama: selector platform sering memakai
+  // `span[dir="auto"]` untuk keduanya.
+  const previewExplicit = resolveZone('chatPreview', adapter.selectors.chatPreview, root);
   const chatPreview = mergeZone(
     'chatPreview',
-    resolveZone('chatPreview', adapter.selectors.chatPreview, root),
-    parts.previews,
+    previewExplicit
+      ? { ...previewExplicit, elements: withoutNames(previewExplicit.elements, nameElements) }
+      : null,
+    withoutNames(parts.previews, nameElements),
   );
 
   let fallbackMessages: ResolvedZone | null = messages;

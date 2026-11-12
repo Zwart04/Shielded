@@ -51,7 +51,7 @@ Tema gelap membalik `--ink` menjadi `#f5f5f7` dan `--on-ink` menjadi `#141416`, 
 | `--text-xl` | 17px | Judul bagian |
 | `--text-2xl` | 21px | Judul halaman privasi |
 
-Sapaan popup memakai 26px/600 dengan letter-spacing −0.035em. Subtitle sapaan memakai **Georgia italic 14.5px** — satu-satunya tempat serif dipakai, sebagai aksen lembut.
+Teks memakai **Inter** (variabel 400–600) yang ikut dibundel di `public/fonts/inter-latin.woff2`, sehingga tampilan sama di semua OS dan tidak ada permintaan jaringan. Fallback: `-apple-system`, `Segoe UI`, lalu `system-ui`.
 
 ## 9.4 Spasi, Radius, Bayangan
 

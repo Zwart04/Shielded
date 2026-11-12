@@ -52,8 +52,14 @@ img.psx-zone--blur,
   transition: opacity 120ms cubic-bezier(0.2, 0, 0, 1);
 }
 
+/*
+ * Sembunyikan lewat opacity, bukan visibility: elemen tetap menerima pointer
+ * sehingga hover bisa membukanya. visibility: hidden membuat reveal hover
+ * mustahil dan bertentangan dengan kontrol "Hover membuka item".
+ */
 .psx-zone--hide {
-  visibility: hidden !important;
+  opacity: 0;
+  transition: opacity 120ms cubic-bezier(0.2, 0, 0, 1);
 }
 
 .psx-zone--direct.psx-zone--cover {
@@ -63,8 +69,10 @@ img.psx-zone--blur,
 
 /* Reveal hanya item yang disorot. */
 .psx-zone--blur:hover,
+.psx-zone--hide:hover,
 .psx-zone--direct.psx-zone--cover:hover,
 .psx-zone.psx-revealed.psx-zone--blur,
+.psx-zone.psx-revealed.psx-zone--hide,
 .psx-zone.psx-revealed.psx-zone--direct.psx-zone--cover {
   filter: none;
   opacity: 1;
@@ -85,7 +93,7 @@ body.psx-reveal-all .psx-zone--direct.psx-zone--cover {
 }
 
 body.psx-reveal-all .psx-zone--hide {
-  visibility: visible !important;
+  opacity: 1;
 }
 
 /* Hover reveal dimatikan / dikunci: tetap tertutup. */
@@ -93,6 +101,12 @@ body.psx-hover-off .psx-zone--blur:hover,
 body.psx-locked .psx-zone--blur:hover,
 body.psx-locked .psx-zone.psx-revealed.psx-zone--blur {
   filter: blur(var(--psx-blur-eff));
+}
+
+body.psx-hover-off .psx-zone--hide:hover,
+body.psx-locked .psx-zone--hide:hover,
+body.psx-locked .psx-zone.psx-revealed.psx-zone--hide {
+  opacity: 0;
 }
 
 body.psx-hover-off .psx-zone--direct.psx-zone--cover:hover,

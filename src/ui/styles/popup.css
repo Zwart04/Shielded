@@ -72,27 +72,6 @@ body.popup {
   transform: scale(0.94);
 }
 
-/* ---------- Greeting ---------- */
-.po-greeting {
-  padding: 4px 4px 2px;
-}
-
-.po-greeting h1 {
-  font-size: 26px;
-  font-weight: 600;
-  letter-spacing: -0.035em;
-  line-height: 1.15;
-}
-
-.po-greeting p {
-  margin-top: 3px;
-  color: var(--text-2);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 14.5px;
-  font-style: italic;
-  letter-spacing: 0.005em;
-}
-
 /* ---------- Cards ---------- */
 .po-card {
   background: var(--surface);

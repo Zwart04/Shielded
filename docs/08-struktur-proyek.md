@@ -14,11 +14,14 @@ shielded/
 ├─ README.md
 ├─ dist/                           # hasil build; tidak di-commit
 ├─ public/
-│  └─ icons/
-│     ├─ icon16.png
-│     ├─ icon32.png
-│     ├─ icon48.png
-│     └─ icon128.png
+│  ├─ icons/
+│  │  ├─ icon16.png
+│  │  ├─ icon32.png
+│  │  ├─ icon48.png
+│  │  └─ icon128.png
+│  └─ fonts/
+│     ├─ inter-latin.woff2         # font UI yang dibundel (tanpa CDN)
+│     └─ OFL.txt
 ├─ src/
 │  ├─ shared/
 │  │  ├─ types.ts                  # tipe domain (Settings, PlatformId, ZoneId, ...)

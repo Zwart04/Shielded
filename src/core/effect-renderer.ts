@@ -36,6 +36,31 @@ const ZONE_CLASSES = [
 const HEAVY_ZONES = new Set<ZoneId>(['avatars', 'mediaPreview', 'feedContent']);
 const HEAVY_MEDIA_ZONES = new Set<ZoneId>(['media']);
 
+/**
+ * Zona bergambar tetap memakai efeknya sendiri walau berada di dalam zona teks
+ * yang lebih ringan. Tanpa ini, gambar di dalam gelembung pesan hanya ikut
+ * blur 5px milik teks dan isinya masih terbaca.
+ */
+const KEEPS_OWN_EFFECT = new Set<ZoneId>([...HEAVY_ZONES, ...HEAVY_MEDIA_ZONES]);
+
+/** Menandai elemen yang sudah tercakup efek elemen lain yang juga dilindungi. */
+export function pruneCovered(desired: ReadonlyMap<Element, ZoneId>): Set<Element> {
+  const covered = new Set<Element>();
+  for (const [element, zoneId] of desired) {
+    let parent = element.parentElement;
+    while (parent) {
+      const parentZone = desired.get(parent);
+      if (parentZone !== undefined) {
+        const keepHeavy = parentZone !== zoneId && KEEPS_OWN_EFFECT.has(zoneId);
+        if (!keepHeavy) covered.add(element);
+        break;
+      }
+      parent = parent.parentElement;
+    }
+  }
+  return covered;
+}
+
 /** Elemen yang tidak bisa memuat overlay anak (mis. <img>) diberi efek langsung. */
 const DIRECT_TAGS = new Set(['IMG', 'INPUT', 'TEXTAREA', 'SELECT', 'SVG', 'VIDEO', 'IFRAME', 'CANVAS']);
 
@@ -177,18 +202,7 @@ export class EffectRenderer {
 
     // Lewati elemen yang sudah tercakup elemen lain yang juga dilindungi.
     // Contoh: nama di dalam baris chat yang seluruhnya dikaburkan.
-    const covered = new Set<Element>();
-    for (const element of desired.keys()) {
-      let parent = element.parentElement;
-      while (parent) {
-        if (desired.has(parent)) {
-          covered.add(element);
-          break;
-        }
-        parent = parent.parentElement;
-      }
-    }
-    for (const element of covered) desired.delete(element);
+    for (const element of pruneCovered(desired)) desired.delete(element);
 
     for (const [element, zoneId] of desired) {
       const rule = rules[zoneId];

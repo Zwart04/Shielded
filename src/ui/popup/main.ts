@@ -140,12 +140,6 @@ async function main(): Promise<void> {
     ]);
   };
 
-  const renderGreeting = (): HTMLElement =>
-    el('div', { className: 'po-greeting' }, [
-      el('h1', { text: 'Hai 👋' }),
-      el('p', { text: 'Atur apa yang terlihat hari ini.' }),
-    ]);
-
   const renderPlatformCard = (): HTMLElement => {
     const platform = settings.platforms[selected];
     const count = zoneCount(settings, selected);
@@ -336,7 +330,6 @@ async function main(): Promise<void> {
     app.append(
       el('div', { className: 'popup' }, [
         renderHeader(),
-        renderGreeting(),
         renderPlatformCard(),
         renderLevel(),
         renderZones(),

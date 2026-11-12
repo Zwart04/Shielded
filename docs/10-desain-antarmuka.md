@@ -11,22 +11,21 @@ Ada **dua** permukaan UI di versi 0.1.0: popup (satu-satunya panel pengaturan) d
 ### Ukuran & Struktur
 - Lebar tetap **372px** (`--popup-w`), tinggi mengikuti konten.
 - Satu kolom, padding 14px, jarak antar-kartu 12px.
-- Saat platform nonaktif, tinggi popup ± 629px sehingga tidak perlu scroll.
+- Saat platform nonaktif, tinggi popup ± 559px sehingga tidak perlu scroll.
 - Saat platform aktif, daftar zona muncul dan popup memanjang (scroll di dalam popup).
 
 ### Layout (atas ke bawah)
 
 1. **Header brand** — logo Shielded 24px di tile 32px, teks "Shielded", dan tombol tema bulat 34px (ikon matahari/bulan sesuai tema yang akan dipilih).
-2. **Sapaan** — "Hai 👋" (`26px`, semibold, letter-spacing negatif) dan subtitle italic serif: "Atur apa yang terlihat hari ini."
-3. **Kartu platform**
+2. **Kartu platform**
    - Tile logo platform 42px, nama platform, status kecil ("Nonaktif" / "Aktif · N zona terlindungi"), switch master di kanan.
    - Baris chip berisi **7 logo platform** dengan pemisah garis di atasnya. Chip terpilih memakai latar `--surface-2`; chip yang platformnya aktif menampilkan titik kecil `--ink` di bawah logo.
-4. **Segmented level** — Normal / Privasi / Maksimum dalam kartu putih. Pilihan aktif memakai latar `--ink` (hitam di tema terang, putih di tema gelap) dengan teks `--on-ink`.
-5. **Kartu zona** — 9 baris berikon: Isi pesan, Seluruh baris chat, Preview pesan, Nama kontak, Foto profil, Preview media, Galeri media, Konten feed, Kotak ketik. Setiap baris punya switch sendiri dan sub-teks "Dilindungi" / "Terlihat".
+3. **Segmented level** — Normal / Privasi / Maksimum dalam kartu putih. Pilihan aktif memakai latar `--ink` (hitam di tema terang, putih di tema gelap) dengan teks `--on-ink`.
+4. **Kartu zona** — 9 baris berikon: Isi pesan, Seluruh baris chat, Preview pesan, Nama kontak, Foto profil, Preview media, Galeri media, Konten feed, Kotak ketik. Setiap baris punya switch sendiri dan sub-teks "Dilindungi" / "Terlihat".
    - Bila platform nonaktif, daftar baris **disembunyikan** dan diganti satu catatan: "Nyalakan platform di atas untuk memilih bagian yang ingin disembunyikan."
-6. **Opsi lanjutan** (`<details>`) — kekuatan blur (Ringan/Sedang/Kuat), hover membuka item, tautan pintasan keyboard, tautan kebijakan privasi. Ikon chevron berputar 180° saat terbuka.
-7. **Kartu support** — latar hangat, ikon kopi, "Suka Shielded?" / "Traktir kopi lewat Tako", tombol pil "Buka" menuju `https://tako.id/Zwart04/gift`.
-8. **Footer** — "Privasi lokal · Tanpa telemetri" (`10.5px`, `--text-3`, rata tengah).
+5. **Opsi lanjutan** (`<details>`) — kekuatan blur (Ringan/Sedang/Kuat), hover membuka item, tautan pintasan keyboard, tautan kebijakan privasi. Ikon chevron berputar 180° saat terbuka.
+6. **Kartu support** — latar hangat, ikon kopi, "Suka Shielded?" / "Traktir kopi lewat Tako", tombol pil "Buka" menuju `https://tako.id/Zwart04/gift`.
+7. **Footer** — "Privasi lokal · Tanpa telemetri" (`10.5px`, `--text-3`, rata tengah).
 
 ### Interaksi
 - Semua perubahan langsung disimpan ke `chrome.storage.local` dan diterapkan tanpa reload.

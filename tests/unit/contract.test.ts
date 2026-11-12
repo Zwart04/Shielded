@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { deriveRowParts } from '../../src/adapters/contract.ts';
+import { deriveRowParts, withoutNames } from '../../src/adapters/contract.ts';
 import { whatsappAdapter } from '../../src/adapters/whatsapp/index.ts';
 import { telegramAdapter } from '../../src/adapters/telegram/index.ts';
 import { instagramAdapter } from '../../src/adapters/instagram/index.ts';
@@ -127,4 +127,19 @@ test('adapter MVP menandai zona per item sebagai multi', () => {
       `${adapter.id} tidak punya baris chat multi`,
     );
   }
+});
+
+function fakeNode(children: Element[] = []): Element {
+  return {
+    contains: (element: Element) => children.includes(element),
+  } as unknown as Element;
+}
+
+test('withoutNames membuang nama dan wadah yang memuat nama dari zona preview', () => {
+  const name = fakeNode();
+  const preview = fakeNode();
+  const row = fakeNode([name, preview]);
+
+  assert.deepEqual(withoutNames([name, preview, row], [name]), [preview]);
+  assert.deepEqual(withoutNames([preview], []), [preview]);
 });
