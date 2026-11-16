@@ -30,6 +30,12 @@ tidak pernah dijalankan: nol kerja tambahan di beranda, nol risiko ter-blur.
 | Facebook | `/messages/*` | `messenger.com` |
 | X | `/messages/*` | — |
 
+Catatan Threads: inbox dan panel percakapan tampil bersamaan, jadi zona pesan
+memakai **satu kandidat gabungan** (`div[dir="auto"]`, `span[dir="auto"]` dengan
+pengecualian navigasi). Kandidat terpisah akan saling menutupi karena hanya
+kandidat berbobot tertinggi yang dipakai — itu sebabnya gelembung percakapan
+sempat lolos walau baris inbox sudah ter-blur.
+
 Panel pesan mengambang (`dmScopes`) dipakai bila platform punya jendela chat di
 luar route DM: Facebook `[aria-label="Chats"]` (plus varian "Obrolan"/"Chat" dan
 `[data-pagelet="Chats"]`), X `[data-testid="DMDrawer"]`. Panel diperiksa punya

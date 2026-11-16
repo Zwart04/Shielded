@@ -52,6 +52,13 @@ export const facebookAdapter: PlatformAdapter = {
         multi: true,
       },
       {
+        id: 'fb-message-any',
+        selector: 'div[dir="auto"], span[dir="auto"]',
+        weight: 2,
+        note: 'Cadangan: teks pesan di panel Chats (batas panel menjaga feed)',
+        multi: true,
+      },
+      {
         id: 'fb-message-dir',
         selector: 'div[role="main"] div[dir="auto"]:not(article *):not([role="article"] *)',
         weight: 3,

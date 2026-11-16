@@ -74,7 +74,7 @@ Shielded dimuat sebagai **unpacked extension** (belum dipublikasikan di Web Stor
 
 ### Cara 1 — dari rilis (tanpa Node.js)
 
-1. Unduh `shielded-0.1.4.zip` dari [halaman Releases](https://github.com/Zwart04/Shielded/releases/latest).
+1. Unduh `shielded-0.1.5.zip` dari [halaman Releases](https://github.com/Zwart04/Shielded/releases/latest).
 2. Ekstrak zip ke folder tetap, misalnya `~/Shielded`.
 3. Buka `chrome://extensions` (juga berlaku di Brave, Edge, dan Vivaldi).
 4. Nyalakan **Mode developer** di kanan atas.
@@ -242,7 +242,7 @@ npm run build        # build ke dist/
 npm run typecheck    # TypeScript (aplikasi + tes)
 npm test             # 57 tes unit
 npm run verify:privacy  # audit bundle: tidak ada URL jaringan / src=
-npm run zip          # paket rilis shielded-0.1.4.zip
+npm run zip          # paket rilis shielded-0.1.5.zip
 ```
 
 ### Struktur proyek
