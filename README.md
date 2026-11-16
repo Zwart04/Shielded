@@ -302,7 +302,7 @@ Hasil lengkap: [Hasil Verifikasi Selector](docs/selector-verification-results.md
 | [Design System](docs/09-design-system.md) | Token dan komponen UI |
 | [Keamanan, Privasi & Performa](docs/12-keamanan-privasi-performa.md) | Ancaman dan mitigasi |
 | [Hasil Verifikasi Selector](docs/selector-verification-results.md) | Status uji per platform |
-| [Kebijakan Privasi](docs/privacy-policy.md) | Draf kebijakan privasi |
+| [Kebijakan Privasi](docs/privacy-policy.md) | Data, izin, dan batasan perlindungan |
 | [Justifikasi Izin](docs/permissions-justification.md) | Alasan tiap permission |
 | [Runbook Selector](docs/selectors-runbook.md) | Prosedur perbaikan selector |
 

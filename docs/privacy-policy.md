@@ -1,6 +1,6 @@
 # Kebijakan Privasi — Shielded
 
-> **Draf.** Wajib ditinjau sebelum publikasi. Tanggal berlaku diisi saat rilis.
+> **Berlaku sejak 16 November 2026.** Berlaku untuk Shielded 0.1.7 dan versi sesudahnya.
 
 ## 1. Ringkasan
 
@@ -78,7 +78,7 @@ Jika kebijakan berubah, versi baru akan diterbitkan bersama pembaruan ekstensi d
 
 ## 10. Kontak
 
-Alamat surel kontak akan diisi sebelum publikasi.
+Pertanyaan tentang privasi dapat dikirim lewat [Issues repositori](https://github.com/Zwart04/Shielded/issues) atau [Tako](https://tako.id/Zwart04/gift).
 
 ## 11. Kepatuhan
 
