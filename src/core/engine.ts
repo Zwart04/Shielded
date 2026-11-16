@@ -329,6 +329,10 @@ export class PrivacyEngine {
     this.renderer.setRevealAll(false);
   };
 
+  private readonly onScroll = (): void => {
+    this.scheduleDetect();
+  };
+
   private readonly onActivity = (): void => {
     if (this.idleLocked) {
       this.idleLocked = false;
@@ -346,11 +350,15 @@ export class PrivacyEngine {
     for (const type of ['pointerdown', 'keydown', 'wheel', 'touchstart'] as const) {
       document.addEventListener(type, this.onActivity, { passive: true });
     }
+    // Scroll memunculkan item baru tanpa mutasi DOM pada daftar non-virtual.
+    // Deteksi dijadwalkan ulang (tetap di-throttle) agar item itu ikut kabur.
+    window.addEventListener('scroll', this.onScroll, { passive: true, capture: true });
   }
 
   private unbindActivity(): void {
     if (!this.activityBound) return;
     this.activityBound = false;
+    window.removeEventListener('scroll', this.onScroll, { capture: true });
     document.removeEventListener('pointermove', this.onPointerMove);
     document.documentElement.removeEventListener('pointerleave', this.onPointerLeave);
     for (const type of ['pointerdown', 'keydown', 'wheel', 'touchstart'] as const) {

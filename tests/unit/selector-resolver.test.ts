@@ -1,27 +1,35 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { isUsableElement, pickBest } from '../../src/core/selector-resolver.ts';
+import { isUsableElement, pickBest, resolveZone } from '../../src/core/selector-resolver.ts';
 import type { SelectorCandidate } from '../../src/shared/types.ts';
 
 class FakeElement {
   tagName = 'DIV';
-  private classes: string[];
   width: number;
   height: number;
+  top: number;
+  left: number;
+  classList: DOMTokenList;
 
-  constructor(classes: string[] = [], width = 100, height = 100) {
-    this.classes = classes;
+  constructor(classes: string[] = [], width = 100, height = 100, top = 0, left = 0) {
     this.width = width;
     this.height = height;
+    this.top = top;
+    this.left = left;
     this.classList = {
-      contains: (name: string) => this.classes.includes(name),
+      contains: (name: string) => classes.includes(name),
     } as unknown as DOMTokenList;
   }
 
-  classList: DOMTokenList;
-
   getBoundingClientRect(): DOMRect {
-    return { width: this.width, height: this.height } as DOMRect;
+    return {
+      width: this.width,
+      height: this.height,
+      top: this.top,
+      left: this.left,
+      right: this.left + this.width,
+      bottom: this.top + this.height,
+    } as DOMRect;
   }
 }
 
@@ -36,8 +44,14 @@ function withFakeDom(run: () => void): void {
   }
 }
 
-function fake(classes: string[] = [], width = 100, height = 100): Element {
-  return new FakeElement(classes, width, height) as unknown as Element;
+function fake(
+  classes: string[] = [],
+  width = 100,
+  height = 100,
+  top = 0,
+  left = 0,
+): Element {
+  return new FakeElement(classes, width, height, top, left) as unknown as Element;
 }
 
 test('element yang sudah dilindungi tetap dianggap usable pada deteksi berikutnya', () => {
@@ -106,4 +120,46 @@ test('pickBest mempertahankan urutan asli untuk bobot sama', () => {
   const candidates = [candidate('first', 5), candidate('second', 5)];
   const match = pickBest(candidates, () => 1);
   assert.equal(match?.candidate.id, 'first');
+});
+
+test('resolveZone memprioritaskan item dekat viewport saat batas item tercapai', () => {
+  withFakeDom(() => {
+    const globals = globalThis as unknown as { window?: unknown };
+    const previousWindow = globals.window;
+    globals.window = { innerWidth: 1200, innerHeight: 800 };
+
+    try {
+      // 130 baris: 129 jauh di bawah layar, 1 terlihat di layar.
+      const rows = Array.from({ length: 129 }, () => fake([], 300, 52, 5000));
+      const visible = fake([], 300, 52, 100);
+      rows.push(visible);
+
+      const root = { querySelectorAll: () => rows } as unknown as ParentNode;
+      const zone = resolveZone(
+        'chatList',
+        [{ id: 'rows', selector: '.row', weight: 1, note: 'test', multi: true }],
+        root,
+      );
+
+      assert.equal(zone?.elements.length, 120);
+      assert.ok(zone?.elements.includes(visible), 'baris yang terlihat harus ikut terlindungi');
+      assert.ok(!zone?.elements.includes(rows[128]!), 'baris jauh terakhir harus dikorbankan');
+    } finally {
+      globals.window = previousWindow;
+    }
+  });
+});
+
+test('resolveZone mengembalikan semuanya bila item di bawah batas', () => {
+  withFakeDom(() => {
+    const rows = [fake([], 300, 52, 0), fake([], 300, 52, 60), fake([], 300, 52, 120)];
+    const root = { querySelectorAll: () => rows } as unknown as ParentNode;
+    const zone = resolveZone(
+      'chatList',
+      [{ id: 'rows', selector: '.row', weight: 1, note: 'test', multi: true }],
+      root,
+    );
+
+    assert.equal(zone?.elements.length, 3);
+  });
 });

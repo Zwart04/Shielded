@@ -47,9 +47,10 @@ Pernyataan ini harus muncul di halaman About dan deskripsi toko.
 
 | Metrik | Anggaran | Hasil ukur (0.1.6) |
 |---|---|---|
-| Pass selector zona pesan (3.047 node) | ≤ 10 ms | **3,7 ms** (sebelumnya 32,4 ms) |
+| Pass selector zona pesan (1.556 node) | ≤ 10 ms | **3,2 ms** (sebelumnya 32,4 ms pada 3.047 node) |
 | Reapply per batch mutasi | ≤ 10 ms | ± 4 ms pada fixture yang sama |
-| Pemindaian elemen | ≤ 120 elemen per zona | 120, dipotong saat pengumpulan |
+| Pemindaian elemen | ≤ 600 node, ≤ 120 item per zona | 600 node dipindai, 120 item dipakai |
+| Cakupan daftar panjang | Item di layar selalu terlindungi | 400 pesan: 120 dipakai, 14/14 item terlihat ter-blur setelah scroll |
 | CPU saat tab hidden | ~0 | 0 — deteksi langsung keluar saat `visibilityState === 'hidden'` |
 | Ukuran content script | ≤ 60 KB | 48 KB (`dist/content.js`) |
 | Ukuran paket ekstensi | ≤ 2 MB | 256 KB (`du -sh dist`) |
@@ -61,12 +62,13 @@ DOM sintetis 3.047 node di Brave (Linux), rata-rata 20 putaran.
 
 1. **Coalescing:** callback `MutationObserver` dibungkus `requestAnimationFrame`; deteksi dibatasi 120 ms agar beberapa mutasi beruntun jadi satu pass.
 2. **Zona yang dimatikan tidak di-query:** engine hanya mengirim zona yang dilindungi ke `detectChatArea`, jadi toggle mati = nol selector dijalankan.
-3. **Berhenti saat batas tercapai:** `queryUsable` berhenti di 120 elemen (atau 1 untuk panel), tidak memfilter seluruh hasil query.
+3. **Prioritas viewport:** `queryUsable` mengumpulkan item yang berada dalam satu layar di atas/bawah viewport lebih dulu, lalu berhenti di 120 item. Pada daftar >120 item, item yang sedang dilihat tetap terlindungi (deteksi ulang dipicu event `scroll`).
 4. **Satu pembacaan layout per elemen:** `getBoundingClientRect` dipakai sekali untuk cek ukuran sekaligus cek elemen raksasa.
 5. **Tanpa overlay untuk blur:** filter diterapkan langsung ke elemen; tidak ada node tambahan maupun `backdrop-filter`, jadi satu lapisan paint lebih murah.
 6. **Idempoten:** class tidak ditulis ulang bila zona dan efeknya sama, sehingga tidak ada style recalc tiap 120 ms.
-7. **Tab latar berhenti:** deteksi keluar saat tab tersembunyi dan dijadwalkan ulang pada `visibilitychange`.
-8. **Detach saat nonaktif:** observer, interval, dan listener dilepas ketika platform dimatikan; handle overlay dibersihkan.
+7. **Scroll memicu deteksi ulang:** listener `scroll` pasif (throttle 120 ms) supaya item yang baru masuk layar langsung dikaburkan tanpa menunggu heartbeat.
+8. **Tab latar berhenti:** deteksi keluar saat tab tersembunyi dan dijadwalkan ulang pada `visibilitychange`.
+9. **Detach saat nonaktif:** observer, interval, dan listener dilepas ketika platform dimatikan; handle overlay dibersihkan.
 
 ## 12.7 Audit Privasi Otomatis
 
