@@ -16,6 +16,24 @@
 | TikTok | daftar pesan, thread | Lolos | atribut `inbox-list-item`, `dm-new-chat-item`, `dm-new-input-editor` |
 | X | halaman publik | Tidak dapat diuji penuh | profil uji masih login wall; DM/timeline belum diverifikasi |
 
+### Skema v8: zona DM dibatasi per route
+
+Versi `0.1.3` menambahkan `dmPaths` / `dmHosts` di adapter Instagram, Facebook,
+Threads, dan X. Di luar route pesan, engine memanggil
+`detectChatArea(adapter, document, ['feedContent'])` sehingga selector zona DM
+tidak pernah dijalankan: nol kerja tambahan di beranda, nol risiko ter-blur.
+
+| Platform | Route DM | Host DM |
+|---|---|---|
+| Instagram | `/direct/*` | — |
+| Threads | `/direct/*` | — |
+| Facebook | `/messages/*` | `messenger.com` |
+| X | `/messages/*` | — |
+
+WhatsApp, Telegram, dan TikTok tidak memakai `dmPaths` karena seluruh situsnya
+adalah ruang pesan. `RouteWatcher` (polling `location.href` 400 ms) memicu
+deteksi ulang saat pengguna berpindah feed ↔ DM, jadi kelas blur lama dilepas.
+
 Zona baru skema v7: **Konten feed** (`feedContent`). Post feed Instagram/Facebook/Threads
 dipisah dari zona percakapan dan **nonaktif secara bawaan**, jadi teks/gambar feed
 terlihat sampai pengguna menyalakannya di popup → kartu platform → zona "Konten feed".

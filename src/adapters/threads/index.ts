@@ -10,20 +10,16 @@ export const threadsAdapter: PlatformAdapter = {
   id: 'threads',
   name: 'Threads',
   hosts: ['www.threads.net', 'threads.net', 'www.threads.com', 'threads.com'],
+  // Feed Threads bukan ruang pesan; hanya /direct/*.
+  dmPaths: ['/direct'],
   selectors: {
     messages: [
       {
         id: 'th-dm-text',
-        selector: 'div[role="main"] [role="listitem"] div[dir="auto"]',
+        selector: '[role="region"] [role="listitem"] div[dir="auto"]',
         weight: 7,
         note: 'Teks pesan DM (per item)',
         multi: true,
-      },
-      {
-        id: 'th-main-section',
-        selector: 'div[role="main"] section',
-        weight: 4,
-        note: 'Bagian utama DM',
       },
     ],
     feedContent: [
@@ -52,14 +48,14 @@ export const threadsAdapter: PlatformAdapter = {
     chatList: [
       {
         id: 'th-thread-link',
-        selector: 'a[href*="/direct/t/"], [role="region"] a[href*="/@"]',
+        selector: 'a[href*="/direct/t/"]',
         weight: 9,
-        note: 'Baris percakapan DM + tautan profil di feed',
+        note: 'Baris percakapan DM',
         multi: true,
       },
       {
         id: 'th-listitem',
-        selector: 'div[role="main"] [role="listitem"], [role="region"] [role="listitem"]',
+        selector: '[role="listitem"]:has(a[href*="/direct/t/"])',
         weight: 7,
         note: 'Baris daftar percakapan',
         multi: true,
@@ -68,9 +64,10 @@ export const threadsAdapter: PlatformAdapter = {
     names: [
       {
         id: 'th-post-author',
-        selector: '[role="region"] a[href^="/@"], [role="region"] a[href*="/@"]',
+        selector:
+          'a[href*="/direct/t/"] span[dir="auto"], [role="region"] [role="listitem"] span[dir="auto"]',
         weight: 7,
-        note: 'Nama pengunggah / pengguna di feed',
+        note: 'Nama kontak di daftar percakapan',
         multi: true,
       },
       {
@@ -84,8 +81,7 @@ export const threadsAdapter: PlatformAdapter = {
     mediaPreview: [
       {
         id: 'th-media-preview',
-        selector:
-          'a[href*="/direct/"] img, [class*="thumbnail" i], [role="region"] [role="listitem"] img',
+        selector: 'a[href*="/direct/"] img, [class*="thumbnail" i]',
         weight: 5,
         note: 'Thumbnail media di daftar',
         multi: true,
@@ -94,7 +90,7 @@ export const threadsAdapter: PlatformAdapter = {
     media: [
       {
         id: 'th-media-photo',
-        selector: 'div[role="main"] video',
+        selector: '[role="region"] video, div[role="main"] video',
         weight: 6,
         note: 'Media di percakapan',
         multi: true,
@@ -113,10 +109,9 @@ export const threadsAdapter: PlatformAdapter = {
     avatars: [
       {
         id: 'th-avatars',
-        selector:
-          '[role="region"] img[alt*="profil" i], [role="region"] img[alt*="profile" i], div[role="main"] header img, img:not([role="navigation"] *)',
+        selector: 'a[href*="/direct/t/"] img, [role="region"] header img, div[role="main"] header img',
         weight: 5,
-        note: 'Foto profil pengunggah dan header',
+        note: 'Foto profil kontak dan header percakapan',
         multi: true,
       },
     ],

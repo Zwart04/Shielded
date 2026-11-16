@@ -1,7 +1,7 @@
 import type { PlatformId, Settings, ResolvedChatArea, ResolvedZone, ZoneId } from '../shared/types.ts';
 import { MVP_ZONES } from '../shared/defaults.ts';
 import type { PlatformAdapter } from '../adapters/contract.ts';
-import { detectChatArea } from '../adapters/contract.ts';
+import { detectChatArea, isDmContext } from '../adapters/contract.ts';
 import { EffectRenderer } from './effect-renderer.ts';
 import { DomWatcher } from './dom-watcher.ts';
 import { FocusWatcher } from './focus-watcher.ts';
@@ -40,6 +40,8 @@ export class PrivacyEngine {
   private readonly health = new SelectorHealth();
 
   private current: ResolvedChatArea | null = null;
+  /** Route saat ini berada di ruang pesan (bukan feed/beranda). */
+  private dmContext = true;
   private running = false;
   private interactionLocked = false;
   private revealTimer: number | null = null;
@@ -160,7 +162,12 @@ export class PrivacyEngine {
   private detectAndRender(): void {
     if (!this.running) return;
     this.lastDetect = performance.now();
-    this.current = detectChatArea(this.adapter);
+    // Di luar route pesan hanya zona konten feed yang dijalankan, sehingga
+    // beranda/profil/reels tidak pernah ikut ter-blur oleh zona DM.
+    this.dmContext = isDmContext(this.adapter, window.location);
+    this.current = this.dmContext
+      ? detectChatArea(this.adapter)
+      : detectChatArea(this.adapter, document, ['feedContent']);
     if (this.current.usedFallback) this.health.reportFailure('fallback-mode');
     if (this.current.usedHeuristic) this.health.reportFailure('structural-rows');
     this.renderCurrent();
@@ -185,11 +192,16 @@ export class PrivacyEngine {
     this.renderer.setInteractionLocked(this.interactionLocked);
 
     if (zones.length === 0) {
-      this.report('inactive', 'Tidak ada zona yang dilindungi.');
+      this.report(
+        'inactive',
+        this.dmContext ? 'Tidak ada zona yang dilindungi.' : 'Bukan ruang pesan.',
+      );
       return;
     }
 
-    const expected = MVP_ZONES.filter((zoneId) => rules[zoneId]?.protected);
+    const expected = (this.dmContext ? MVP_ZONES : (['feedContent'] as const)).filter(
+      (zoneId) => rules[zoneId]?.protected,
+    );
     const covered = expected.filter((zoneId) =>
       zones.some((zone) => zone.zone === zoneId),
     );

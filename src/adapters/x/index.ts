@@ -10,6 +10,8 @@ export const xAdapter: PlatformAdapter = {
   id: 'x',
   name: 'X (Twitter)',
   hosts: ['x.com', 'www.x.com', 'twitter.com', 'www.twitter.com'],
+  // Beranda, profil, dan pencarian tidak dijangkau; hanya /messages/*.
+  dmPaths: ['/messages'],
   selectors: {
     messages: [
       {
@@ -40,13 +42,6 @@ export const xAdapter: PlatformAdapter = {
         selector: '[data-testid="DMDrawer"] [role="listitem"]',
         weight: 6,
         note: 'Baris daftar percakapan',
-        multi: true,
-      },
-      {
-        id: 'x-dm-link',
-        selector: 'a[href^="/messages/"]',
-        weight: 5,
-        note: 'Tautan percakapan',
         multi: true,
       },
     ],
@@ -81,7 +76,7 @@ export const xAdapter: PlatformAdapter = {
       {
         id: 'x-compose',
         selector:
-          '[data-testid="dmComposerTextInput"], [contenteditable="true"][role="textbox"]',
+          '[data-testid="dmComposerTextInput"], [data-testid="dmComposerRichTextDiv"] [contenteditable="true"]',
         weight: 8,
         note: 'Kotak ketik pesan',
         multi: true,

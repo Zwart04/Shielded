@@ -1,9 +1,12 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { deriveRowParts, withoutNames } from '../../src/adapters/contract.ts';
+import { deriveRowParts, detectChatArea, isDmContext, withoutNames } from '../../src/adapters/contract.ts';
 import { whatsappAdapter } from '../../src/adapters/whatsapp/index.ts';
 import { telegramAdapter } from '../../src/adapters/telegram/index.ts';
 import { instagramAdapter } from '../../src/adapters/instagram/index.ts';
+import { facebookAdapter } from '../../src/adapters/facebook/index.ts';
+import { threadsAdapter } from '../../src/adapters/threads/index.ts';
+import { xAdapter } from '../../src/adapters/x/index.ts';
 import type { PlatformAdapter } from '../../src/adapters/contract.ts';
 
 interface RowPartsInput {
@@ -142,4 +145,67 @@ test('withoutNames membuang nama dan wadah yang memuat nama dari zona preview', 
 
   assert.deepEqual(withoutNames([name, preview, row], [name]), [preview]);
   assert.deepEqual(withoutNames([preview], []), [preview]);
+});
+
+test('isDmContext hanya benar di route pesan Instagram', () => {
+  const url = (pathname: string) => ({ hostname: 'www.instagram.com', pathname });
+  assert.equal(isDmContext(instagramAdapter, url('/direct/t/123')), true);
+  assert.equal(isDmContext(instagramAdapter, url('/direct/inbox/')), true);
+  assert.equal(isDmContext(instagramAdapter, url('/')), false);
+  assert.equal(isDmContext(instagramAdapter, url('/reels/abc/')), false);
+  assert.equal(isDmContext(instagramAdapter, url('/p/abc/')), false);
+});
+
+test('isDmContext Threads hanya di /direct', () => {
+  const url = (pathname: string) => ({ hostname: 'www.threads.com', pathname });
+  assert.equal(isDmContext(threadsAdapter, url('/direct/t/1')), true);
+  assert.equal(isDmContext(threadsAdapter, url('/@zwart/post/1')), false);
+  assert.equal(isDmContext(threadsAdapter, url('/')), false);
+});
+
+test('isDmContext Facebook mencakup /messages dan messenger.com', () => {
+  const fb = (hostname: string, pathname: string) => ({ hostname, pathname });
+  assert.equal(isDmContext(facebookAdapter, fb('www.facebook.com', '/messages/t/1')), true);
+  assert.equal(isDmContext(facebookAdapter, fb('www.facebook.com', '/')), false);
+  assert.equal(isDmContext(facebookAdapter, fb('web.facebook.com', '/groups/1')), false);
+  assert.equal(isDmContext(facebookAdapter, fb('www.messenger.com', '/t/1')), true);
+  assert.equal(isDmContext(facebookAdapter, fb('messenger.com', '/')), true);
+});
+
+test('isDmContext X hanya di /messages', () => {
+  const url = (pathname: string) => ({ hostname: 'x.com', pathname });
+  assert.equal(isDmContext(xAdapter, url('/messages/1-2')), true);
+  assert.equal(isDmContext(xAdapter, url('/messages')), true);
+  assert.equal(isDmContext(xAdapter, url('/home')), false);
+  assert.equal(isDmContext(xAdapter, url('/Zwart04')), false);
+});
+
+test('platform tanpa dmPaths dianggap selalu ruang pesan', () => {
+  assert.equal(
+    isDmContext(whatsappAdapter, { hostname: 'web.whatsapp.com', pathname: '/' }),
+    true,
+  );
+});
+
+test('detectChatArea dengan only=feedContent hanya menjalankan selector feed', () => {
+  const asked: string[] = [];
+  const root = {
+    querySelectorAll: (selector: string) => {
+      asked.push(selector);
+      return [];
+    },
+  } as unknown as ParentNode;
+
+  detectChatArea(instagramAdapter, root, ['feedContent']);
+
+  const igFeedSelectors = new Set(
+    instagramAdapter.selectors.feedContent?.map((candidate) => candidate.selector),
+  );
+  const allNonFeed = Object.entries(instagramAdapter.selectors)
+    .filter(([zone]) => zone !== 'feedContent')
+    .flatMap(([, candidates]) => candidates?.map((candidate) => candidate.selector) ?? []);
+
+  assert.ok(asked.length > 0, 'tidak ada selector yang dijalankan');
+  for (const selector of asked) assert.ok(igFeedSelectors.has(selector), selector);
+  for (const selector of allNonFeed) assert.ok(!asked.includes(selector), selector);
 });

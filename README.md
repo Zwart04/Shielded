@@ -43,7 +43,7 @@ Semua pemrosesan terjadi di perangkat Anda. Tidak ada server, akun, atau telemet
 - **Nonaktif secara bawaan** — pemasangan baru tidak mengubah tampilan situs sampai Anda menyalakan sebuah platform.
 - **Proteksi per item** — 9 zona independen: isi pesan, baris chat, preview, nama, avatar, preview media, galeri media, konten feed, dan kotak ketik.
 - **Hover membuka satu item** — item lain di sekitarnya tetap kabur. Bisa dimatikan di opsi lanjutan.
-- **Konten feed terpisah** — unggahan di feed Instagram, Facebook, dan Threads tidak ikut terblur kecuali Anda menyalakan zona **Konten feed**.
+- **Hanya ruang pesan** — di Instagram, Facebook, Threads, dan X zona percakapan hanya aktif di route DM (`/direct`, `/messages`, atau messenger.com). Beranda, profil, reels, dan pencarian tidak pernah tersentuh; di sana hanya zona **Konten feed** yang bisa menyala.
 - **Pengaturan per platform** — aktifkan proteksi hanya di platform yang Anda pakai, lalu atur zonanya sendiri.
 - **Tiga level siap pakai** — Normal, Privasi, Maksimum. Berlaku langsung tanpa reload.
 - **Ringan** — deteksi ber-throttle 120 ms, pemrosesan idempoten, animasi 120 ms. Tidak ada pemindaian teks pesan.
@@ -73,7 +73,7 @@ Shielded dimuat sebagai **unpacked extension** (belum dipublikasikan di Web Stor
 
 ### Cara 1 — dari rilis (tanpa Node.js)
 
-1. Unduh `shielded-0.1.2.zip` dari [halaman Releases](https://github.com/Zwart04/Shielded/releases/latest).
+1. Unduh `shielded-0.1.3.zip` dari [halaman Releases](https://github.com/Zwart04/Shielded/releases/latest).
 2. Ekstrak zip ke folder tetap, misalnya `~/Shielded`.
 3. Buka `chrome://extensions` (juga berlaku di Brave, Edge, dan Vivaldi).
 4. Nyalakan **Mode developer** di kanan atas.
@@ -158,7 +158,7 @@ Arahkan kursor ke satu item — hanya item itu yang terbuka:
 | **Foto profil** | Avatar di daftar dan header | Blur lebih kuat karena area gambar |
 | **Preview media** | Gambar dan dokumen kecil di daftar chat | |
 | **Galeri media** | Gambar, video, dan dokumen di percakapan | |
-| **Konten feed** | Teks dan media unggahan di feed | Nonaktif bawaan; bukan percakapan |
+| **Konten feed** | Teks dan media unggahan di feed | Satu-satunya zona yang aktif di luar route DM |
 | **Kotak ketik** | Teks yang sedang diketik | Berguna saat berbagi layar |
 
 Zona yang saling bertumpuk tidak digandakan: elemen di dalam item yang sudah terlindungi tidak diproses ulang, sehingga blur tidak menumpuk dan halaman tetap ringan.
@@ -239,9 +239,9 @@ npm install          # pasang dependensi
 npm run dev          # build mode watch
 npm run build        # build ke dist/
 npm run typecheck    # TypeScript (aplikasi + tes)
-npm test             # 50 tes unit
+npm test             # 56 tes unit
 npm run verify:privacy  # audit bundle: tidak ada URL jaringan / src=
-npm run zip          # paket rilis shielded-0.1.2.zip
+npm run zip          # paket rilis shielded-0.1.3.zip
 ```
 
 ### Struktur proyek
@@ -276,7 +276,7 @@ Detail teknis: [Arsitektur](docs/07-arsitektur-teknis.md) dan [Struktur Proyek](
 | Pemeriksaan | Hasil |
 |---|---|
 | Typecheck | Bersih |
-| Tes unit | 50/50 lulus |
+| Tes unit | 56/56 lulus |
 | Build produksi | Berhasil |
 | Audit privasi | Lolos (3 berkas JS, 19 host permission) |
 | Verifikasi selector live | 6 platform lolos, X sebagian |

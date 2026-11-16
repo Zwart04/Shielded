@@ -20,9 +20,24 @@ export interface PlatformAdapter {
    * root aplikasi (#app / #react-root): itu akan mengaburkan seluruh halaman.
    */
   fallback?: readonly SelectorCandidate[];
+  /**
+   * Route yang dianggap ruang pesan. Di luar route ini hanya zona `feedContent`
+   * yang dijalankan, sehingga feed/beranda tidak pernah tersentuh zona lain.
+   * Tanpa properti ini adapter dianggap selalu berada di ruang pesan.
+   */
+  dmPaths?: readonly string[];
+  /** Host yang seluruhnya dianggap ruang pesan (mis. web.messenger.com). */
+  dmHosts?: readonly string[];
   /** Catatan khusus platform, contoh: dua basis klien Telegram. */
   quirks?: readonly string[];
 }
+
+const EMPTY_PARTS: RowParts = {
+  names: [],
+  previews: [],
+  avatars: [],
+  mediaPreviews: [],
+};
 
 interface RowParts {
   names: Element[];
@@ -232,13 +247,44 @@ export function withoutNames(
   );
 }
 
-export function detectChatArea(adapter: PlatformAdapter, root: ParentNode = document): ResolvedChatArea {
-  const messages = resolveZone('messages', adapter.selectors.messages, root);
-  const media = resolveZone('media', adapter.selectors.media, root);
-  let usedHeuristic = false;
+function normalizeHost(hostname: string): string {
+  return hostname.replace(/^www\./, '').toLowerCase();
+}
 
-  let conversationList = resolveZone('chatList', adapter.selectors.chatList, root);
-  if (!conversationList) {
+/**
+ * Apakah URL saat ini berada di ruang pesan platform.
+ * Platform tanpa `dmPaths`/`dmHosts` selalu dianggap ruang pesan.
+ */
+export function isDmContext(
+  adapter: PlatformAdapter,
+  url: { hostname: string; pathname: string },
+): boolean {
+  if (!adapter.dmPaths && !adapter.dmHosts) return true;
+
+  const host = normalizeHost(url.hostname);
+  if (adapter.dmHosts?.some((item) => normalizeHost(item) === host)) return true;
+
+  const path = url.pathname.toLowerCase();
+  return (adapter.dmPaths ?? []).some((prefix) => path.startsWith(prefix.toLowerCase()));
+}
+
+export function detectChatArea(
+  adapter: PlatformAdapter,
+  root: ParentNode = document,
+  only?: readonly ZoneId[],
+): ResolvedChatArea {
+  const wanted = (zone: ZoneId): boolean => !only || only.includes(zone);
+  const pick = (zone: ZoneId): ResolvedZone | null =>
+    wanted(zone) ? resolveZone(zone, adapter.selectors[zone], root) : null;
+
+  // Di luar route pesan, `only` hanya berisi `feedContent`, sehingga semua
+  // query selector DM dilewati. Ini yang menjaga feed tidak tersentuh.
+  const messages = pick('messages');
+  const media = pick('media');
+
+  let usedHeuristic = false;
+  let conversationList = pick('chatList');
+  if (wanted('chatList') && !conversationList) {
     const rows = findConversationRows(root);
     if (rows.length >= 3) {
       conversationList = {
@@ -251,26 +297,19 @@ export function detectChatArea(adapter: PlatformAdapter, root: ParentNode = docu
     }
   }
 
-  const rows = conversationList?.elements ?? [];
-  const parts = deriveRowParts(rows);
+  // Turunan baris hanya berguna kalau salah satu zona per item diminta.
+  const rowsWanted = (['names', 'chatPreview', 'avatars', 'mediaPreview'] as const).some((zone) =>
+    wanted(zone),
+  );
+  const parts = rowsWanted ? deriveRowParts(conversationList?.elements ?? []) : EMPTY_PARTS;
 
-  const names = mergeZone('names', resolveZone('names', adapter.selectors.names, root), parts.names);
+  const names = mergeZone('names', pick('names'), parts.names);
   const nameElements = names?.elements ?? [];
-  const mediaPreview = mergeZone(
-    'mediaPreview',
-    resolveZone('mediaPreview', adapter.selectors.mediaPreview, root),
-    parts.mediaPreviews,
-  );
-  const feedContent = resolveZone('feedContent', adapter.selectors.feedContent, root);
-  const textInput = resolveZone('textInput', adapter.selectors.textInput, root);
-  const avatars = mergeZone(
-    'avatars',
-    resolveZone('avatars', adapter.selectors.avatars, root),
-    parts.avatars,
-  );
+  const mediaPreview = mergeZone('mediaPreview', pick('mediaPreview'), parts.mediaPreviews);
+  const avatars = mergeZone('avatars', pick('avatars'), parts.avatars);
   // Zona preview tidak boleh menyentuh nama: selector platform sering memakai
   // `span[dir="auto"]` untuk keduanya.
-  const previewExplicit = resolveZone('chatPreview', adapter.selectors.chatPreview, root);
+  const previewExplicit = pick('chatPreview');
   const chatPreview = mergeZone(
     'chatPreview',
     previewExplicit
@@ -281,7 +320,7 @@ export function detectChatArea(adapter: PlatformAdapter, root: ParentNode = docu
 
   let fallbackMessages: ResolvedZone | null = messages;
   let usedFallback = false;
-  if (!messages && adapter.fallback && adapter.fallback.length > 0) {
+  if (!messages && wanted('messages') && adapter.fallback && adapter.fallback.length > 0) {
     fallbackMessages = resolveZone('messages', adapter.fallback, root);
     usedFallback = fallbackMessages !== null;
   }
@@ -294,8 +333,8 @@ export function detectChatArea(adapter: PlatformAdapter, root: ParentNode = docu
     avatars,
     mediaPreview,
     media,
-    feedContent,
-    textInput,
+    feedContent: pick('feedContent'),
+    textInput: pick('textInput'),
     usedFallback,
     usedHeuristic,
   };

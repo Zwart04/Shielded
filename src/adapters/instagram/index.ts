@@ -9,6 +9,8 @@ export const instagramAdapter: PlatformAdapter = {
   id: 'instagram',
   name: 'Instagram',
   hosts: ['www.instagram.com', 'instagram.com'],
+  // Feed/reels/profil tidak pernah dijangkau zona DM; hanya /direct/*.
+  dmPaths: ['/direct'],
   selectors: {
     messages: [
       {
@@ -25,13 +27,6 @@ export const instagramAdapter: PlatformAdapter = {
         note: 'Teks pesan DM (caption feed tidak termasuk)',
         multi: true,
       },
-      {
-        id: 'ig-main-section',
-        selector: 'div[role="main"] section',
-        weight: 7,
-        note: 'Bagian utama DM',
-      },
-      { id: 'ig-main', selector: 'main[role="main"]', weight: 6, note: 'Kontainer role main' },
     ],
     chatList: [
       {
@@ -60,9 +55,9 @@ export const instagramAdapter: PlatformAdapter = {
       {
         id: 'ig-post-author',
         selector:
-          'article header a[href^="/"], article header h2, article h1, main a[href^="/"][role="link"], main span[dir="auto"]:not(article *)',
+          'div[role="main"] a[href^="/direct/t/"] span[dir="auto"], div[role="main"] [role="listitem"] span[dir="auto"]',
         weight: 8,
-        note: 'Nama pengunggah di feed + panel saran (bukan di dalam unggahan)',
+        note: 'Nama kontak di daftar percakapan',
         multi: true,
       },
       {
@@ -105,7 +100,7 @@ export const instagramAdapter: PlatformAdapter = {
       {
         id: 'ig-compose-input',
         selector:
-          'div[role="main"] textarea, div[role="main"] [contenteditable="true"][role="textbox"], textarea[aria-label], [contenteditable="true"][role="textbox"]',
+          'div[role="main"] textarea, div[role="main"] [contenteditable="true"][role="textbox"]',
         weight: 7,
         note: 'Kotak ketik pesan',
         multi: true,
@@ -115,9 +110,9 @@ export const instagramAdapter: PlatformAdapter = {
       {
         id: 'ig-post-avatar',
         selector:
-          'article header img, main a[href^="/"][role="link"] img, img[alt*="avatar" i], img[alt*="profil" i], main canvas:not(article *), main li:has(canvas), main li:has(img):not(article *)',
+          'div[role="main"] a[href^="/direct/t/"] img, img[alt*="avatar" i], img[alt*="profil" i]',
         weight: 7,
-        note: 'Avatar pengunggah, foto profil (alt terlokalisasi), dan item cerita',
+        note: 'Foto profil kontak di daftar percakapan',
         multi: true,
       },
       {

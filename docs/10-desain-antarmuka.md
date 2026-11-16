@@ -70,7 +70,7 @@ Sembilan zona, masing-masing berdiri sendiri:
 | Foto profil | gambar | Blur (intensitas lebih kuat) |
 | Preview media | gambar kecil | Blur |
 | Galeri media | gambar besar | Blur |
-| Konten feed | feed | Terlihat (feed bukan percakapan) |
+| Konten feed | feed | Terlihat (feed bukan percakapan); satu-satunya zona aktif di luar route DM |
 | Kotak ketik | kotak teks | Blur |
 
 Aturan:

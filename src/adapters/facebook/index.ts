@@ -16,6 +16,9 @@ export const facebookAdapter: PlatformAdapter = {
     'www.messenger.com',
     'messenger.com',
   ],
+  // Hanya ruang pesan: /messages/* dan seluruh messenger.com.
+  dmPaths: ['/messages'],
+  dmHosts: ['messenger.com'],
   selectors: {
     messages: [
       {
@@ -34,8 +37,7 @@ export const facebookAdapter: PlatformAdapter = {
       },
       {
         id: 'fb-message-dir',
-        selector:
-          'div[role="main"] div[dir="auto"]:not(article *):not([role="article"] *):not([role="feed"] *)',
+        selector: 'div[role="main"] div[dir="auto"]:not(article *):not([role="article"] *)',
         weight: 3,
         note: 'Teks pesan percakapan (post feed tidak termasuk)',
         multi: true,
@@ -77,9 +79,9 @@ export const facebookAdapter: PlatformAdapter = {
       {
         id: 'fb-names',
         selector:
-          'div[role="row"] h4, div[role="main"] h4, div[role="main"] h3, div[role="main"] a[role="link"]:not(:has(img, video)), div[role="main"] [role="listitem"] span[dir="auto"]',
+          'div[role="row"] h4, div[role="main"] a[href*="/t/"] span[dir="auto"], div[role="main"] [role="listitem"] span[dir="auto"]',
         weight: 5,
-        note: 'Nama kontak di baris percakapan + nama pengunggah feed',
+        note: 'Nama kontak di baris percakapan',
         multi: true,
       },
     ],
