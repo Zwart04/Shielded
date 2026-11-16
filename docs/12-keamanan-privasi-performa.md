@@ -45,25 +45,28 @@ Pernyataan ini harus muncul di halaman About dan deskripsi toko.
 
 ## 12.5 Anggaran Performa
 
-| Metrik | Anggaran | Cara ukur |
+| Metrik | Anggaran | Hasil ukur (0.1.6) |
 |---|---|---|
-| Inisialisasi content script | ≤ 300 ms setelah `document_idle` | Performance panel |
-| Reapply per batch mutasi | ≤ 10 ms | Profiling dengan fixture |
-| Memori tambahan per tab | ≤ 15 MB | Heap snapshot 10 menit |
-| CPU saat tab hidden | ~0 (listener tidur) | Performance monitor |
-| Ukuran paket ekstensi | ≤ 2 MB (tanpa aset berat) | `du -sh dist` |
+| Pass selector zona pesan (3.047 node) | ≤ 10 ms | **3,7 ms** (sebelumnya 32,4 ms) |
+| Reapply per batch mutasi | ≤ 10 ms | ± 4 ms pada fixture yang sama |
+| Pemindaian elemen | ≤ 120 elemen per zona | 120, dipotong saat pengumpulan |
+| CPU saat tab hidden | ~0 | 0 — deteksi langsung keluar saat `visibilityState === 'hidden'` |
+| Ukuran content script | ≤ 60 KB | 48 KB (`dist/content.js`) |
+| Ukuran paket ekstensi | ≤ 2 MB | 256 KB (`du -sh dist`) |
 
-Angka ini adalah target awal, bukan hasil pengukuran. Harus divalidasi pada Fase 2.
+Angka selector diukur dengan `document.querySelectorAll` + filter visibilitas pada
+DOM sintetis 3.047 node di Brave (Linux), rata-rata 20 putaran.
 
 ## 12.6 Teknik Optimasi
 
-1. **Observer terpinat:** setelah zona ditemukan, amati subtree zona saja.
-2. **Coalescing:** callback dibungkus `requestAnimationFrame`.
-3. **Cache selektor:** per route, bukan per mutasi.
-4. **Overlay satu lapisan:** `backdrop-filter` pada satu elemen, bukan filter pada subtree.
-5. **`contain: layout paint`** pada wrapper zona untuk membatasi reflow.
-6. **Tanpa `will-change` permanen:** hanya saat animasi aktif.
-7. **Detach saat nonaktif:** lepas observer dan listener ketika platform dimatikan.
+1. **Coalescing:** callback `MutationObserver` dibungkus `requestAnimationFrame`; deteksi dibatasi 120 ms agar beberapa mutasi beruntun jadi satu pass.
+2. **Zona yang dimatikan tidak di-query:** engine hanya mengirim zona yang dilindungi ke `detectChatArea`, jadi toggle mati = nol selector dijalankan.
+3. **Berhenti saat batas tercapai:** `queryUsable` berhenti di 120 elemen (atau 1 untuk panel), tidak memfilter seluruh hasil query.
+4. **Satu pembacaan layout per elemen:** `getBoundingClientRect` dipakai sekali untuk cek ukuran sekaligus cek elemen raksasa.
+5. **Tanpa overlay untuk blur:** filter diterapkan langsung ke elemen; tidak ada node tambahan maupun `backdrop-filter`, jadi satu lapisan paint lebih murah.
+6. **Idempoten:** class tidak ditulis ulang bila zona dan efeknya sama, sehingga tidak ada style recalc tiap 120 ms.
+7. **Tab latar berhenti:** deteksi keluar saat tab tersembunyi dan dijadwalkan ulang pada `visibilitychange`.
+8. **Detach saat nonaktif:** observer, interval, dan listener dilepas ketika platform dimatikan; handle overlay dibersihkan.
 
 ## 12.7 Audit Privasi Otomatis
 

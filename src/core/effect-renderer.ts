@@ -96,8 +96,10 @@ function nearestLuminance(element: Element): number | null {
   // WhatsApp memakai banyak lapisan transparan; 6 level tidak cukup untuk
   // mencapai latar panel, jadi telusuri sampai root sebelum menyerah.
   for (let depth = 0; node && depth < 24; depth += 1, node = node.parentElement) {
-    const rgba = parseRgba(getComputedStyle(node).backgroundColor);
-    if (rgba && rgba[3] >= 0.5) return luminance(getComputedStyle(node).backgroundColor);
+    // Satu getComputedStyle per node: pembacaan style memicu style recalc.
+    const background = getComputedStyle(node).backgroundColor;
+    const rgba = parseRgba(background);
+    if (rgba && rgba[3] >= 0.5) return luminance(background);
   }
   const body = document.body;
   if (body) {

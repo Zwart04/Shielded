@@ -39,9 +39,12 @@ function viewportArea(): number {
  * Menolak elemen yang menutupi hampir seluruh viewport. Ini pengaman agar
  * root aplikasi (#app / #react-root) tidak pernah ikut dikaburkan.
  */
-function isOversized(element: Element): boolean {
-  const rect = element.getBoundingClientRect();
+function isOversizedRect(rect: DOMRect): boolean {
   return rect.width * rect.height > viewportArea() * 0.9;
+}
+
+function isOversized(element: Element): boolean {
+  return isOversizedRect(element.getBoundingClientRect());
 }
 
 function isOverlayElement(element: Element): boolean {
@@ -56,26 +59,40 @@ function isUsableElement(element: Element, multi: boolean): boolean {
   if (!(element instanceof HTMLElement)) return false;
   if (isOverlayElement(element)) return false;
 
+  // Satu pembacaan layout per elemen: `getBoundingClientRect` memaksa reflow,
+  // jadi memanggilnya dua kali untuk elemen yang sama membuang waktu.
   const rect = element.getBoundingClientRect();
   if (rect.width <= 0 || rect.height <= 0) return false;
-  if (isOversized(element)) return false;
+  if (isOversizedRect(rect)) return false;
 
   // Item (baris chat / nama) boleh kecil; panel harus cukup besar.
   return multi ? rect.width > 8 && rect.height > 10 : rect.width > 40 && rect.height > 40;
 }
 
+/**
+ * Mengumpulkan elemen yang layak sampai batasnya. Berhenti lebih awal, bukan
+ * memfilter seluruh hasil query: daftar `div[dir="auto"]` di halaman panjang
+ * bisa ribuan node, dan hasilnya toh dipotong di `MAX_MULTI_ELEMENTS`.
+ */
 function queryUsable(
   root: ParentNode,
   selector: string,
   multi: boolean,
 ): Element[] {
+  const limit = multi ? MAX_MULTI_ELEMENTS : 1;
+  const usable: Element[] = [];
+  let found: NodeListOf<Element>;
   try {
-    return [...root.querySelectorAll(selector)].filter((element) =>
-      isUsableElement(element, multi),
-    );
+    found = root.querySelectorAll(selector);
   } catch {
-    return [];
+    return usable;
   }
+  for (const element of found) {
+    if (!isUsableElement(element, multi)) continue;
+    usable.push(element);
+    if (usable.length >= limit) break;
+  }
+  return usable;
 }
 
 export function resolveZone(
@@ -93,7 +110,7 @@ export function resolveZone(
 
     return {
       zone,
-      elements: multi ? elements.slice(0, MAX_MULTI_ELEMENTS) : [elements[0] as Element],
+      elements: multi ? elements : [elements[0] as Element],
       candidateId: candidate.id,
       score: candidate.weight,
     };

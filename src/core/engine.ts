@@ -14,22 +14,24 @@ export interface EngineCallbacks {
   onStatus: (status: EngineStatus, detail: string) => void;
 }
 
-const ZONE_ORDER: readonly ZoneId[] = [
-  'messages',
-  'chatList',
-  'chatPreview',
-  'names',
-  'avatars',
-  'mediaPreview',
-  'media',
-  'feedContent',
-  'textInput',
-];
-
 /** Zona pesan; semuanya kecuali konten feed. */
 const DM_ZONES: readonly ZoneId[] = MVP_ZONES.filter((zone) => zone !== 'feedContent');
 /** Di luar route DM tanpa panel pesan: hanya feed yang boleh diproses. */
 const FEED_ONLY: readonly ZoneId[] = ['feedContent'];
+
+const EMPTY_AREA: ResolvedChatArea = {
+  messages: null,
+  chatList: null,
+  chatPreview: null,
+  names: null,
+  avatars: null,
+  mediaPreview: null,
+  media: null,
+  feedContent: null,
+  textInput: null,
+  usedFallback: false,
+  usedHeuristic: false,
+};
 
 /** Deteksi ulang cepat agar item baru (baris virtual, pesan masuk) tidak sempat
  * tampil jelas. 120ms masih jauh di bawah ambang mata untuk kilasan. */
@@ -168,9 +170,21 @@ export class PrivacyEngine {
 
   private detectAndRender(): void {
     if (!this.running) return;
+    // Tab latar tidak perlu dianalisis; `handleVisible` menjadwalkan deteksi
+    // ulang begitu tab kembali terlihat.
+    if (document.visibilityState === 'hidden') return;
     this.lastDetect = performance.now();
     // Di luar route pesan hanya zona konten feed yang dijalankan, sehingga
     // beranda/profil/reels tidak pernah ikut ter-blur oleh zona DM.
+    // Tidak ada zona aktif: tidak perlu query selector sama sekali.
+    if (this.activeZones().length === 0) {
+      this.dmScope = null;
+      this.current = EMPTY_AREA;
+      this.renderer.render([], this.settings.platforms[this.platform].zones);
+      this.report('inactive', 'Tidak ada zona yang dilindungi.');
+      return;
+    }
+
     this.dmContext = isDmContext(this.adapter, window.location);
     this.current = this.dmContext ? this.detectInDm() : this.detectOutsideDm();
     if (this.current.usedFallback) this.health.reportFailure('fallback-mode');
@@ -178,9 +192,15 @@ export class PrivacyEngine {
     this.renderCurrent();
   }
 
+  /** Zona yang benar-benar dinyalakan; sisanya tidak perlu di-query sama sekali. */
+  private activeZones(): ZoneId[] {
+    const rules = this.settings.platforms[this.platform].zones;
+    return MVP_ZONES.filter((zone) => rules[zone]?.protected);
+  }
+
   private detectInDm(): ResolvedChatArea {
     this.dmScope = null;
-    return detectChatArea(this.adapter);
+    return detectChatArea(this.adapter, document, this.activeZones());
   }
 
   /**
@@ -189,12 +209,16 @@ export class PrivacyEngine {
    * Facebook memakai pola ini: beranda tetap terlihat, jendela Chats ter-blur.
    */
   private detectOutsideDm(): ResolvedChatArea {
-    const feed = detectChatArea(this.adapter, document, FEED_ONLY);
+    const active = this.activeZones();
+    const feedWanted = active.includes('feedContent');
+    const dockZones = active.filter((zone) => zone !== 'feedContent');
+    const feed = feedWanted ? detectChatArea(this.adapter, document, FEED_ONLY) : EMPTY_AREA;
+    if (dockZones.length === 0) return feed;
+
     this.dmScope = resolveDmScope(this.adapter, document);
     if (!this.dmScope) return feed;
 
-    const scope = this.dmScope;
-    const dock = detectChatArea(this.adapter, scope, DM_ZONES);
+    const dock = detectChatArea(this.adapter, this.dmScope, dockZones);
     return { ...dock, feedContent: feed.feedContent };
   }
 
@@ -208,7 +232,7 @@ export class PrivacyEngine {
     const rules = this.settings.platforms[this.platform].zones;
     const zones: ResolvedZone[] = [];
 
-    for (const zoneId of ZONE_ORDER) {
+    for (const zoneId of MVP_ZONES) {
       const zone = area[zoneId];
       if (zone && zone.elements.length > 0 && rules[zoneId]?.protected) zones.push(zone);
     }
@@ -269,6 +293,7 @@ export class PrivacyEngine {
   }
 
   private handleVisible(): void {
+    this.scheduleDetect();
     if (this.settings.restoreOnFocus) this.unlock();
   }
 
