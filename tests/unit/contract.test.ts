@@ -1,6 +1,12 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { deriveRowParts, detectChatArea, isDmContext, withoutNames } from '../../src/adapters/contract.ts';
+import {
+  deriveRowParts,
+  detectChatArea,
+  isDmContext,
+  resolveDmScope,
+  withoutNames,
+} from '../../src/adapters/contract.ts';
 import { whatsappAdapter } from '../../src/adapters/whatsapp/index.ts';
 import { telegramAdapter } from '../../src/adapters/telegram/index.ts';
 import { instagramAdapter } from '../../src/adapters/instagram/index.ts';
@@ -159,6 +165,8 @@ test('isDmContext hanya benar di route pesan Instagram', () => {
 test('isDmContext Threads hanya di /direct', () => {
   const url = (pathname: string) => ({ hostname: 'www.threads.com', pathname });
   assert.equal(isDmContext(threadsAdapter, url('/direct/t/1')), true);
+  assert.equal(isDmContext(threadsAdapter, url('/direct/inbox')), true);
+  assert.equal(isDmContext(threadsAdapter, url('/messages')), true);
   assert.equal(isDmContext(threadsAdapter, url('/@zwart/post/1')), false);
   assert.equal(isDmContext(threadsAdapter, url('/')), false);
 });
@@ -208,4 +216,22 @@ test('detectChatArea dengan only=feedContent hanya menjalankan selector feed', (
   assert.ok(asked.length > 0, 'tidak ada selector yang dijalankan');
   for (const selector of asked) assert.ok(igFeedSelectors.has(selector), selector);
   for (const selector of allNonFeed) assert.ok(!asked.includes(selector), selector);
+});
+
+test('resolveDmScope hanya menerima panel pesan yang benar-benar tampil', () => {
+  const dock = {
+    getBoundingClientRect: () => ({ width: 320, height: 640 }),
+  } as unknown as Element;
+  const hidden = {
+    getBoundingClientRect: () => ({ width: 0, height: 0 }),
+  } as unknown as Element;
+
+  const root = (element: Element | null) =>
+    ({ querySelector: () => element }) as unknown as ParentNode;
+
+  assert.equal(resolveDmScope(facebookAdapter, root(dock)), dock);
+  assert.equal(resolveDmScope(facebookAdapter, root(hidden)), null);
+  assert.equal(resolveDmScope(facebookAdapter, root(null)), null);
+  // Adapter tanpa dmScopes tidak punya panel mengambang.
+  assert.equal(resolveDmScope(instagramAdapter, root(dock)), null);
 });

@@ -10,13 +10,15 @@ export const threadsAdapter: PlatformAdapter = {
   id: 'threads',
   name: 'Threads',
   hosts: ['www.threads.net', 'threads.net', 'www.threads.com', 'threads.com'],
-  // Feed Threads bukan ruang pesan; hanya /direct/*.
-  dmPaths: ['/direct'],
+  // Feed Threads bukan ruang pesan. Dua pola diterima karena URL inbox web
+  // bisa berupa /direct/* maupun /messages/*.
+  dmPaths: ['/direct', '/messages'],
   selectors: {
     messages: [
       {
         id: 'th-dm-text',
-        selector: '[role="region"] [role="listitem"] div[dir="auto"]',
+        selector:
+          '[role="listitem"] div[dir="auto"], [role="listitem"] span[dir="auto"], [role="region"] [role="listitem"] div[dir="auto"]',
         weight: 7,
         note: 'Teks pesan DM (per item)',
         multi: true,
@@ -55,9 +57,16 @@ export const threadsAdapter: PlatformAdapter = {
       },
       {
         id: 'th-listitem',
-        selector: '[role="listitem"]:has(a[href*="/direct/t/"])',
+        selector: '[role="listitem"]',
         weight: 7,
         note: 'Baris daftar percakapan',
+        multi: true,
+      },
+      {
+        id: 'th-row',
+        selector: '[role="row"]',
+        weight: 5,
+        note: 'Baris daftar alternatif (inbox web)',
         multi: true,
       },
     ],
@@ -65,7 +74,7 @@ export const threadsAdapter: PlatformAdapter = {
       {
         id: 'th-post-author',
         selector:
-          'a[href*="/direct/t/"] span[dir="auto"], [role="region"] [role="listitem"] span[dir="auto"]',
+          'a[href*="/direct/t/"] span[dir="auto"], [role="listitem"] span[dir="auto"], [role="region"] [role="listitem"] span[dir="auto"]',
         weight: 7,
         note: 'Nama kontak di daftar percakapan',
         multi: true,
@@ -81,7 +90,8 @@ export const threadsAdapter: PlatformAdapter = {
     mediaPreview: [
       {
         id: 'th-media-preview',
-        selector: 'a[href*="/direct/"] img, [class*="thumbnail" i]',
+        selector:
+          'a[href*="/direct/"] img, [role="listitem"] img, [class*="thumbnail" i]',
         weight: 5,
         note: 'Thumbnail media di daftar',
         multi: true,
@@ -109,7 +119,8 @@ export const threadsAdapter: PlatformAdapter = {
     avatars: [
       {
         id: 'th-avatars',
-        selector: 'a[href*="/direct/t/"] img, [role="region"] header img, div[role="main"] header img',
+        selector:
+          'a[href*="/direct/t/"] img, [role="listitem"] img, [role="region"] header img, div[role="main"] header img, header img',
         weight: 5,
         note: 'Foto profil kontak dan header percakapan',
         multi: true,

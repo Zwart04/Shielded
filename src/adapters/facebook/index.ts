@@ -19,6 +19,22 @@ export const facebookAdapter: PlatformAdapter = {
   // Hanya ruang pesan: /messages/* dan seluruh messenger.com.
   dmPaths: ['/messages'],
   dmHosts: ['messenger.com'],
+  // Panel "Chats" yang mengambang di beranda. Zona pesan dibatasi di dalam
+  // panel ini, jadi unggahan feed di sekitarnya tidak ikut ter-blur.
+  dmScopes: [
+    {
+      id: 'fb-dock-scope',
+      selector: '[aria-label="Chats"], [aria-label="Obrolan"], [aria-label="Chat"]',
+      weight: 9,
+      note: 'Panel Chats',
+    },
+    {
+      id: 'fb-dock-scope-pagelet',
+      selector: '[data-pagelet="Chats"], .fbChatSidebar',
+      weight: 5,
+      note: 'Panel Chats (data-pagelet lama)',
+    },
+  ],
   selectors: {
     messages: [
       {
@@ -65,6 +81,13 @@ export const facebookAdapter: PlatformAdapter = {
         note: 'Tautan percakapan',
         multi: true,
       },
+      {
+        id: 'fb-dock-row',
+        selector: '[role="listitem"], a[href*="/t/"]',
+        weight: 7,
+        note: 'Baris percakapan di panel Chats',
+        multi: true,
+      },
     ],
     chatPreview: [
       {
@@ -79,7 +102,7 @@ export const facebookAdapter: PlatformAdapter = {
       {
         id: 'fb-names',
         selector:
-          'div[role="row"] h4, div[role="main"] a[href*="/t/"] span[dir="auto"], div[role="main"] [role="listitem"] span[dir="auto"]',
+          'div[role="row"] h4, div[role="main"] a[href*="/t/"] span[dir="auto"], [role="listitem"] span[dir="auto"], [role="row"] span[dir="auto"]',
         weight: 5,
         note: 'Nama kontak di baris percakapan',
         multi: true,
@@ -89,7 +112,7 @@ export const facebookAdapter: PlatformAdapter = {
       {
         id: 'fb-media-preview',
         selector:
-          'div[role="row"] img, div[role="main"] [role="listitem"] img, div[role="main"] [role="listitem"] video',
+          'div[role="row"] img, [role="listitem"] img, [role="listitem"] video',
         weight: 5,
         note: 'Thumbnail media di baris',
         multi: true,
@@ -135,7 +158,7 @@ export const facebookAdapter: PlatformAdapter = {
     avatars: [
       {
         id: 'fb-avatar',
-        selector: 'div[role="row"] img, div[role="main"] [role="listitem"] img',
+        selector: 'div[role="row"] img, [role="listitem"] img',
         weight: 5,
         note: 'Foto profil di baris percakapan (listitem atau row)',
         multi: true,

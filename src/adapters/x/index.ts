@@ -12,6 +12,15 @@ export const xAdapter: PlatformAdapter = {
   hosts: ['x.com', 'www.x.com', 'twitter.com', 'www.twitter.com'],
   // Beranda, profil, dan pencarian tidak dijangkau; hanya /messages/*.
   dmPaths: ['/messages'],
+  // Panel DM yang bisa dibuka dari beranda tanpa pindah route.
+  dmScopes: [
+    {
+      id: 'x-drawer-scope',
+      selector: '[data-testid="DMDrawer"]',
+      weight: 9,
+      note: 'Panel Direct Messages',
+    },
+  ],
   selectors: {
     messages: [
       {

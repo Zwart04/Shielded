@@ -28,6 +28,12 @@ export interface PlatformAdapter {
   dmPaths?: readonly string[];
   /** Host yang seluruhnya dianggap ruang pesan (mis. web.messenger.com). */
   dmHosts?: readonly string[];
+  /**
+   * Wadah pesan yang juga muncul di luar route DM, contoh panel "Chats" di
+   * facebook.com. Bila ditemukan, zona pesan hanya dijalankan di dalam wadah
+   * ini sehingga feed di sekitarnya tetap terlihat.
+   */
+  dmScopes?: readonly SelectorCandidate[];
   /** Catatan khusus platform, contoh: dua basis klien Telegram. */
   quirks?: readonly string[];
 }
@@ -266,6 +272,36 @@ export function isDmContext(
 
   const path = url.pathname.toLowerCase();
   return (adapter.dmPaths ?? []).some((prefix) => path.startsWith(prefix.toLowerCase()));
+}
+
+/**
+ * Wadah pesan mengambang (mis. panel Chats Facebook) yang bisa dipakai sebagai
+ * batas zona pesan di luar route DM. `null` bila platform tidak menyediakannya
+ * atau panelnya sedang tertutup.
+ */
+export function resolveDmScope(
+  adapter: PlatformAdapter,
+  root: ParentNode = document,
+): Element | null {
+  const candidates = adapter.dmScopes;
+  if (!candidates || candidates.length === 0) return null;
+
+  for (const candidate of [...candidates].sort((a, b) => b.weight - a.weight)) {
+    let found: Element | null = null;
+    try {
+      found = root.querySelector(candidate.selector);
+    } catch {
+      found = null;
+    }
+    if (!found) continue;
+    const rect = found.getBoundingClientRect();
+    // Panel tertutup atau tersembunyi tidak boleh dipakai: zona pesan akan
+    // kosong dan feed tetap aman.
+    if (rect.width < 120 || rect.height < 160) continue;
+    return found;
+  }
+
+  return null;
 }
 
 export function detectChatArea(

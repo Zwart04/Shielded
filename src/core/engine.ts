@@ -1,7 +1,7 @@
 import type { PlatformId, Settings, ResolvedChatArea, ResolvedZone, ZoneId } from '../shared/types.ts';
 import { MVP_ZONES } from '../shared/defaults.ts';
 import type { PlatformAdapter } from '../adapters/contract.ts';
-import { detectChatArea, isDmContext } from '../adapters/contract.ts';
+import { detectChatArea, isDmContext, resolveDmScope } from '../adapters/contract.ts';
 import { EffectRenderer } from './effect-renderer.ts';
 import { DomWatcher } from './dom-watcher.ts';
 import { FocusWatcher } from './focus-watcher.ts';
@@ -26,6 +26,11 @@ const ZONE_ORDER: readonly ZoneId[] = [
   'textInput',
 ];
 
+/** Zona pesan; semuanya kecuali konten feed. */
+const DM_ZONES: readonly ZoneId[] = MVP_ZONES.filter((zone) => zone !== 'feedContent');
+/** Di luar route DM tanpa panel pesan: hanya feed yang boleh diproses. */
+const FEED_ONLY: readonly ZoneId[] = ['feedContent'];
+
 /** Deteksi ulang cepat agar item baru (baris virtual, pesan masuk) tidak sempat
  * tampil jelas. 120ms masih jauh di bawah ambang mata untuk kilasan. */
 const DETECT_THROTTLE_MS = 120;
@@ -42,6 +47,8 @@ export class PrivacyEngine {
   private current: ResolvedChatArea | null = null;
   /** Route saat ini berada di ruang pesan (bukan feed/beranda). */
   private dmContext = true;
+  /** Wadah pesan mengambang yang ditemukan di luar route DM (panel Chats). */
+  private dmScope: Element | null = null;
   private running = false;
   private interactionLocked = false;
   private revealTimer: number | null = null;
@@ -165,12 +172,30 @@ export class PrivacyEngine {
     // Di luar route pesan hanya zona konten feed yang dijalankan, sehingga
     // beranda/profil/reels tidak pernah ikut ter-blur oleh zona DM.
     this.dmContext = isDmContext(this.adapter, window.location);
-    this.current = this.dmContext
-      ? detectChatArea(this.adapter)
-      : detectChatArea(this.adapter, document, ['feedContent']);
+    this.current = this.dmContext ? this.detectInDm() : this.detectOutsideDm();
     if (this.current.usedFallback) this.health.reportFailure('fallback-mode');
     if (this.current.usedHeuristic) this.health.reportFailure('structural-rows');
     this.renderCurrent();
+  }
+
+  private detectInDm(): ResolvedChatArea {
+    this.dmScope = null;
+    return detectChatArea(this.adapter);
+  }
+
+  /**
+   * Di luar route DM: konten feed dideteksi pada seluruh dokumen, sedangkan
+   * zona pesan hanya dijalankan di dalam panel pesan mengambang (bila ada).
+   * Facebook memakai pola ini: beranda tetap terlihat, jendela Chats ter-blur.
+   */
+  private detectOutsideDm(): ResolvedChatArea {
+    const feed = detectChatArea(this.adapter, document, FEED_ONLY);
+    this.dmScope = resolveDmScope(this.adapter, document);
+    if (!this.dmScope) return feed;
+
+    const scope = this.dmScope;
+    const dock = detectChatArea(this.adapter, scope, DM_ZONES);
+    return { ...dock, feedContent: feed.feedContent };
   }
 
   private renderCurrent(): void {
@@ -192,14 +217,11 @@ export class PrivacyEngine {
     this.renderer.setInteractionLocked(this.interactionLocked);
 
     if (zones.length === 0) {
-      this.report(
-        'inactive',
-        this.dmContext ? 'Tidak ada zona yang dilindungi.' : 'Bukan ruang pesan.',
-      );
+      this.report('inactive', this.dmContext ? 'Tidak ada zona yang dilindungi.' : 'Bukan ruang pesan.');
       return;
     }
 
-    const expected = (this.dmContext ? MVP_ZONES : (['feedContent'] as const)).filter(
+    const expected = (this.dmContext || this.dmScope ? MVP_ZONES : FEED_ONLY).filter(
       (zoneId) => rules[zoneId]?.protected,
     );
     const covered = expected.filter((zoneId) =>

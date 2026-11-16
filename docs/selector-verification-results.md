@@ -26,9 +26,14 @@ tidak pernah dijalankan: nol kerja tambahan di beranda, nol risiko ter-blur.
 | Platform | Route DM | Host DM |
 |---|---|---|
 | Instagram | `/direct/*` | — |
-| Threads | `/direct/*` | — |
+| Threads | `/direct/*`, `/messages/*` | — |
 | Facebook | `/messages/*` | `messenger.com` |
 | X | `/messages/*` | — |
+
+Panel pesan mengambang (`dmScopes`) dipakai bila platform punya jendela chat di
+luar route DM: Facebook `[aria-label="Chats"]` (plus varian "Obrolan"/"Chat" dan
+`[data-pagelet="Chats"]`), X `[data-testid="DMDrawer"]`. Panel diperiksa punya
+kotak ≥120×160 px; panel tertutup diabaikan sehingga hanya feed yang diproses.
 
 WhatsApp, Telegram, dan TikTok tidak memakai `dmPaths` karena seluruh situsnya
 adalah ruang pesan. `RouteWatcher` (polling `location.href` 400 ms) memicu
