@@ -7,7 +7,7 @@ Dokumen ini menjelaskan setiap izin yang diminta Shielded, alasannya, dan mengap
 | Izin | Jenis | Wajib | Alasan satu kalimat |
 |---|---|---|---|
 | `storage` | API permission | Ya | Menyimpan preferensi tampilan secara lokal |
-| Host permission 7 domain | Host permission | Ya | Menjalankan skrip visual di platform yang didukung |
+| Host permission 19 pola URL (7 platform) | Host permission | Ya | Menjalankan skrip visual di platform yang didukung |
 | `commands` | Manifest key | Ya | Mendaftarkan pintasan keyboard |
 
 Tidak ada izin lain.

@@ -1,7 +1,9 @@
 # Hasil Verifikasi Selector
 
-> **Status: DIJALANKAN (2026-11-10).**
-> Verifikasi live pada Brave Origin 157 (profil uji, ekstensi 0.1.0) lewat CDP.
+> **Status: DIJALANKAN.**
+> Verifikasi live awal 2026-11-10 pada Brave Origin 157 (profil uji, ekstensi 0.1.0) lewat CDP.
+> Perubahan 0.1.3–0.1.7 (gating DM, panel Chats, zona Threads, prioritas viewport)
+> diverifikasi ulang pada **DOM sintetis** di Brave yang sama, bukan akun platform asli.
 > Tabel detail di bawah masih templat; ringkasan hasil ada di bagian berikut.
 
 ## Ringkasan Verifikasi Live 2026-11-10
@@ -66,13 +68,26 @@ Ambang elemen kecil `multi`: `width > 8 && height > 10` (nama pendek tetap terli
 
 | Platform | Tanggal uji | Browser | Versi ekstensi | Status |
 |---|---|---|---|---|
-| WhatsApp Web | 2026-11-10 | Brave Origin 157 | 0.1.0 | Lolos |
-| Telegram Web | 2026-11-10 | Brave Origin 157 | 0.1.0 | Lolos |
-| Instagram (feed + DM) | 2026-11-10 | Brave Origin 157 | 0.1.0 | Lolos |
-| Facebook (feed + Messenger) | 2026-11-10 | Brave Origin 157 | 0.1.0 | Lolos |
-| Threads | 2026-11-10 | Brave Origin 157 | 0.1.0 | Lolos |
-| TikTok (pesan) | 2026-11-10 | Brave Origin 157 | 0.1.0 | Lolos |
-| X (Twitter) | 2026-11-10 | Brave Origin 157 | 0.1.0 | Sebagian (login wall) |
+| WhatsApp Web | 2026-11-10 | Brave Origin 157 | 0.1.0 (live) | Lolos |
+| Telegram Web | 2026-11-10 | Brave Origin 157 | 0.1.0 (live) | Lolos |
+| Instagram (feed + DM) | 2026-11-10 | Brave Origin 157 | 0.1.0 (live), 0.1.7 (sintetis) | Lolos |
+| Facebook (feed + Messenger) | 2026-11-10 | Brave Origin 157 | 0.1.0 (live), 0.1.7 (sintetis) | Lolos |
+| Threads | 2026-11-10 | Brave Origin 157 | 0.1.0 (live), 0.1.7 (sintetis) | Lolos |
+| TikTok (pesan) | 2026-11-10 | Brave Origin 157 | 0.1.0 (live) | Lolos |
+| X (Twitter) | 2026-11-10 | Brave Origin 157 | 0.1.0 (live) | Sebagian (login wall) |
+
+### Verifikasi ulang 0.1.3–0.1.7 pada DOM sintetis
+
+Akun platform asli tidak tersedia untuk login, jadi tiap perubahan dipasang di
+halaman platform kosong lalu diperiksa lewat CDP pada Brave yang sama.
+
+| Perubahan | Uji | Hasil |
+|---|---|---|
+| Gating DM Instagram | feed `/` vs `/direct/t/999` | feed tetap ter-blur; baris DM, bubble, avatar hanya ter-blur di `/direct` |
+| Panel Chats Facebook | beranda + `[aria-label="Chats"]` | post feed bersih; baris, avatar, bubble panel ter-blur |
+| Isi percakapan Threads | `/direct/inbox`, 526 kandidat | inbox + bubble + header + avatar ter-blur; label navigasi tidak |
+| Prioritas viewport | 400 pesan, tanpa scroll | 120 item dipakai, 13/13 item terlihat ter-blur |
+| Prioritas viewport | 400 pesan, scroll ke bawah | 14/14 item terlihat ter-blur (0.1.6: 0 karena di luar 120 pertama) |
 
 Legenda status: `Lolos` / `Sebagian` / `Gagal` / `Belum dijalankan`.
 

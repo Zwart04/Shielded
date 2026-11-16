@@ -95,7 +95,7 @@ Lihat `02-konsep-dan-posisi-produk.md` bagian 2.5. Ringkasnya: kebocoran visual 
 2. `chrome.storage.local` hanya menyimpan preferensi tampilan.
 3. Tidak ada telemetri, analitik, atau crash reporting ke server.
 4. Tidak ada pembacaan konten pesan; tidak ada penyimpanan teks.
-5. Least privilege: hanya `storage` + host permission 7 domain.
+5. Least privilege: hanya `storage` + host permission 19 pola URL untuk 7 platform.
 6. Content script hanya didaftarkan untuk domain target.
 7. Tidak ada remote code (**Fakta:** dilarang MV3); semua JS dibundel.
 8. Halaman ekstensi tidak memuat resource eksternal.

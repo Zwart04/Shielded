@@ -66,6 +66,8 @@ Semua pemrosesan terjadi di perangkat Anda. Tidak ada server, akun, atau telemet
 
 Verifikasi dilakukan 2026-11-10 pada Brave Origin 157 dengan profil uji. X belum bisa diuji penuh karena halaman DM meminta login; selector-nya tetap terpasang dan akan diverifikasi ulang saat tersedia akses.
 
+Perubahan 0.1.3–0.1.7 (gating khusus route DM, panel Chats Facebook, isi percakapan Threads, prioritas item di layar) diverifikasi pada **DOM sintetis** di browser yang sama, bukan akun platform asli. Detail per uji ada di [Hasil Verifikasi Selector](docs/selector-verification-results.md).
+
 ---
 
 ## Instalasi
@@ -218,7 +220,7 @@ Shielded adalah **proteksi tampilan visual**, bukan enkripsi. Yang perlu diketah
 | Izin | Alasan |
 |---|---|
 | `storage` | Menyimpan preferensi secara lokal di perangkat |
-| Host permission 7 domain | Menjalankan content script visual di platform yang didukung |
+| Host permission 19 pola URL untuk 7 platform | Menjalankan content script visual hanya di domain platform yang didukung |
 | `commands` | Mendaftarkan pintasan keyboard |
 
 Yang **tidak** diminta: `<all_urls>`, `tabs`, `scripting`, `webRequest`, atau akses jaringan apa pun.
@@ -240,7 +242,7 @@ npm install          # pasang dependensi
 npm run dev          # build mode watch
 npm run build        # build ke dist/
 npm run typecheck    # TypeScript (aplikasi + tes)
-npm test             # 57 tes unit
+npm test             # 59 tes unit
 npm run verify:privacy  # audit bundle: tidak ada URL jaringan / src=
 npm run zip          # paket rilis shielded-0.1.7.zip
 ```
@@ -277,11 +279,11 @@ Detail teknis: [Arsitektur](docs/07-arsitektur-teknis.md) dan [Struktur Proyek](
 | Pemeriksaan | Hasil |
 |---|---|
 | Typecheck | Bersih |
-| Tes unit | 57/57 lulus |
+| Tes unit | 59/59 lulus |
 | Build produksi | Berhasil |
 | Audit privasi | Lolos (3 berkas JS, 19 host permission) |
-| Verifikasi selector live | 6 platform lolos, X sebagian |
-| Uji bawaan nonaktif | 0 zona saat platform mati; 8 zona saat diaktifkan |
+| Verifikasi selector live | 6 platform lolos, X sebagian (DOM sintetis untuk perubahan 0.1.3–0.1.7) |
+| Uji bawaan nonaktif | 0 zona saat platform mati; 9 zona saat diaktifkan |
 | Audit manual tampilan | Popup terang/gelap, keadaan aktif/nonaktif, opsi lanjutan |
 
 Yang belum tercakup: pengujian otomatis end-to-end pada halaman platform asli (DOM platform berubah-ubah), verifikasi penuh X, dan uji di Firefox/Safari (ekstensi ini khusus Chromium MV3).

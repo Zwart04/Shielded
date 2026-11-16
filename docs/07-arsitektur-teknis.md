@@ -171,7 +171,7 @@ Deteksi diulang maksimal 2-3x per detik (throttle 400 ms) plus heartbeat 2 detik
 
 ## 7.10 Aliran Data
 
-1. Manifest mendeklarasikan `content_scripts` untuk 7 domain + `commands` + `storage`.
+1. Manifest mendeklarasikan `content_scripts` untuk 19 pola URL (7 platform) + `commands` + `storage`.
 2. Halaman dibuka → bootstrap → registry memilih adapter → `detect()`.
 3. Engine membangun zona dan menerapkan level dari storage.
 4. Popup mengubah preferensi → `storage.local` → `storage.onChanged` di content script → re-apply.

@@ -45,7 +45,7 @@ Pernyataan ini harus muncul di halaman About dan deskripsi toko.
 
 ## 12.5 Anggaran Performa
 
-| Metrik | Anggaran | Hasil ukur (0.1.6) |
+| Metrik | Anggaran | Hasil ukur (0.1.7) |
 |---|---|---|
 | Pass selector zona pesan (1.556 node) | ≤ 10 ms | **3,2 ms** (sebelumnya 32,4 ms pada 3.047 node) |
 | Reapply per batch mutasi | ≤ 10 ms | ± 4 ms pada fixture yang sama |
@@ -77,7 +77,7 @@ Skrip `scripts/verify-privacy.ts` dijalankan di CI dan gagal jika menemukan:
 - `<all_urls>` atau `*://*/*` di manifest.
 - `fetch(`, `XMLHttpRequest`, `WebSocket`, `navigator.sendBeacon`.
 - `eval(`, `new Function(`.
-- Permission di luar daftar putih: `storage`, host 7 domain.
+- Permission di luar daftar putih: `storage`, host 19 pola URL untuk 7 platform.
 - Import dari URL eksternal.
 
 ## 12.8 Izin Ekstensi
@@ -85,7 +85,7 @@ Skrip `scripts/verify-privacy.ts` dijalankan di CI dan gagal jika menemukan:
 | Izin | Alasan |
 |---|---|
 | `storage` | Menyimpan preferensi lokal |
-| `host_permissions` 7 domain | Menjalankan content script di platform target |
+| `host_permissions` 19 pola URL (7 platform) | Menjalankan content script di platform target |
 | `commands` (manifest) | Mendaftarkan pintasan keyboard |
 
 Tidak ada: `tabs`, `webRequest`, `cookies`, `history`, `downloads`, `scripting`, `management`.

@@ -149,7 +149,7 @@ flowchart TD
 ```
 
 **Penjelasan:**
-1. Content script tidak dijalankan di luar 7 domain (least privilege).
+1. Content script tidak dijalankan di luar 19 pola URL milik 7 platform (least privilege).
 2. Popup tetap dapat dibuka dan memberikan penjelasan, bukan error.
 
 ---
