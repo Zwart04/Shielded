@@ -144,7 +144,7 @@ export const whatsappAdapter: PlatformAdapter = {
       {
         id: 'wa-avatars',
         selector:
-          '#main header img, #main [data-testid="conversation-header-avatar"] img, #main [data-testid="group-chat-profile-picture"] img, #main [role="listitem"] img, #pane-side [role="listitem"] img, #pane-side [role="row"] img',
+          '#main header img, #main [data-testid="conversation-header-avatar"] img, #main [data-testid="group-chat-profile-picture"] img, #main [role="listitem"] img, #pane-side [role="listitem"] img, #pane-side [role="row"] img, div:has(> [data-icon*="default" i]), [data-icon="default-group"], [data-icon="default-user"]',
         weight: 8,
         note: 'Avatar header, avatar pengirim di grup, dan foto baris chat (satu kandidat)',
         multi: true,

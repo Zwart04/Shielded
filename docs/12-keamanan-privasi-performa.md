@@ -70,7 +70,9 @@ DOM sintetis 3.047 node di Brave (Linux), rata-rata 20 putaran.
 7. **Scroll memicu deteksi ulang:** listener `scroll` pasif (throttle 120 ms) supaya item yang baru masuk layar langsung dikaburkan tanpa menunggu heartbeat.
 8. **Tab latar berhenti:** deteksi keluar saat tab tersembunyi dan dijadwalkan ulang pada `visibilitychange`.
 9. **Hover tanpa `:hover`:** elemen ber-`pointer-events: none` (avatar TikTok/Instagram) tidak pernah menjadi target hover, jadi posisi kursor dipetakan ke kotak zona terkecil lewat `pickHovered`. Pemetaan di-coalesce dengan `requestAnimationFrame` dan dilewati saat kursor diam.
-10. **Detach saat nonaktif:** observer, interval, dan listener dilepas ketika platform dimatikan; handle overlay dibersihkan.
+10. **Halo blur dipotong:** zona bergambar mendapat `clip-path: inset(0 round <radius>)` sesuai `border-radius` elemen, jadi blur tidak memancar sebagai glow di luar bentuk aslinya. Nilai dilepas kembali saat zona berganti ke efek tutup atau saat handle dilepas.
+11. **Tulis pengaturan berurutan:** `saveSettings`/`updateSettings` melewati satu antrean karena Chrome tidak menjamin urutan selesai `storage.local.set`. Tanpa antrean, klik beruntun bisa membuat snapshot lama menang sehingga pengaturan tampak "tidak live".
+12. **Detach saat nonaktif:** observer, interval, dan listener dilepas ketika platform dimatikan; handle overlay dibersihkan.
 
 ## 12.7 Audit Privasi Otomatis
 

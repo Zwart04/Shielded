@@ -62,8 +62,17 @@ const TEXT_SELECTOR = 'span, div, p, a, b, strong, em, small, time';
  * Avatar tidak selalu <img>: Telegram Web A memakai <div class="Avatar">
  * dengan background-image, WhatsApp memakai <img>. Keduanya dicari.
  */
-const AVATAR_SELECTOR =
-  'img, [class*="avatar" i], [data-testid*="avatar" i], [style*="background-image"]';
+const AVATAR_SELECTOR = [
+  'img',
+  '[class*="avatar" i]',
+  '[data-testid*="avatar" i]',
+  '[style*="background-image"]',
+  // Avatar bawaan WhatsApp (tanpa foto): ikon grup/kontak di dalam span.
+  // Wrapper-nya yang dikaburkan agar lingkaran berwarna ikut tertutup.
+  'div:has(> [data-icon*="default" i])',
+  '[data-icon="default-group"]',
+  '[data-icon="default-user"]',
+].join(', ');
 
 /** Thumbnail media di dalam baris chat (bukan foto profil). */
 const MEDIA_PREVIEW_SELECTOR =

@@ -10,6 +10,9 @@ interface ZoneHandle {
   overlay: HTMLDivElement | null;
   previousPosition: string | null;
   changedPosition: boolean;
+  /** Radius sudut elemen, dipakai memotong halo blur pada avatar/media. */
+  radiusClip: string | null;
+  previousClip: string;
   controller: AbortController;
 }
 
@@ -89,6 +92,20 @@ export function pickHovered(elements: Iterable<Element>, x: number, y: number): 
 
 function needsDirectEffect(element: Element): boolean {
   return DIRECT_TAGS.has(element.tagName);
+}
+
+/**
+ * Blur pada elemen membocorkan cahaya ke luar kotaknya (halo). Untuk avatar
+ * bulat dan media, hasilnya terlihat seperti glow di latar gelap. Memotong
+ * hasil filter dengan radius sudut elemen membuat blur tetap di dalam bentuk
+ * aslinya. Kembalikan `null` bila elemen memang tidak bersudut.
+ */
+export function clipForRadius(borderRadius: string): string | null {
+  const value = borderRadius.trim();
+  if (!value) return null;
+  const parts = value.split(/\s+/);
+  if (parts.every((part) => /^0(px|%)?$/.test(part))) return null;
+  return `inset(0 round ${value})`;
 }
 
 const LIGHT_COVER = '#f5f5f7';
@@ -253,7 +270,8 @@ export class EffectRenderer {
     let handle = this.handles.get(element);
 
     if (!handle) {
-      const changedPosition = getComputedStyle(target).position === 'static';
+      const style = getComputedStyle(target);
+      const changedPosition = style.position === 'static';
       const previousPosition = changedPosition ? target.style.position : null;
       if (changedPosition) target.style.position = 'relative';
 
@@ -278,6 +296,8 @@ export class EffectRenderer {
         overlay: null,
         previousPosition,
         changedPosition,
+        radiusClip: clipForRadius(style.borderRadius),
+        previousClip: target.style.clipPath,
         controller,
       };
       this.handles.set(element, handle);
@@ -298,6 +318,7 @@ export class EffectRenderer {
 
     if (rule.effect === 'hide') {
       target.classList.add('psx-zone--hide');
+      this.setClip(handle, null);
       this.dropOverlay(handle);
       return;
     }
@@ -308,11 +329,15 @@ export class EffectRenderer {
       target.classList.add('psx-zone--blur');
       if (HEAVY_ZONES.has(zoneId)) target.classList.add('psx-zone--heavy');
       else if (HEAVY_MEDIA_ZONES.has(zoneId)) target.classList.add('psx-zone--heavy-media');
+      // Hanya zona bergambar: teks memakai kotak baris dan tidak perlu dipotong.
+      const shaped = HEAVY_ZONES.has(zoneId) || HEAVY_MEDIA_ZONES.has(zoneId);
+      this.setClip(handle, shaped ? handle.radiusClip : null);
       this.dropOverlay(handle);
       return;
     }
 
     target.classList.add('psx-zone--cover');
+    this.setClip(handle, null);
 
     if (needsDirectEffect(target)) {
       target.classList.add('psx-zone--direct');
@@ -331,6 +356,12 @@ export class EffectRenderer {
 
   }
 
+  private setClip(handle: ZoneHandle, clip: string | null): void {
+    const value = clip ?? handle.previousClip;
+    if (handle.element.style.clipPath === value) return;
+    handle.element.style.clipPath = value;
+  }
+
   private dropOverlay(handle: ZoneHandle): void {
     if (!handle.overlay) return;
     handle.overlay.remove();
@@ -344,6 +375,7 @@ export class EffectRenderer {
       handle.element.classList.remove(cls);
     }
     if (handle.overlay) handle.overlay.remove();
+    handle.element.style.clipPath = handle.previousClip;
     if (handle.changedPosition) handle.element.style.position = handle.previousPosition ?? '';
   }
 

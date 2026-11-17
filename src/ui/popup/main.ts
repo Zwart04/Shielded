@@ -8,12 +8,12 @@ import type {
 import {
   LEVEL_LABELS,
   ZONE_ICONS,
-  ZONE_IDS,
   ZONE_LABELS,
   applyPreset,
 } from '../../shared/defaults.ts';
 import { PLATFORM_IDS, PLATFORM_LABELS, platformFromUrl } from '../../shared/platform-ids.ts';
-import { loadSettings, updateSettings } from '../../config-store/storage.ts';
+import { supportedZones } from '../../adapters/registry.ts';
+import { loadSettings, saveSettings, updateSettings } from '../../config-store/storage.ts';
 import { activeTabUrl, applyTheme, clear, el } from '../components/dom.ts';
 import { icon, platformIcon, type IconName } from '../components/icons.ts';
 import { brandLogo } from '../components/logo.ts';
@@ -40,7 +40,9 @@ function resolvedTheme(theme: Settings['theme']): 'light' | 'dark' {
 }
 
 function zoneCount(settings: Settings, platform: PlatformId): number {
-  return ZONE_IDS.filter((zone) => settings.platforms[platform].zones[zone].protected).length;
+  return supportedZones(platform).filter(
+    (zone) => settings.platforms[platform].zones[zone].protected,
+  ).length;
 }
 
 function skeleton(): HTMLElement {
@@ -91,11 +93,9 @@ async function main(): Promise<void> {
   const persist = (next: Settings): void => {
     settings = next;
     render();
-    void updateSettings(() => next)
-      .then((saved) => {
-        settings = saved;
-      })
-      .catch(() => showToast('Gagal menyimpan pengaturan.'));
+    // Tulis langsung, tanpa baca ulang: popup bisa ditutup sebelum rantai
+    // baca-tulis selesai, dan klik beruntun tidak boleh saling menimpa.
+    void saveSettings(next).catch(() => showToast('Gagal menyimpan pengaturan.'));
   };
 
   const patchPlatform = (id: PlatformId, patch: Partial<Settings['platforms'][PlatformId]>): void => {
@@ -199,7 +199,7 @@ async function main(): Promise<void> {
     const enabled = platform.enabled;
     const rows: HTMLElement[] = [];
 
-    for (const zone of ZONE_IDS) {
+    for (const zone of supportedZones(selected)) {
       const rule = platform.zones[zone];
       const toggle = createToggle({
         checked: rule.protected,

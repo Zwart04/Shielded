@@ -14,17 +14,36 @@ export async function loadSettings(): Promise<Settings> {
   return normalizeSettings(stored[STORAGE_KEY]);
 }
 
-export async function saveSettings(settings: Settings): Promise<void> {
-  if (!hasChromeStorage()) return;
-  const normalized = normalizeSettings(settings);
-  await chrome.storage.local.set({ [STORAGE_KEY]: normalized });
+/**
+ * Antrean tulis: Chrome tidak menjamin urutan selesai `storage.local.set`,
+ * jadi klik beruntun bisa membuat snapshot lama menang dan pengaturan
+ * terlihat "tidak live". Semua penulisan lewat satu antrean.
+ */
+let writeQueue: Promise<unknown> = Promise.resolve();
+
+function enqueue<T>(task: () => Promise<T>): Promise<T> {
+  const run = writeQueue.then(task);
+  writeQueue = run.catch(() => undefined);
+  return run;
 }
 
-export async function updateSettings(mutator: (current: Settings) => Settings): Promise<Settings> {
-  const current = await loadSettings();
-  const next = normalizeSettings(mutator(current));
-  await saveSettings(next);
-  return next;
+function writeDirect(settings: Settings): Promise<void> {
+  if (!hasChromeStorage()) return Promise.resolve();
+  const normalized = normalizeSettings(settings);
+  return chrome.storage.local.set({ [STORAGE_KEY]: normalized });
+}
+
+export function saveSettings(settings: Settings): Promise<void> {
+  return enqueue(() => writeDirect(settings));
+}
+
+export function updateSettings(mutator: (current: Settings) => Settings): Promise<Settings> {
+  return enqueue(async () => {
+    const current = await loadSettings();
+    const next = normalizeSettings(mutator(current));
+    await writeDirect(next);
+    return next;
+  });
 }
 
 export async function resetSettings(): Promise<Settings> {

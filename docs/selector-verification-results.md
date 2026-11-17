@@ -91,6 +91,10 @@ halaman platform kosong lalu diperiksa lewat CDP pada Brave yang sama.
 | Hover avatar (0.1.10) | avatar `pointer-events: none` di 6 platform | WhatsApp, Telegram, Instagram, Facebook, Threads, TikTok: ter-blur lalu terbuka saat kursor di atasnya, kembali kabur saat kursor pergi |
 | Hover dimatikan | opsi "Hover membuka item" OFF | avatar tetap ter-blur walau kursor di atasnya |
 | Beban pointermove | 120 zona avatar, 360 kejadian | 0,24 ms rata-rata per kejadian; pemindaian kotak dijalankan sekali per frame (~1,5 ms) |
+| Avatar bawaan WhatsApp (0.1.11) | baris dengan `[data-icon="default-group"]` | wrapper avatar ter-blur `blur(15px)` + `clip-path: inset(0 round 50%)`; ikon di dalamnya tidak dijadikan zona sendiri |
+| Halo blur (0.1.11) | avatar 96 px di latar `#0b0b0d` | piksel latar di luar lingkaran tetap murni `#0b0b0d` (tanpa glow); `clip-path` dilepas saat zona tidak lagi bergambar |
+| Menu zona per platform (0.1.11) | popup WhatsApp | 8 baris tanpa "Konten feed"; Facebook 9 baris; Telegram/Instagram/X/Threads/TikTok 8 baris |
+| Klik beruntun popup (0.1.11) | 6 switch diklik dalam satu putaran | storage = 5 zona terpilih + platform aktif; halaman langsung menampilkan 4 avatar ter-blur |
 
 Legenda status: `Lolos` / `Sebagian` / `Gagal` / `Belum dijalankan`.
 
