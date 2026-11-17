@@ -20,7 +20,7 @@ import { brandLogo } from '../components/logo.ts';
 import { createSegmented } from '../components/segmented.ts';
 import { createToggle } from '../components/toggle.ts';
 import { showToast } from '../components/toast.ts';
-import { SUPPORT_URL } from '../../shared/links.ts';
+import { RELEASES_URL, SUPPORT_URL } from '../../shared/links.ts';
 
 const LEVELS: readonly ProtectionLevel[] = ['normal', 'privacy', 'maximum'];
 
@@ -325,6 +325,25 @@ async function main(): Promise<void> {
     return link;
   };
 
+  const renderFoot = (): HTMLElement => {
+    // Tautan statis: ekstensi tidak melakukan permintaan jaringan sendiri.
+    // Versi terbaru terlihat langsung di halaman rilis; unduhan tetap manual.
+    const update = el('button', {
+      className: 'po-foot-link',
+      attrs: { type: 'button', title: 'Buka halaman rilis GitHub' },
+      text: `v${chrome.runtime.getManifest().version} · Cek update`,
+    });
+    update.addEventListener('click', () => {
+      void chrome.tabs.create({ url: RELEASES_URL });
+    });
+
+    return el('p', { className: 'po-foot' }, [
+      el('span', { text: 'Privasi lokal · Tanpa telemetri' }),
+      el('span', { className: 'po-foot-sep', text: '·' }),
+      update,
+    ]);
+  };
+
   const render = (): void => {
     clear(app);
     app.append(
@@ -335,10 +354,7 @@ async function main(): Promise<void> {
         renderZones(),
         renderAdvanced(),
         renderSupport(),
-        el('p', {
-          className: 'po-foot',
-          text: 'Privasi lokal · Tanpa telemetri',
-        }),
+        renderFoot(),
       ]),
     );
   };

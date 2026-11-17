@@ -81,7 +81,7 @@ Shielded dimuat sebagai **unpacked extension** (belum dipublikasikan di Web Stor
 
 ### Cara 1 — dari rilis (tanpa Node.js)
 
-1. Unduh `shielded-0.1.8.zip` dari [halaman Releases](https://github.com/Zwart04/Shielded/releases/latest).
+1. Unduh `shielded-0.1.9.zip` dari [halaman Releases](https://github.com/Zwart04/Shielded/releases/latest).
 2. Ekstrak zip ke folder tetap, misalnya `~/Shielded`.
 3. Buka `chrome://extensions` (juga berlaku di Brave, Edge, dan Vivaldi).
 4. Nyalakan **Mode developer** di kanan atas.
@@ -103,6 +103,17 @@ npm run build
 Lalu pada langkah 5 di atas, pilih folder **`dist/`**. Setelah mengubah kode, jalankan `npm run build` lagi dan klik **Muat ulang** pada kartu Shielded di `chrome://extensions`.
 
 > Folder `dist/` adalah hasil build. Jangan memilih folder akar proyek — folder itu tidak berisi `manifest.json`.
+
+### Memperbarui ekstensi
+
+Popup menampilkan versi yang terpasang di baris paling bawah, misalnya `v0.1.9 · Cek update`. Klik tautan itu untuk membuka [halaman rilis GitHub](https://github.com/Zwart04/Shielded/releases/latest); versi terbaru selalu ada di paling atas.
+
+Chrome tidak mengizinkan ekstensi *unpacked* memperbarui dirinya sendiri, jadi pembaruan tetap dua langkah manual:
+
+1. Unduh `shielded-<versi>.zip` terbaru, lalu ekstrak **menimpa folder lama** (bukan folder baru).
+2. Buka `chrome://extensions`, klik **Muat ulang** pada kartu Shielded.
+
+Preferensi tidak hilang: ID ekstensi diturunkan dari lokasi folder, jadi selama foldernya sama, setelan Anda tetap terbaca. Ekstensi tidak memeriksa versi sendiri dan tidak mengirim permintaan jaringan apa pun; tautan update hanya membuka tab browser biasa.
 
 ---
 
@@ -251,7 +262,7 @@ npm run build        # build ke dist/
 npm run typecheck    # TypeScript (aplikasi + tes)
 npm test             # 59 tes unit
 npm run verify:privacy  # audit bundle: tidak ada URL jaringan / src=
-npm run zip          # paket rilis shielded-0.1.8.zip
+npm run zip          # paket rilis shielded-0.1.9.zip
 ```
 
 ### Struktur proyek

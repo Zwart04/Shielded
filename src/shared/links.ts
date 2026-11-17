@@ -7,3 +7,4 @@ export const SUPPORT_LABEL = 'Buy me a coffee';
 export const SUPPORT_NOTE = 'Dukung pengembangan Shielded';
 
 export const REPO_URL = 'https://github.com/Zwart04/Shielded';
+export const RELEASES_URL = 'https://github.com/Zwart04/Shielded/releases/latest';
