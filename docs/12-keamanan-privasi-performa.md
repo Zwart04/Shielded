@@ -70,9 +70,10 @@ DOM sintetis 3.047 node di Brave (Linux), rata-rata 20 putaran.
 7. **Scroll memicu deteksi ulang:** listener `scroll` pasif (throttle 120 ms) supaya item yang baru masuk layar langsung dikaburkan tanpa menunggu heartbeat.
 8. **Tab latar berhenti:** deteksi keluar saat tab tersembunyi dan dijadwalkan ulang pada `visibilitychange`.
 9. **Hover tanpa `:hover`:** elemen ber-`pointer-events: none` (avatar TikTok/Instagram) tidak pernah menjadi target hover, jadi posisi kursor dipetakan ke kotak zona terkecil lewat `pickHovered`. Pemetaan di-coalesce dengan `requestAnimationFrame` dan dilewati saat kursor diam.
-10. **Halo blur dipotong:** zona bergambar mendapat `clip-path: inset(0 round <radius>)` sesuai `border-radius` elemen, jadi blur tidak memancar sebagai glow di luar bentuk aslinya. Nilai dilepas kembali saat zona berganti ke efek tutup atau saat handle dilepas.
-11. **Tulis pengaturan berurutan:** `saveSettings`/`updateSettings` melewati satu antrean karena Chrome tidak menjamin urutan selesai `storage.local.set`. Tanpa antrean, klik beruntun bisa membuat snapshot lama menang sehingga pengaturan tampak "tidak live".
-12. **Detach saat nonaktif:** observer, interval, dan listener dilepas ketika platform dimatikan; handle overlay dibersihkan.
+10. **Halo blur dipotong:** semua zona blur mendapat `clip-path` sesuai kotak elemennya (`inset(0)` untuk teks, `inset(0 round <radius>)` untuk avatar/media), jadi cahaya tidak memancar sebagai glow ke luar bentuk aslinya. Nilai dilepas kembali saat zona berganti ke efek tutup atau saat handle dilepas.
+11. **Turunan baris tidak bergantung zona baris utuh:** nama/preview/avatar diturunkan dari baris chat walau "Seluruh baris chat" dimatikan, karena selector platform bisa berhenti cocok (mis. nama hasil pencarian tanpa atribut `title`). Biaya: 0,26 ms per 130 baris.
+12. **Tulis pengaturan berurutan:** `saveSettings`/`updateSettings` melewati satu antrean karena Chrome tidak menjamin urutan selesai `storage.local.set`. Tanpa antrean, klik beruntun bisa membuat snapshot lama menang sehingga pengaturan tampak "tidak live".
+13. **Detach saat nonaktif:** observer, interval, dan listener dilepas ketika platform dimatikan; handle overlay dibersihkan.
 
 ## 12.7 Audit Privasi Otomatis
 

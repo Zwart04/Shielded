@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { clipForRadius, pickHovered, pruneCovered } from '../../src/core/effect-renderer.ts';
+import { clipForBox, pickHovered, pruneCovered } from '../../src/core/effect-renderer.ts';
 import type { ZoneId } from '../../src/shared/types.ts';
 
 function node(parent: Element | null = null): Element {
@@ -57,11 +57,12 @@ test('pickHovered memilih zona terkecil yang memuat kursor', () => {
   assert.equal(pickHovered([row, avatar], 500, 500), null);
 });
 
-test('clipForRadius memotong halo hanya pada elemen bersudut', () => {
-  assert.equal(clipForRadius('50%'), 'inset(0 round 50%)');
-  assert.equal(clipForRadius('18px'), 'inset(0 round 18px)');
-  assert.equal(clipForRadius('12px 12px 0px 0px'), 'inset(0 round 12px 12px 0px 0px)');
-  assert.equal(clipForRadius('0px'), null);
-  assert.equal(clipForRadius('0'), null);
-  assert.equal(clipForRadius(''), null);
+test('clipForBox menahan halo di dalam kotak elemen', () => {
+  assert.equal(clipForBox('50%'), 'inset(0 round 50%)');
+  assert.equal(clipForBox('18px'), 'inset(0 round 18px)');
+  assert.equal(clipForBox('12px 12px 0px 0px'), 'inset(0 round 12px 12px 0px 0px)');
+  // Teks tidak bersudut: tetap dipotong ke kotaknya, tanpa radius.
+  assert.equal(clipForBox('0px'), 'inset(0)');
+  assert.equal(clipForBox('0'), 'inset(0)');
+  assert.equal(clipForBox(''), 'inset(0)');
 });

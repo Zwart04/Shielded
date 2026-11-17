@@ -95,6 +95,10 @@ halaman platform kosong lalu diperiksa lewat CDP pada Brave yang sama.
 | Halo blur (0.1.11) | avatar 96 px di latar `#0b0b0d` | piksel latar di luar lingkaran tetap murni `#0b0b0d` (tanpa glow); `clip-path` dilepas saat zona tidak lagi bergambar |
 | Menu zona per platform (0.1.11) | popup WhatsApp | 8 baris tanpa "Konten feed"; Facebook 9 baris; Telegram/Instagram/X/Threads/TikTok 8 baris |
 | Klik beruntun popup (0.1.11) | 6 switch diklik dalam satu putaran | storage = 5 zona terpilih + platform aktif; halaman langsung menampilkan 4 avatar ter-blur |
+| Hasil pencarian (0.1.12) | level Privasi, baris tanpa `span[title]` | nama + preview + avatar ter-blur walau zona "Seluruh baris chat" mati (`#pane-side` 3 baris → 9 zona) |
+| Avatar tanpa `<img>` (0.1.12) | avatar digambar `background-image` dari class CSS | slot kotak 49 px terdeteksi lewat geometri, ter-blur `blur(15px)` + `inset(0px round 50%)` |
+| Halo teks (0.1.12) | teks terang 16 px di latar `#0b0b0d` | tanpa potong: cahaya menyebar 29 px untuk kotak 19 px; dengan `clip-path: inset(0)`: 21 px, sisa 1 px antialias |
+| Biaya turunan baris | 130 baris chat | 0,26 ms per pass untuk query nama/preview/avatar |
 
 Legenda status: `Lolos` / `Sebagian` / `Gagal` / `Belum dijalankan`.
 

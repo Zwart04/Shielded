@@ -10,8 +10,8 @@ interface ZoneHandle {
   overlay: HTMLDivElement | null;
   previousPosition: string | null;
   changedPosition: boolean;
-  /** Radius sudut elemen, dipakai memotong halo blur pada avatar/media. */
-  radiusClip: string | null;
+  /** Potongan kotak elemen, dipakai menahan halo blur agar tidak jadi glow. */
+  boxClip: string;
   previousClip: string;
   controller: AbortController;
 }
@@ -95,17 +95,17 @@ function needsDirectEffect(element: Element): boolean {
 }
 
 /**
- * Blur pada elemen membocorkan cahaya ke luar kotaknya (halo). Untuk avatar
- * bulat dan media, hasilnya terlihat seperti glow di latar gelap. Memotong
- * hasil filter dengan radius sudut elemen membuat blur tetap di dalam bentuk
- * aslinya. Kembalikan `null` bila elemen memang tidak bersudut.
+ * Blur memancarkan cahaya ke luar kotak elemen (halo), yang di latar gelap
+ * terbaca sebagai glow: paling kentara pada avatar bulat, tetapi teks terang
+ * juga mengaburkan latar di sekitarnya. Memotong hasil filter ke kotak elemen
+ * — dengan radius sudutnya bila ada — menahan semua cahaya di dalam bentuk
+ * aslinya.
  */
-export function clipForRadius(borderRadius: string): string | null {
+export function clipForBox(borderRadius: string): string {
   const value = borderRadius.trim();
-  if (!value) return null;
-  const parts = value.split(/\s+/);
-  if (parts.every((part) => /^0(px|%)?$/.test(part))) return null;
-  return `inset(0 round ${value})`;
+  const parts = value.split(/\s+/).filter(Boolean);
+  const flat = parts.length === 0 || parts.every((part) => /^0(px|%)?$/.test(part));
+  return flat ? 'inset(0)' : `inset(0 round ${value})`;
 }
 
 const LIGHT_COVER = '#f5f5f7';
@@ -296,7 +296,7 @@ export class EffectRenderer {
         overlay: null,
         previousPosition,
         changedPosition,
-        radiusClip: clipForRadius(style.borderRadius),
+        boxClip: clipForBox(style.borderRadius),
         previousClip: target.style.clipPath,
         controller,
       };
@@ -329,9 +329,7 @@ export class EffectRenderer {
       target.classList.add('psx-zone--blur');
       if (HEAVY_ZONES.has(zoneId)) target.classList.add('psx-zone--heavy');
       else if (HEAVY_MEDIA_ZONES.has(zoneId)) target.classList.add('psx-zone--heavy-media');
-      // Hanya zona bergambar: teks memakai kotak baris dan tidak perlu dipotong.
-      const shaped = HEAVY_ZONES.has(zoneId) || HEAVY_MEDIA_ZONES.has(zoneId);
-      this.setClip(handle, shaped ? handle.radiusClip : null);
+      this.setClip(handle, handle.boxClip);
       this.dropOverlay(handle);
       return;
     }

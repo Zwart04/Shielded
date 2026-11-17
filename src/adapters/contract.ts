@@ -74,6 +74,31 @@ const AVATAR_SELECTOR = [
   '[data-icon="default-user"]',
 ].join(', ');
 
+/**
+ * Slot foto profil yang tidak dikenali selector: foto bisa digambar lewat
+ * background-image dari stylesheet, canvas, atau role="img" tanpa <img>.
+ * Slot avatar selalu kotak kecil (32-96 px) di sisi kiri baris, jadi bentuk
+ * dan ukuran dipakai sebagai jaring pengaman.
+ */
+function findAvatarSlot(row: Element): Element | null {
+  const direct = row.querySelector(AVATAR_SELECTOR);
+  if (direct) return direct;
+  if (typeof row.querySelectorAll !== 'function') return null;
+
+  for (const element of row.querySelectorAll('div, span, canvas, picture, [role="img"]')) {
+    if (typeof element.getBoundingClientRect !== 'function') continue;
+    const rect = element.getBoundingClientRect();
+    if (rect.width < 32 || rect.height < 32) continue;
+    if (rect.width > 96 || rect.height > 96) continue;
+    if (Math.abs(rect.width - rect.height) > 8) continue;
+    if (element.querySelector('img, canvas, picture, [role="img"]')) return element;
+    if (typeof getComputedStyle !== 'function') continue;
+    const background = getComputedStyle(element).backgroundImage;
+    if (background && background.includes('url(')) return element;
+  }
+  return null;
+}
+
 /** Thumbnail media di dalam baris chat (bukan foto profil). */
 const MEDIA_PREVIEW_SELECTOR =
   '[data-testid="media-preview"], [class*="thumbnail" i], [class*="media-preview" i], video';
@@ -184,7 +209,7 @@ function deriveRowParts(rows: readonly Element[]): RowParts {
       named.find((element) => (element.textContent ?? '').trim().length > 0) ?? texts[0] ?? null;
     if (name) names.push(name);
 
-    const avatar = row.querySelector(AVATAR_SELECTOR);
+    const avatar = findAvatarSlot(row);
     if (avatar) avatars.push(avatar);
 
     // Thumbnail media: img/element bergambar di baris yang bukan avatar.
@@ -313,6 +338,17 @@ export function resolveDmScope(
   return null;
 }
 
+/**
+ * Baris chat untuk menurunkan nama/preview/avatar, walau zona baris utuh tidak
+ * ikut dilindungi. Selector eksplisit dulu, lalu jaring pengaman geometri.
+ */
+function listRows(adapter: PlatformAdapter, root: ParentNode): Element[] {
+  const explicit = resolveZone('chatList', adapter.selectors.chatList, root);
+  if (explicit) return explicit.elements;
+  const rows = findConversationRows(root);
+  return rows.length >= 3 ? rows : [];
+}
+
 export function detectChatArea(
   adapter: PlatformAdapter,
   root: ParentNode = document,
@@ -346,7 +382,13 @@ export function detectChatArea(
   const rowsWanted = (['names', 'chatPreview', 'avatars', 'mediaPreview'] as const).some((zone) =>
     wanted(zone),
   );
-  const parts = rowsWanted ? deriveRowParts(conversationList?.elements ?? []) : EMPTY_PARTS;
+  // Baris tetap dicari walau zona "Seluruh baris chat" dimatikan (bawaan level
+  // Privasi). Tanpa ini, nama/preview hanya bergantung pada selector platform,
+  // sehingga baris hasil pencarian — yang nama/preview-nya tanpa `title` —
+  // lolos tanpa blur.
+  const rowSource =
+    conversationList?.elements ?? (rowsWanted ? listRows(adapter, root) : []);
+  const parts = rowsWanted ? deriveRowParts(rowSource) : EMPTY_PARTS;
 
   const names = mergeZone('names', pick('names'), parts.names);
   const nameElements = names?.elements ?? [];
