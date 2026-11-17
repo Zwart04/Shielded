@@ -75,28 +75,25 @@ const AVATAR_SELECTOR = [
 ].join(', ');
 
 /**
- * Slot foto profil yang tidak dikenali selector: foto bisa digambar lewat
- * background-image dari stylesheet, canvas, atau role="img" tanpa <img>.
- * Slot avatar selalu kotak kecil (32-96 px) di sisi kiri baris, jadi bentuk
- * dan ukuran dipakai sebagai jaring pengaman.
+ * Slot foto profil. Avatar selalu kotak 32-96 px di sisi kiri baris, jadi
+ * bentuk dan posisi dipakai lebih dulu: itu menangkap avatar yang digambar
+ * lewat background-image dari stylesheet, ikon bawaan, atau cincin status
+ * yang membungkus foto. Selector hanya dipakai bila geometri tidak menemukan.
  */
 function findAvatarSlot(row: Element): Element | null {
-  const direct = row.querySelector(AVATAR_SELECTOR);
-  if (direct) return direct;
-  if (typeof row.querySelectorAll !== 'function') return null;
-
-  for (const element of row.querySelectorAll('div, span, canvas, picture, [role="img"]')) {
-    if (typeof element.getBoundingClientRect !== 'function') continue;
-    const rect = element.getBoundingClientRect();
-    if (rect.width < 32 || rect.height < 32) continue;
-    if (rect.width > 96 || rect.height > 96) continue;
-    if (Math.abs(rect.width - rect.height) > 8) continue;
-    if (element.querySelector('img, canvas, picture, [role="img"]')) return element;
-    if (typeof getComputedStyle !== 'function') continue;
-    const background = getComputedStyle(element).backgroundImage;
-    if (background && background.includes('url(')) return element;
+  if (typeof row.getBoundingClientRect !== 'function') return row.querySelector(AVATAR_SELECTOR);
+  const rowRect = row.getBoundingClientRect();
+  if (rowRect.width <= 0) return row.querySelector(AVATAR_SELECTOR);
+  let node: Element | null = row.firstElementChild;
+  for (let depth = 0; node && depth < 4; depth += 1) {
+    if (typeof node.getBoundingClientRect !== 'function') break;
+    const rect = node.getBoundingClientRect();
+    const square = rect.width >= 32 && rect.width <= 96 && Math.abs(rect.width - rect.height) <= 8;
+    const left = rect.left - rowRect.left;
+    if (square && left >= 0 && left <= 40) return node;
+    node = node.firstElementChild;
   }
-  return null;
+  return row.querySelector(AVATAR_SELECTOR);
 }
 
 /** Thumbnail media di dalam baris chat (bukan foto profil). */

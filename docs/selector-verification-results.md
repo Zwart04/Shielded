@@ -99,6 +99,8 @@ halaman platform kosong lalu diperiksa lewat CDP pada Brave yang sama.
 | Avatar tanpa `<img>` (0.1.12) | avatar digambar `background-image` dari class CSS | slot kotak 49 px terdeteksi lewat geometri, ter-blur `blur(15px)` + `inset(0px round 50%)` |
 | Halo teks (0.1.12) | teks terang 16 px di latar `#0b0b0d` | tanpa potong: cahaya menyebar 29 px untuk kotak 19 px; dengan `clip-path: inset(0)`: 21 px, sisa 1 px antialias |
 | Biaya turunan baris | 130 baris chat | 0,26 ms per pass untuk query nama/preview/avatar |
+| Slot avatar geometri (0.1.13) | 4 varian markup dalam satu daftar | cincin status (`svg`+`img`), ikon bawaan (`span[data-icon]`), `background-image` class, dan `<img>` biasa: keempatnya ter-blur `blur(15px)` + `inset(0px round 50%)` |
+| Potong bulat wrapper (0.1.13) | wrapper avatar tanpa `border-radius` | kotak 49x49 px tetap dipotong `50%` agar glow tidak bersudut |
 
 Legenda status: `Lolos` / `Sebagian` / `Gagal` / `Belum dijalankan`.
 

@@ -271,6 +271,15 @@ export class EffectRenderer {
 
     if (!handle) {
       const style = getComputedStyle(target);
+      const rect = target.getBoundingClientRect();
+      const boxClip = clipForBox(style.borderRadius);
+      // Avatar selalu bulat. Bila yang dipakai adalah wrapper tanpa radius
+      // (cincin status, ikon bawaan), potong bulat agar glow tidak bersudut.
+      const square = rect.width >= 32 && Math.abs(rect.width - rect.height) <= 8;
+      const clip =
+        zoneId === 'avatars' && boxClip === 'inset(0)' && square
+          ? 'inset(0 round 50%)'
+          : boxClip;
       const changedPosition = style.position === 'static';
       const previousPosition = changedPosition ? target.style.position : null;
       if (changedPosition) target.style.position = 'relative';
@@ -296,7 +305,7 @@ export class EffectRenderer {
         overlay: null,
         previousPosition,
         changedPosition,
-        boxClip: clipForBox(style.borderRadius),
+        boxClip: clip,
         previousClip: target.style.clipPath,
         controller,
       };
