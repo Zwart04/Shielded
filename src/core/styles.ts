@@ -67,10 +67,15 @@ img.psx-zone--blur,
   transition: opacity 120ms cubic-bezier(0.2, 0, 0, 1);
 }
 
-/* Reveal hanya item yang disorot. */
+/* Reveal hanya item yang disorot.
+ * Kelas psx-hovered dipasang lewat pointermove untuk elemen yang tidak bisa
+ * di-hover (pointer-events: none), mis. avatar TikTok/Instagram. */
 .psx-zone--blur:hover,
 .psx-zone--hide:hover,
 .psx-zone--direct.psx-zone--cover:hover,
+.psx-zone.psx-hovered.psx-zone--blur,
+.psx-zone.psx-hovered.psx-zone--hide,
+.psx-zone.psx-hovered.psx-zone--direct.psx-zone--cover,
 .psx-zone.psx-revealed.psx-zone--blur,
 .psx-zone.psx-revealed.psx-zone--hide,
 .psx-zone.psx-revealed.psx-zone--direct.psx-zone--cover {
@@ -79,9 +84,16 @@ img.psx-zone--blur,
 }
 
 .psx-zone--cover:hover > .psx-overlay,
+.psx-zone.psx-hovered.psx-zone--cover > .psx-overlay,
 .psx-zone.psx-revealed.psx-zone--cover > .psx-overlay,
 body.psx-reveal-all .psx-overlay {
   opacity: 0;
+}
+
+/* Item bersarang ikut terbuka bersama item induknya: avatar/media di dalam
+ * baris atau gelembung yang sedang disorot adalah bagian item yang sama. */
+body:not(.psx-hover-off):not(.psx-locked) .psx-zone:is(:hover, .psx-hovered) .psx-zone--blur {
+  filter: none;
 }
 
 body.psx-reveal-all .psx-zone--blur {
@@ -99,24 +111,32 @@ body.psx-reveal-all .psx-zone--hide {
 /* Hover reveal dimatikan / dikunci: tetap tertutup. */
 body.psx-hover-off .psx-zone--blur:hover,
 body.psx-locked .psx-zone--blur:hover,
+body.psx-hover-off .psx-zone.psx-hovered.psx-zone--blur,
+body.psx-locked .psx-zone.psx-hovered.psx-zone--blur,
 body.psx-locked .psx-zone.psx-revealed.psx-zone--blur {
   filter: blur(var(--psx-blur-eff));
 }
 
 body.psx-hover-off .psx-zone--hide:hover,
 body.psx-locked .psx-zone--hide:hover,
+body.psx-hover-off .psx-zone.psx-hovered.psx-zone--hide,
+body.psx-locked .psx-zone.psx-hovered.psx-zone--hide,
 body.psx-locked .psx-zone.psx-revealed.psx-zone--hide {
   opacity: 0;
 }
 
 body.psx-hover-off .psx-zone--direct.psx-zone--cover:hover,
 body.psx-locked .psx-zone--direct.psx-zone--cover:hover,
+body.psx-hover-off .psx-zone.psx-hovered.psx-zone--direct.psx-zone--cover,
+body.psx-locked .psx-zone.psx-hovered.psx-zone--direct.psx-zone--cover,
 body.psx-locked .psx-zone.psx-revealed.psx-zone--direct.psx-zone--cover {
   opacity: 0;
 }
 
 body.psx-hover-off .psx-zone--cover:hover > .psx-overlay,
 body.psx-locked .psx-zone--cover:hover > .psx-overlay,
+body.psx-hover-off .psx-zone.psx-hovered.psx-zone--cover > .psx-overlay,
+body.psx-locked .psx-zone.psx-hovered.psx-zone--cover > .psx-overlay,
 body.psx-locked .psx-zone.psx-revealed.psx-zone--cover > .psx-overlay {
   opacity: 1;
 }

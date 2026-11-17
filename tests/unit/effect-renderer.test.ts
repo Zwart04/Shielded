@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { pruneCovered } from '../../src/core/effect-renderer.ts';
+import { pickHovered, pruneCovered } from '../../src/core/effect-renderer.ts';
 import type { ZoneId } from '../../src/shared/types.ts';
 
 function node(parent: Element | null = null): Element {
@@ -38,4 +38,21 @@ test('pruneCovered tetap membuang elemen dari zona yang sama di dalam induknya',
   ]);
 
   assert.deepEqual([...pruneCovered(desired)], [inner]);
+});
+
+function box(left: number, top: number, width: number, height: number): Element {
+  return {
+    isConnected: true,
+    getBoundingClientRect: () =>
+      ({ left, top, width, height, right: left + width, bottom: top + height }) as DOMRect,
+  } as unknown as Element;
+}
+
+test('pickHovered memilih zona terkecil yang memuat kursor', () => {
+  const row = box(0, 0, 300, 60);
+  const avatar = box(8, 6, 44, 44);
+
+  assert.equal(pickHovered([row, avatar], 20, 20), avatar);
+  assert.equal(pickHovered([row, avatar], 200, 20), row);
+  assert.equal(pickHovered([row, avatar], 500, 500), null);
 });

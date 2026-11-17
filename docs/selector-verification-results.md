@@ -88,6 +88,9 @@ halaman platform kosong lalu diperiksa lewat CDP pada Brave yang sama.
 | Isi percakapan Threads | `/direct/inbox`, 526 kandidat | inbox + bubble + header + avatar ter-blur; label navigasi tidak |
 | Prioritas viewport | 400 pesan, tanpa scroll | 120 item dipakai, 13/13 item terlihat ter-blur |
 | Prioritas viewport | 400 pesan, scroll ke bawah | 14/14 item terlihat ter-blur (0.1.6: 0 karena di luar 120 pertama) |
+| Hover avatar (0.1.10) | avatar `pointer-events: none` di 6 platform | WhatsApp, Telegram, Instagram, Facebook, Threads, TikTok: ter-blur lalu terbuka saat kursor di atasnya, kembali kabur saat kursor pergi |
+| Hover dimatikan | opsi "Hover membuka item" OFF | avatar tetap ter-blur walau kursor di atasnya |
+| Beban pointermove | 120 zona avatar, 360 kejadian | 0,24 ms rata-rata per kejadian; pemindaian kotak dijalankan sekali per frame (~1,5 ms) |
 
 Legenda status: `Lolos` / `Sebagian` / `Gagal` / `Belum dijalankan`.
 

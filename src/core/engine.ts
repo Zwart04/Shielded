@@ -317,13 +317,19 @@ export class PrivacyEngine {
    * Opsi "buka semua saat aplikasi di-hover": begitu kursor bergerak di
    * dalam halaman, semua zona dibuka; keluar jendela, semuanya tertutup lagi.
    */
-  private readonly onPointerMove = (): void => {
+  private readonly onPointerMove = (event: PointerEvent): void => {
+    // Reveal bawaan memakai CSS :hover; ini menambal zona yang tidak bisa
+    // di-hover sama sekali (avatar dengan pointer-events: none).
+    if (!this.interactionLocked) {
+      this.renderer.hoverAt(event.clientX, event.clientY, event.target);
+    }
     if (!this.settings.unblurOnAppHover || this.interactionLocked) return;
     if (!this.renderer.isRevealAll()) this.renderer.setRevealAll(true);
     this.touchActivity();
   };
 
   private readonly onPointerLeave = (): void => {
+    this.renderer.clearHover();
     if (!this.settings.unblurOnAppHover) return;
     this.clearRevealTimer();
     this.renderer.setRevealAll(false);

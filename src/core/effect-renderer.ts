@@ -64,6 +64,29 @@ export function pruneCovered(desired: ReadonlyMap<Element, ZoneId>): Set<Element
 /** Elemen yang tidak bisa memuat overlay anak (mis. <img>) diberi efek langsung. */
 const DIRECT_TAGS = new Set(['IMG', 'INPUT', 'TEXTAREA', 'SELECT', 'SVG', 'VIDEO', 'IFRAME', 'CANVAS']);
 
+/**
+ * Zona terkecil yang memuat titik kursor, dipakai saat CSS `:hover` tidak bisa
+ * bekerja. Avatar di TikTok/Instagram kerap memakai `pointer-events: none`
+ * supaya klik diteruskan ke tautan induk; elemen seperti itu tidak pernah
+ * menjadi target hover, jadi posisi kursor dipetakan ke kotak zona.
+ */
+export function pickHovered(elements: Iterable<Element>, x: number, y: number): HTMLElement | null {
+  let best: HTMLElement | null = null;
+  let bestArea = Number.POSITIVE_INFINITY;
+  for (const element of elements) {
+    if (!element.isConnected) continue;
+    const rect = element.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) continue;
+    if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) continue;
+    const area = rect.width * rect.height;
+    if (area < bestArea) {
+      bestArea = area;
+      best = element as HTMLElement;
+    }
+  }
+  return best;
+}
+
 function needsDirectEffect(element: Element): boolean {
   return DIRECT_TAGS.has(element.tagName);
 }
@@ -130,6 +153,10 @@ export class EffectRenderer {
     instantReveal: false,
   };
   private revealAll = false;
+  private hovered: HTMLElement | null = null;
+  private hoverPoint: { x: number; y: number } | null = null;
+  private hoverPending: { x: number; y: number } | null = null;
+  private hoverFrame: number | null = null;
 
   constructor() {
     this.ensureStyle();
@@ -173,6 +200,7 @@ export class EffectRenderer {
     this.options = options;
     this.applyVariables();
     document.body?.classList.toggle('psx-hover-off', !options.hoverReveal);
+    if (!options.hoverReveal) this.clearHover();
     document.body?.classList.toggle('psx-instant', options.instantReveal);
 
     if (clickRevealChanged) {
@@ -311,9 +339,61 @@ export class EffectRenderer {
 
   private detach(handle: ZoneHandle): void {
     handle.controller.abort();
-    for (const cls of [...ZONE_CLASSES, 'psx-revealed']) handle.element.classList.remove(cls);
+    if (this.hovered === handle.element) this.hovered = null;
+    for (const cls of [...ZONE_CLASSES, 'psx-revealed', 'psx-hovered']) {
+      handle.element.classList.remove(cls);
+    }
     if (handle.overlay) handle.overlay.remove();
     if (handle.changedPosition) handle.element.style.position = handle.previousPosition ?? '';
+  }
+
+  /**
+   * Dipanggil dari pointermove. Bila kursor berada di atas elemen zona biasa,
+   * CSS `:hover` sudah cukup; jalur ini hanya menyelamatkan zona yang tidak
+   * bisa di-hover (pointer-events: none), mis. avatar.
+   */
+  hoverAt(x: number, y: number, target: EventTarget | null): void {
+    if (!this.options.hoverReveal) return;
+    if (target instanceof Element && target.closest('.psx-zone')) {
+      this.setHovered(null);
+      return;
+    }
+    // Kursor diam: kotak zona tidak berubah, tidak perlu membaca layout lagi.
+    if (this.hoverPoint && Math.abs(this.hoverPoint.x - x) < 2 && Math.abs(this.hoverPoint.y - y) < 2) {
+      return;
+    }
+    this.hoverPoint = { x, y };
+    this.hoverPending = { x, y };
+    // Satu putaran animasi per frame: pointermove bisa datang 120-240x/detik,
+    // sedangkan pembacaan kotak 120 zona butuh ~1,5 ms per putaran.
+    if (this.hoverFrame !== null) return;
+    this.hoverFrame = requestAnimationFrame(() => {
+      this.hoverFrame = null;
+      const point = this.hoverPending;
+      this.hoverPending = null;
+      if (!point) return;
+      this.setHovered(pickHovered(this.handles.keys(), point.x, point.y));
+    });
+  }
+
+  clearHover(): void {
+    this.cancelHoverFrame();
+    this.hoverPoint = null;
+    this.setHovered(null);
+  }
+
+  private cancelHoverFrame(): void {
+    if (this.hoverFrame === null) return;
+    cancelAnimationFrame(this.hoverFrame);
+    this.hoverFrame = null;
+    this.hoverPending = null;
+  }
+
+  private setHovered(element: HTMLElement | null): void {
+    if (this.hovered === element) return;
+    this.hovered?.classList.remove('psx-hovered');
+    this.hovered = element;
+    element?.classList.add('psx-hovered');
   }
 
   setRevealAll(value: boolean): void {
@@ -332,6 +412,9 @@ export class EffectRenderer {
   clear(): void {
     for (const handle of this.handles.values()) this.detach(handle);
     this.handles.clear();
+    this.hovered = null;
+    this.hoverPoint = null;
+    this.cancelHoverFrame();
     document.body?.classList.remove('psx-reveal-all', 'psx-locked');
     this.revealAll = false;
   }

@@ -50,6 +50,7 @@ Pernyataan ini harus muncul di halaman About dan deskripsi toko.
 | Pass selector zona pesan (1.556 node) | ≤ 10 ms | **3,2 ms** (sebelumnya 32,4 ms pada 3.047 node) |
 | Reapply per batch mutasi | ≤ 10 ms | ± 4 ms pada fixture yang sama |
 | Pemindaian elemen | ≤ 600 node, ≤ 120 item per zona | 600 node dipindai, 120 item dipakai |
+| Pemetaan hover (pointermove) | ≤ 1 putaran per frame | 0,24 ms per kejadian; pemindaian 120 kotak hanya sekali per frame (~1,5 ms) |
 | Cakupan daftar panjang | Item di layar selalu terlindungi | 400 pesan: 120 dipakai, 14/14 item terlihat ter-blur setelah scroll |
 | CPU saat tab hidden | ~0 | 0 — deteksi langsung keluar saat `visibilityState === 'hidden'` |
 | Ukuran content script | ≤ 60 KB | 48 KB (`dist/content.js`) |
@@ -68,7 +69,8 @@ DOM sintetis 3.047 node di Brave (Linux), rata-rata 20 putaran.
 6. **Idempoten:** class tidak ditulis ulang bila zona dan efeknya sama, sehingga tidak ada style recalc tiap 120 ms.
 7. **Scroll memicu deteksi ulang:** listener `scroll` pasif (throttle 120 ms) supaya item yang baru masuk layar langsung dikaburkan tanpa menunggu heartbeat.
 8. **Tab latar berhenti:** deteksi keluar saat tab tersembunyi dan dijadwalkan ulang pada `visibilitychange`.
-9. **Detach saat nonaktif:** observer, interval, dan listener dilepas ketika platform dimatikan; handle overlay dibersihkan.
+9. **Hover tanpa `:hover`:** elemen ber-`pointer-events: none` (avatar TikTok/Instagram) tidak pernah menjadi target hover, jadi posisi kursor dipetakan ke kotak zona terkecil lewat `pickHovered`. Pemetaan di-coalesce dengan `requestAnimationFrame` dan dilewati saat kursor diam.
+10. **Detach saat nonaktif:** observer, interval, dan listener dilepas ketika platform dimatikan; handle overlay dibersihkan.
 
 ## 12.7 Audit Privasi Otomatis
 
