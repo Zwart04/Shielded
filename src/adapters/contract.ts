@@ -75,25 +75,49 @@ const AVATAR_SELECTOR = [
 ].join(', ');
 
 /**
- * Slot foto profil. Avatar selalu kotak 32-96 px di sisi kiri baris, jadi
- * bentuk dan posisi dipakai lebih dulu: itu menangkap avatar yang digambar
- * lewat background-image dari stylesheet, ikon bawaan, atau cincin status
- * yang membungkus foto. Selector hanya dipakai bila geometri tidak menemukan.
+ * Slot foto profil. Avatar selalu kotak kecil (32-64 px) di sisi kiri baris,
+ * jadi geometri dipakai lebih dulu: itu menangkap avatar yang digambar lewat
+ * background-image dari stylesheet, ikon bawaan, atau cincin status yang
+ * membungkus foto. Selector hanya dipakai bila geometri tidak menemukan.
+ *
+ * Batas 64 px penting: pembungkus baris setinggi 72 px juga persegi, dan
+ * memblur pembungkus itu menghasilkan bulatan besar yang menutupi seluruh
+ * baris, bukan hanya foto.
  */
+const AVATAR_MIN = 32;
+const AVATAR_MAX = 64;
+const AVATAR_SCAN = 14;
+
 function findAvatarSlot(row: Element): Element | null {
   if (typeof row.getBoundingClientRect !== 'function') return row.querySelector(AVATAR_SELECTOR);
   const rowRect = row.getBoundingClientRect();
   if (rowRect.width <= 0) return row.querySelector(AVATAR_SELECTOR);
-  let node: Element | null = row.firstElementChild;
-  for (let depth = 0; node && depth < 4; depth += 1) {
-    if (typeof node.getBoundingClientRect !== 'function') break;
+  if (typeof row.querySelectorAll !== 'function') return null;
+
+  let best: Element | null = null;
+  let bestLeft = Number.POSITIVE_INFINITY;
+  let bestSize = 0;
+  const nodes = row.querySelectorAll('*');
+  const limit = Math.min(nodes.length, AVATAR_SCAN);
+
+  for (let index = 0; index < limit; index += 1) {
+    const node = nodes[index]!;
+    if (typeof node.getBoundingClientRect !== 'function') continue;
     const rect = node.getBoundingClientRect();
-    const square = rect.width >= 32 && rect.width <= 96 && Math.abs(rect.width - rect.height) <= 8;
+    if (rect.width < AVATAR_MIN || rect.width > AVATAR_MAX) continue;
+    if (Math.abs(rect.width - rect.height) > 8) continue;
     const left = rect.left - rowRect.left;
-    if (square && left >= 0 && left <= 40) return node;
-    node = node.firstElementChild;
+    if (left < 0 || left > 40) continue;
+    // Kandidat paling kiri menang; bila sama, ambil yang terluar (lebih besar)
+    // supaya cincin dan ikon ikut terbawa, bukan hanya foto di dalamnya.
+    if (left < bestLeft - 1 || (Math.abs(left - bestLeft) <= 1 && rect.width > bestSize)) {
+      best = node;
+      bestLeft = left;
+      bestSize = rect.width;
+    }
   }
-  return row.querySelector(AVATAR_SELECTOR);
+
+  return best ?? row.querySelector(AVATAR_SELECTOR);
 }
 
 /** Thumbnail media di dalam baris chat (bukan foto profil). */

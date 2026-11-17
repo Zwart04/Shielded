@@ -101,6 +101,8 @@ halaman platform kosong lalu diperiksa lewat CDP pada Brave yang sama.
 | Biaya turunan baris | 130 baris chat | 0,26 ms per pass untuk query nama/preview/avatar |
 | Slot avatar geometri (0.1.13) | 4 varian markup dalam satu daftar | cincin status (`svg`+`img`), ikon bawaan (`span[data-icon]`), `background-image` class, dan `<img>` biasa: keempatnya ter-blur `blur(15px)` + `inset(0px round 50%)` |
 | Potong bulat wrapper (0.1.13) | wrapper avatar tanpa `border-radius` | kotak 49x49 px tetap dipotong `50%` agar glow tidak bersudut |
+| Batas ukuran slot (0.1.14) | baris dengan pembungkus 72x72 px | pembungkus dilewati, avatar 49 px di dalamnya yang ter-blur (tidak ada bulatan besar menutupi baris) |
+| Biaya pencarian slot | 4 baris x 14 node | 0,015 ms per baris (130 baris ± 2 ms per pass) |
 
 Legenda status: `Lolos` / `Sebagian` / `Gagal` / `Belum dijalankan`.
 
