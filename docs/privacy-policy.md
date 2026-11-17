@@ -1,6 +1,6 @@
 # Kebijakan Privasi — Shielded
 
-> **Berlaku sejak 16 November 2026.** Berlaku untuk Shielded 0.1.7 dan versi sesudahnya.
+> **Berlaku sejak 16 November 2026.** Berlaku untuk Shielded 0.1.8 dan versi sesudahnya.
 
 ## 1. Ringkasan
 

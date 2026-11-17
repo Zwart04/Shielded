@@ -2,14 +2,18 @@
 
 **Privasi visual untuk web chat.** Sembunyikan nama, foto profil, preview pesan, isi percakapan, media, dan kotak ketik dari layar — lalu buka satu per satu saat Anda benar-benar perlu melihatnya.
 
+[![Rilis](https://img.shields.io/github/v/release/Zwart04/Shielded?style=flat-square)](https://github.com/Zwart04/Shielded/releases/latest)
 ![Manifest V3](https://img.shields.io/badge/Manifest-V3-4c8bf5?style=flat-square)
 ![Chrome 110+](https://img.shields.io/badge/Chrome-110%2B-1f9d55?style=flat-square)
 ![7 platform](https://img.shields.io/badge/platform-7-8b5cf6?style=flat-square)
 ![Tanpa telemetri](https://img.shields.io/badge/telemetri-tidak%20ada-c98a52?style=flat-square)
+[![Lisensi: GPL v3](https://img.shields.io/badge/lisensi-GPL--3.0-2f6f4e?style=flat-square)](LICENSE)
 
 Shielded bekerja **per item**, bukan memblur seluruh halaman. Nama kontak, avatar, preview, gelembung pesan, dan kotak ketik masing-masing bisa diatur. Saat kursor diarahkan ke satu item, hanya item itu yang terbuka — sisanya tetap terlindungi.
 
 Semua pemrosesan terjadi di perangkat Anda. Tidak ada server, akun, atau telemetri.
+
+<a href="https://tako.id/Zwart04/gift"><img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-%E2%98%95%20lewat%20Tako-FFDD00?style=for-the-badge&labelColor=1f1f1f" alt="Buy me a coffee lewat Tako" height="42"></a>
 
 <br>
 
@@ -34,6 +38,7 @@ Semua pemrosesan terjadi di perangkat Anda. Tidak ada server, akun, atau telemet
 - [Pengembangan](#pengembangan)
 - [Status Verifikasi](#status-verifikasi)
 - [Dokumentasi](#dokumentasi)
+- [Lisensi](#lisensi)
 
 ---
 
@@ -76,7 +81,7 @@ Shielded dimuat sebagai **unpacked extension** (belum dipublikasikan di Web Stor
 
 ### Cara 1 — dari rilis (tanpa Node.js)
 
-1. Unduh `shielded-0.1.7.zip` dari [halaman Releases](https://github.com/Zwart04/Shielded/releases/latest).
+1. Unduh `shielded-0.1.8.zip` dari [halaman Releases](https://github.com/Zwart04/Shielded/releases/latest).
 2. Ekstrak zip ke folder tetap, misalnya `~/Shielded`.
 3. Buka `chrome://extensions` (juga berlaku di Brave, Edge, dan Vivaldi).
 4. Nyalakan **Mode developer** di kanan atas.
@@ -196,7 +201,9 @@ Chrome tidak mengizinkan ekstensi memetakan ulang pintasan secara programatik. G
 
 Shielded gratis, tanpa iklan, dan tanpa telemetri. Jika ekstensi ini membantu, Anda bisa mentraktir kopi lewat Tako:
 
-[☕ **Buy me a coffee**](https://tako.id/Zwart04/gift)
+<a href="https://tako.id/Zwart04/gift"><img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-%E2%98%95%20lewat%20Tako-FFDD00?style=for-the-badge&labelColor=1f1f1f" alt="Buy me a coffee lewat Tako" height="42"></a>
+
+Atau buka langsung: [tako.id/Zwart04/gift](https://tako.id/Zwart04/gift).
 
 Dukungan bersifat opsional dan tidak membuka fitur tambahan. Tautan juga tersedia sebagai kartu di bagian bawah popup.
 
@@ -244,7 +251,7 @@ npm run build        # build ke dist/
 npm run typecheck    # TypeScript (aplikasi + tes)
 npm test             # 59 tes unit
 npm run verify:privacy  # audit bundle: tidak ada URL jaringan / src=
-npm run zip          # paket rilis shielded-0.1.7.zip
+npm run zip          # paket rilis shielded-0.1.8.zip
 ```
 
 ### Struktur proyek
@@ -315,3 +322,11 @@ Hasil lengkap: [Hasil Verifikasi Selector](docs/selector-verification-results.md
 3. **Least privilege** — `storage` + host permission platform.
 4. **Fail-open untuk situs** — proteksi boleh gagal, situs tidak boleh rusak.
 5. **Jujur soal batasan** — blur bukan enkripsi.
+
+---
+
+## Lisensi
+
+Shielded didistribusikan di bawah **GNU General Public License v3.0**. Teks lengkap ada di [LICENSE](LICENSE).
+
+Artinya: Anda bebas memakai, mempelajari, dan memodifikasi Shielded, dengan syarat versi turunan tetap terbuka di bawah lisensi yang sama. Perangkat lunak ini disediakan **tanpa garansi** apa pun, termasuk jaminan kelayakan untuk tujuan tertentu.
