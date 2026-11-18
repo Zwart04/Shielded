@@ -7,6 +7,7 @@ Dokumen ini menjelaskan setiap izin yang diminta Shielded, alasannya, dan mengap
 | Izin | Jenis | Wajib | Alasan satu kalimat |
 |---|---|---|---|
 | `storage` | API permission | Ya | Menyimpan preferensi tampilan secara lokal |
+| `scripting` | API permission | Ya | Menyuntikkan content script sendiri ke tab yang sudah terbuka saat ekstensi dipasang/di-reload |
 | Host permission 19 pola URL (7 platform) | Host permission | Ya | Menjalankan skrip visual di platform yang didukung |
 | `commands` | Manifest key | Ya | Mendaftarkan pintasan keyboard |
 
@@ -46,13 +47,19 @@ Daftar domain:
 
 - `<all_urls>` → bertentangan dengan least privilege dan memicu review ketat.
 - `activeTab` saja → membutuhkan klik pengguna setiap kali; tidak cocok untuk proteksi otomatis.
-- `scripting` → tidak diperlukan karena content script dideklarasikan di manifest.
+- Tanpa `scripting` (hanya content script deklaratif) → tab yang sudah terbuka sebelum ekstensi dipasang tidak pernah mendapat skrip sampai halaman di-refresh; pengguna melihat proteksi "tidak live". Opsi "coba refresh tab" ditolak karena mengganggu dan bisa menghilangkan status halaman.
 
 ### 2.3 `commands`
 
 **Dipakai untuk:** mendaftarkan shortcut toggle dan reveal.
 
 **Batasan [Fakta]:** Chrome tidak mengizinkan ekstensi memetakan ulang shortcut secara programatik; pengguna mengubahnya di `chrome://extensions/shortcuts`.
+
+### 2.4 `scripting`
+
+**Dipakai untuk:** satu hal saja — memanggil `chrome.scripting.executeScript` dengan berkas `content.js` milik ekstensi pada tab platform yang sudah terbuka, saat ekstensi baru dipasang/di-reload. Guard `__psxBooted` membuat penyuntikan berulang tidak menggandakan listener.
+
+**Tidak dipakai untuk:** menyuntik skrip dari jaringan, mengeksekusi kode dinamis (`eval`/`new Function` dilarang oleh audit), atau membaca tab di luar 19 pola host yang diminta.
 
 ## 3. Izin yang Sengaja Tidak Diminta
 

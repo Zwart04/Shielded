@@ -5,7 +5,9 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = path.join(ROOT, 'dist');
 
-const ALLOWED_PERMISSIONS = new Set(['storage']);
+// `scripting` hanya dipakai menyuntik content.js ke tab yang sudah terbuka
+// saat ekstensi baru dipasang/di-reload, supaya tidak perlu refresh halaman.
+const ALLOWED_PERMISSIONS = new Set(['storage', 'scripting']);
 const EXPECTED_HOSTS = new Set([
   'web.whatsapp.com',
   'web.telegram.org',

@@ -13,14 +13,15 @@ import {
 } from '../../shared/defaults.ts';
 import { PLATFORM_IDS, PLATFORM_LABELS, platformFromUrl } from '../../shared/platform-ids.ts';
 import { supportedZones } from '../../adapters/registry.ts';
-import { loadSettings, saveSettings, updateSettings } from '../../config-store/storage.ts';
-import { activeTabUrl, applyTheme, clear, el } from '../components/dom.ts';
+import { loadSettings, saveSettings } from '../../config-store/storage.ts';
+import { activeTab, applyTheme, clear, el } from '../components/dom.ts';
 import { icon, platformIcon, type IconName } from '../components/icons.ts';
 import { brandLogo } from '../components/logo.ts';
 import { createSegmented } from '../components/segmented.ts';
 import { createToggle } from '../components/toggle.ts';
 import { showToast } from '../components/toast.ts';
 import { RELEASES_URL, SUPPORT_URL } from '../../shared/links.ts';
+import type { RuntimeMessage } from '../../shared/messaging.ts';
 
 const LEVELS: readonly ProtectionLevel[] = ['normal', 'privacy', 'maximum'];
 
@@ -63,9 +64,17 @@ async function main(): Promise<void> {
   let selected: PlatformId = 'whatsapp';
 
   try {
-    const [url, stored] = await Promise.all([activeTabUrl(), loadSettings()]);
+    const [tab, stored] = await Promise.all([activeTab(), loadSettings()]);
     settings = stored;
-    const onSite = url ? platformFromUrl(url) : null;
+    const onSite = tab.url ? platformFromUrl(tab.url) : null;
+    // Tab yang sudah terbuka saat ekstensi baru dipasang/di-reload belum punya
+    // content script. Suntik sekarang supaya switch langsung berefek tanpa
+    // harus refresh halaman. Guard `__psxBooted` membuat ini aman diulang.
+    if (onSite && tab.id != null) {
+      void chrome.scripting
+        ?.executeScript({ target: { tabId: tab.id }, files: ['content.js'] })
+        .catch(() => undefined);
+    }
     selected =
       onSite ??
       PLATFORM_IDS.find((id) => settings.platforms[id].enabled) ??
@@ -93,9 +102,13 @@ async function main(): Promise<void> {
   const persist = (next: Settings): void => {
     settings = next;
     render();
-    // Tulis langsung, tanpa baca ulang: popup bisa ditutup sebelum rantai
-    // baca-tulis selesai, dan klik beruntun tidak boleh saling menimpa.
-    void saveSettings(next).catch(() => showToast('Gagal menyimpan pengaturan.'));
+    // Popup bisa ditutup sebelum penulisan selesai, dan konteks popup ikut
+    // dimatikan. Titipkan ke service worker supaya tulisan tetap jalan;
+    // cadangan langsung hanya dipakai bila worker tidak menjawab.
+    void chrome.runtime
+      .sendMessage({ type: 'save-settings', settings: next } satisfies RuntimeMessage)
+      .catch(() => saveSettings(next))
+      .catch(() => showToast('Gagal menyimpan pengaturan.'));
   };
 
   const patchPlatform = (id: PlatformId, patch: Partial<Settings['platforms'][PlatformId]>): void => {
@@ -125,10 +138,8 @@ async function main(): Promise<void> {
     );
     themeButton.addEventListener('click', () => {
       const next = { ...settings, theme: toDark ? ('dark' as const) : ('light' as const) };
-      settings = next;
       applyTheme(next.theme);
-      render();
-      void updateSettings(() => next).catch(() => showToast('Gagal menyimpan tema.'));
+      persist(next);
     });
 
     return el('header', { className: 'po-head' }, [

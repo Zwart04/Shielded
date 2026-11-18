@@ -73,8 +73,10 @@ DOM sintetis 3.047 node di Brave (Linux), rata-rata 20 putaran.
 10. **Halo blur dipotong:** semua zona blur mendapat `clip-path` sesuai kotak elemennya (`inset(0)` untuk teks, `inset(0 round <radius>)` untuk avatar/media), jadi cahaya tidak memancar sebagai glow ke luar bentuk aslinya. Nilai dilepas kembali saat zona berganti ke efek tutup atau saat handle dilepas.
 11. **Slot avatar dari geometri:** avatar dicari sebagai kotak 32-64 px paling kiri dalam baris, maksimum 14 node pertama. Batas 64 px mencegah pembungkus baris (72 px) ikut ter-blur dan tampil sebagai bulatan besar; toleransi sisi 3 px mencegah avatar tampak lonjong setelah dipotong bulat. Ini menangkap cincin status, ikon bawaan, dan `background-image` dari stylesheet tanpa `getComputedStyle` per node; selector hanya cadangan bila baris tidak punya layout. Biaya 0,015 ms per baris.
 12. **Turunan baris tidak bergantung zona baris utuh:** nama/preview/avatar diturunkan dari baris chat walau "Seluruh baris chat" dimatikan, karena selector platform bisa berhenti cocok (mis. nama hasil pencarian tanpa atribut `title`). Biaya: 0,26 ms per 130 baris.
-13. **Tulis pengaturan berurutan:** `saveSettings`/`updateSettings` melewati satu antrean karena Chrome tidak menjamin urutan selesai `storage.local.set`. Tanpa antrean, klik beruntun bisa membuat snapshot lama menang sehingga pengaturan tampak "tidak live".
-14. **Detach saat nonaktif:** observer, interval, dan listener dilepas ketika platform dimatikan; handle overlay dibersihkan.
+13. **Tulis lewat service worker:** popup bisa ditutup sebelum `storage.local.set` selesai, dan konteks popup ikut dimatikan. Penulisan dititipkan ke service worker lewat pesan `save-settings`; popup hanya menulis sendiri bila worker tidak menjawab.
+14. **Suntik ke tab lama:** saat ekstensi dipasang/di-reload, `chrome.scripting.executeScript` menyuntik `content.js` ke tab platform yang sudah terbuka. Tanpa ini blur baru muncul setelah refresh manual.
+15. **Tulis pengaturan berurutan:** `saveSettings`/`updateSettings` melewati satu antrean karena Chrome tidak menjamin urutan selesai `storage.local.set`. Tanpa antrean, klik beruntun bisa membuat snapshot lama menang sehingga pengaturan tampak "tidak live".
+16. **Detach saat nonaktif:** observer, interval, dan listener dilepas ketika platform dimatikan; handle overlay dibersihkan.
 
 ## 12.7 Audit Privasi Otomatis
 

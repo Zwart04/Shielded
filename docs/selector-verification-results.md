@@ -105,6 +105,9 @@ halaman platform kosong lalu diperiksa lewat CDP pada Brave yang sama.
 | Biaya pencarian slot | 4 baris x 14 node | 0,015 ms per baris (130 baris ± 2 ms per pass) |
 | Hover per pesan Telegram (0.1.15) | WebK tanpa `#column-center`, 3 gelembung | ketiganya ter-blur; hover gelembung 1 hanya membuka gelembung 1, dua lainnya tetap `blur(5px)` |
 | Avatar lonjong Telegram (0.1.15) | pembungkus 54x62 px berisi foto 48 px | pembungkus dilewati; foto ter-blur `blur(15px)` + `inset(0px round 50%)`, tidak lonjong |
+| Suntik ke tab lama (0.1.16) | `chrome.scripting.executeScript` dari popup | `ok`; hanya satu `#psx-style` (tidak menggandakan content script) |
+| Aktifkan tanpa refresh (0.1.16) | platform mati → switch popup diklik | 12 zona muncul di halaman dalam < 1 detik tanpa reload |
+| Popup ditutup seketika (0.1.16) | klik switch lalu `window.close()` | pengaturan tetap tersimpan (`enabled: true`) karena ditulis service worker |
 
 Legenda status: `Lolos` / `Sebagian` / `Gagal` / `Belum dijalankan`.
 

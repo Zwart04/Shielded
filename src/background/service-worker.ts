@@ -1,6 +1,6 @@
 import type { PlatformId, Settings } from '../shared/types.ts';
 import type { RuntimeMessage } from '../shared/messaging.ts';
-import { platformFromUrl } from '../shared/platform-ids.ts';
+import { CONTENT_MATCH_PATTERNS, platformFromUrl } from '../shared/platform-ids.ts';
 import { loadSettings, onSettingsChanged, saveSettings } from '../config-store/storage.ts';
 
 const BADGE_COLOR = '#0071e3';
@@ -33,11 +33,32 @@ async function refreshActiveBadge(): Promise<void> {
   if (tab?.id) await refreshBadgeForTab(tab.id);
 }
 
+/**
+ * Tab yang sudah terbuka saat ekstensi dipasang/di-reload tidak punya content
+ * script (Chrome hanya menyuntik pada navigasi baru), jadi blur tidak muncul
+ * sampai halaman di-refresh. Suntik manual agar langsung hidup. Guard
+ * `__psxBooted` di content script membuat ini aman diulang.
+ */
+async function injectIntoOpenTabs(): Promise<void> {
+  if (!chrome.scripting?.executeScript) return;
+  const tabs = await chrome.tabs.query({ url: [...CONTENT_MATCH_PATTERNS] });
+  await Promise.all(
+    tabs.map((tab) =>
+      tab.id == null
+        ? undefined
+        : chrome.scripting
+            .executeScript({ target: { tabId: tab.id }, files: ['content.js'] })
+            .catch(() => undefined),
+    ),
+  );
+}
+
 chrome.runtime.onInstalled.addListener(() => {
   void (async () => {
     const settings = await loadSettings();
     await saveSettings(settings);
 
+    await injectIntoOpenTabs();
     await refreshActiveBadge();
   })();
 });
@@ -78,6 +99,9 @@ chrome.commands.onCommand.addListener((command) => {
 chrome.runtime.onMessage.addListener((message: RuntimeMessage, sender) => {
   if (message?.type === 'status' && sender.tab?.id != null) {
     setBadge(sender.tab.id, message.platform, message.protected);
+  }
+  if (message?.type === 'save-settings') {
+    void saveSettings(message.settings).catch(() => undefined);
   }
   return false;
 });

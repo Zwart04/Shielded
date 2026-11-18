@@ -1,6 +1,6 @@
 # Kebijakan Privasi — Shielded
 
-> **Berlaku sejak 16 November 2026.** Berlaku untuk Shielded 0.1.15 dan versi sesudahnya.
+> **Berlaku sejak 16 November 2026.** Berlaku untuk Shielded 0.1.16 dan versi sesudahnya.
 
 ## 1. Ringkasan
 
@@ -42,6 +42,7 @@ Ekstensi menjalankan skrip di halaman platform yang didukung untuk menambahkan l
 | Izin | Tujuan |
 |---|---|
 | `storage` | Menyimpan preferensi lokal |
+| `scripting` | Menyuntikkan `content.js` milik ekstensi sendiri ke tab platform yang sudah terbuka saat ekstensi baru dipasang atau diperbarui |
 | Host permission platform | Menjalankan skrip visual di situs yang didukung |
 | `commands` (manifest key, bukan izin tambahan) | Mendaftarkan pintasan keyboard |
 

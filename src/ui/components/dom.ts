@@ -41,15 +41,19 @@ export function applyTheme(preference: ThemePreference): void {
  * (mis. dari tab yang di-pin), tab aktif bukan situs web; dalam kasus itu
  * pakai tab web pertama di jendela yang sama agar platform tetap terdeteksi.
  */
-export async function activeTabUrl(): Promise<string | null> {
+export async function activeTab(): Promise<{ id: number | null; url: string | null }> {
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (tab?.url && /^https?:/i.test(tab.url)) return tab.url;
+    if (tab?.url && /^https?:/i.test(tab.url)) return { id: tab.id ?? null, url: tab.url };
 
     const tabs = await chrome.tabs.query({ currentWindow: true });
     const web = tabs.find((item) => item.url && /^https?:/i.test(item.url));
-    return web?.url ?? tab?.url ?? null;
+    return { id: web?.id ?? tab?.id ?? null, url: web?.url ?? tab?.url ?? null };
   } catch {
-    return null;
+    return { id: null, url: null };
   }
+}
+
+export async function activeTabUrl(): Promise<string | null> {
+  return (await activeTab()).url;
 }

@@ -7,6 +7,7 @@ export type RuntimeMessage =
   | { type: 'reveal-all' }
   | { type: 'panic' }
   | { type: 'status'; platform: PlatformId | null; protected: boolean }
+  | { type: 'save-settings'; settings: Settings }
   | { type: 'get-status' };
 
 export function sendToActiveTab(message: RuntimeMessage): void {
@@ -21,6 +22,11 @@ export function sendToActiveTab(message: RuntimeMessage): void {
       });
     })
     .catch(() => undefined);
+}
+
+/** Popup bisa ditutup kapan saja; tulis lewat service worker agar tidak hilang. */
+export function saveSettingsViaBackground(settings: Settings): Promise<void> {
+  return chrome.runtime.sendMessage({ type: 'save-settings', settings } satisfies RuntimeMessage);
 }
 
 export function platformName(id: PlatformId | null): string {

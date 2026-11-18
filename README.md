@@ -81,7 +81,7 @@ Shielded dimuat sebagai **unpacked extension** (belum dipublikasikan di Web Stor
 
 ### Cara 1 — dari rilis (tanpa Node.js)
 
-1. Unduh `shielded-0.1.15.zip` dari [halaman Releases](https://github.com/Zwart04/Shielded/releases/latest).
+1. Unduh `shielded-0.1.16.zip` dari [halaman Releases](https://github.com/Zwart04/Shielded/releases/latest).
 2. Ekstrak zip ke folder tetap, misalnya `~/Shielded`.
 3. Buka `chrome://extensions` (juga berlaku di Brave, Edge, dan Vivaldi).
 4. Nyalakan **Mode developer** di kanan atas.
@@ -106,7 +106,7 @@ Lalu pada langkah 5 di atas, pilih folder **`dist/`**. Setelah mengubah kode, ja
 
 ### Memperbarui ekstensi
 
-Popup menampilkan versi yang terpasang di baris paling bawah, misalnya `v0.1.15 · Cek update`. Klik tautan itu untuk membuka [halaman rilis GitHub](https://github.com/Zwart04/Shielded/releases/latest); versi terbaru selalu ada di paling atas.
+Popup menampilkan versi yang terpasang di baris paling bawah, misalnya `v0.1.16 · Cek update`. Klik tautan itu untuk membuka [halaman rilis GitHub](https://github.com/Zwart04/Shielded/releases/latest); versi terbaru selalu ada di paling atas.
 
 Chrome tidak mengizinkan ekstensi *unpacked* memperbarui dirinya sendiri, jadi pembaruan tetap dua langkah manual:
 
@@ -238,10 +238,11 @@ Shielded adalah **proteksi tampilan visual**, bukan enkripsi. Yang perlu diketah
 | Izin | Alasan |
 |---|---|
 | `storage` | Menyimpan preferensi secara lokal di perangkat |
+| `scripting` | Menyuntikkan `content.js` sendiri ke tab platform yang sudah terbuka saat ekstensi baru dipasang/di-reload, supaya tidak perlu refresh halaman |
 | Host permission 19 pola URL untuk 7 platform | Menjalankan content script visual hanya di domain platform yang didukung |
 | `commands` | Mendaftarkan pintasan keyboard |
 
-Yang **tidak** diminta: `<all_urls>`, `tabs`, `scripting`, `webRequest`, atau akses jaringan apa pun.
+Yang **tidak** diminta: `<all_urls>`, `tabs`, `webRequest`, atau akses jaringan apa pun. `scripting` hanya menyuntik berkas milik ekstensi sendiri; tidak ada skrip dari jaringan.
 
 - Tidak ada analitik, ikon pelacak, atau panggilan ke server.
 - Preferensi tidak disinkronkan ke cloud.
@@ -262,7 +263,7 @@ npm run build        # build ke dist/
 npm run typecheck    # TypeScript (aplikasi + tes)
 npm test             # 59 tes unit
 npm run verify:privacy  # audit bundle: tidak ada URL jaringan / src=
-npm run zip          # paket rilis shielded-0.1.15.zip
+npm run zip          # paket rilis shielded-0.1.16.zip
 ```
 
 ### Struktur proyek
@@ -330,7 +331,7 @@ Hasil lengkap: [Hasil Verifikasi Selector](docs/selector-verification-results.md
 
 1. **Local-first** — nol permintaan jaringan, nol telemetri.
 2. **Tidak menyentuh konten pesan** — hanya struktur DOM dan presentasi.
-3. **Least privilege** — `storage` + host permission platform.
+3. **Least privilege** — `storage`, `scripting` (menyuntik skrip sendiri), dan host permission platform.
 4. **Fail-open untuk situs** — proteksi boleh gagal, situs tidak boleh rusak.
 5. **Jujur soal batasan** — blur bukan enkripsi.
 
