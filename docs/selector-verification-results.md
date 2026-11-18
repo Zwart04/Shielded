@@ -103,6 +103,8 @@ halaman platform kosong lalu diperiksa lewat CDP pada Brave yang sama.
 | Potong bulat wrapper (0.1.13) | wrapper avatar tanpa `border-radius` | kotak 49x49 px tetap dipotong `50%` agar glow tidak bersudut |
 | Batas ukuran slot (0.1.14) | baris dengan pembungkus 72x72 px | pembungkus dilewati, avatar 49 px di dalamnya yang ter-blur (tidak ada bulatan besar menutupi baris) |
 | Biaya pencarian slot | 4 baris x 14 node | 0,015 ms per baris (130 baris ± 2 ms per pass) |
+| Hover per pesan Telegram (0.1.15) | WebK tanpa `#column-center`, 3 gelembung | ketiganya ter-blur; hover gelembung 1 hanya membuka gelembung 1, dua lainnya tetap `blur(5px)` |
+| Avatar lonjong Telegram (0.1.15) | pembungkus 54x62 px berisi foto 48 px | pembungkus dilewati; foto ter-blur `blur(15px)` + `inset(0px round 50%)`, tidak lonjong |
 
 Legenda status: `Lolos` / `Sebagian` / `Gagal` / `Belum dijalankan`.
 

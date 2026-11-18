@@ -15,16 +15,26 @@ export const telegramAdapter: PlatformAdapter = {
     messages: [
       {
         id: 'tg-bubble-webk',
-        selector: '#column-center .bubbles .bubble, #column-center .bubble',
+        selector: '#column-center .bubbles .bubble, #column-center .bubble, .bubbles .bubble',
         weight: 10,
         note: 'Satu gelembung pesan (WebK/Web A)',
         multi: true,
       },
       {
         id: 'tg-message-item',
-        selector: '#column-center .message-list-item, #column-center .Message',
+        selector: '#column-center .message-list-item, #column-center .Message, .Message',
         weight: 9,
         note: 'Satu pesan Web A',
+        multi: true,
+      },
+      {
+        // WebK terbaru tidak lagi memakai #column-center; tanpa selector ini
+        // yang terpilih adalah kontainer percakapan, sehingga hover satu pesan
+        // membuka seluruh isi chat.
+        id: 'tg-bubble-webk-root',
+        selector: '.message, .bubble',
+        weight: 8,
+        note: 'Gelembung pesan tanpa cakupan kolom',
         multi: true,
       },
       { id: 'tg-bubbles', selector: '#column-center .bubbles', weight: 6, note: 'Kontainer pesan WebK' },
@@ -40,7 +50,8 @@ export const telegramAdapter: PlatformAdapter = {
     chatList: [
       {
         id: 'tg-chat-item',
-        selector: '#column-left .chatlist a.chat-item, #column-left .chatlist .chat-item',
+        selector:
+          '#column-left .chatlist a.chat-item, #column-left .chatlist .chat-item, .chatlist .chat-item, .chatlist .row',
         weight: 9,
         note: 'Baris chat WebK',
         multi: true,
@@ -95,7 +106,7 @@ export const telegramAdapter: PlatformAdapter = {
       {
         id: 'tg-avatar',
         selector:
-          '#column-center .avatar img, .chat-info .avatar img, .chat-header img, #column-left .chat-item img, .chat-list .avatar img',
+          '#column-center .avatar img, .chat-info .avatar img, .chat-header img, #column-left .chat-item img, .chat-list .avatar img, .avatar img',
         weight: 7,
         note: 'Foto profil di header dan tiap baris chat',
         multi: true,

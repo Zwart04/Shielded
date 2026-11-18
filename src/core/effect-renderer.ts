@@ -275,7 +275,7 @@ export class EffectRenderer {
       const boxClip = clipForBox(style.borderRadius);
       // Avatar selalu bulat. Bila yang dipakai adalah wrapper tanpa radius
       // (cincin status, ikon bawaan), potong bulat agar glow tidak bersudut.
-      const square = rect.width >= 32 && Math.abs(rect.width - rect.height) <= 8;
+      const square = rect.width >= 32 && Math.abs(rect.width - rect.height) <= 2;
       const clip =
         zoneId === 'avatars' && boxClip === 'inset(0)' && square
           ? 'inset(0 round 50%)'

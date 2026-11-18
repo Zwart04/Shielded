@@ -105,7 +105,9 @@ function findAvatarSlot(row: Element): Element | null {
     if (typeof node.getBoundingClientRect !== 'function') continue;
     const rect = node.getBoundingClientRect();
     if (rect.width < AVATAR_MIN || rect.width > AVATAR_MAX) continue;
-    if (Math.abs(rect.width - rect.height) > 8) continue;
+    // Toleransi kecil: pembungkus cincin/status kadang beberapa px lebih
+    // tinggi. Longgar (8 px) membuat avatar tampak lonjong setelah dipotong.
+    if (Math.abs(rect.width - rect.height) > 3) continue;
     const left = rect.left - rowRect.left;
     if (left < 0 || left > 40) continue;
     // Kandidat paling kiri menang; bila sama, ambil yang terluar (lebih besar)
