@@ -2,6 +2,11 @@
 
 **Privasi visual untuk web chat.** Sembunyikan nama, foto profil, preview pesan, isi percakapan, media, dan kotak ketik dari layar — lalu buka satu per satu saat Anda benar-benar perlu melihatnya.
 
+> [!IMPORTANT]
+> **Jangan pakai tombol `Code` → `Download ZIP` untuk memasang.** Itu arsip kode sumber: tidak ada `manifest.json` di akarnya (yang ada `manifest.config.ts`) dan belum ada hasil build, jadi Chrome menolak dengan pesan **"Tidak dapat memuat manifes"**.
+>
+> Unduh paket siap pasang dari **[Releases](https://github.com/Zwart04/Shielded/releases/latest)**: `shielded-<versi>-chromium.zip` untuk Chrome/Edge/Brave/Opera/Vivaldi, atau `shielded-<versi>-firefox.zip` untuk Firefox. Keduanya sudah berisi `manifest.json` + seluruh berkas build.
+
 [![Rilis](https://img.shields.io/github/v/release/Zwart04/Shielded?style=flat-square)](https://github.com/Zwart04/Shielded/releases/latest)
 ![Manifest V3](https://img.shields.io/badge/Manifest-V3-4c8bf5?style=flat-square)
 ![Chrome 110+](https://img.shields.io/badge/Chrome-110%2B-1f9d55?style=flat-square)
@@ -80,6 +85,8 @@ Perubahan 0.1.3–0.1.7 (gating khusus route DM, panel Chats Facebook, isi perca
 ## Instalasi
 
 Shielded belum dipublikasikan di Chrome Web Store atau addons.mozilla.org. Ekstensi dimuat sebagai **unpacked** (Chromium) atau **temporary add-on** (Firefox).
+
+Arsip **`Code` → `Download ZIP`** dari halaman repo adalah kode sumber, bukan paket pasang. Paket yang bisa langsung dimuat hanya ada di halaman **Releases**.
 
 ### Kompatibilitas browser
 
