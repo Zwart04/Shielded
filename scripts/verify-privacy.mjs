@@ -53,7 +53,7 @@ async function walk(dir) {
   return files;
 }
 
-function checkManifest(manifest) {
+function checkManifest(manifest, browser) {
   const permissions = manifest.permissions ?? [];
   for (const permission of permissions) {
     if (!ALLOWED_PERMISSIONS.has(permission)) {
@@ -85,32 +85,56 @@ function checkManifest(manifest) {
     }
   }
 
-  if (manifest.background?.type !== 'module') {
-    findings.push('Background worker seharusnya bertipe module');
+  if (browser === 'firefox') {
+    if (!Array.isArray(manifest.background?.scripts)) {
+      findings.push('Firefox harus memakai background.scripts');
+    }
+    if (manifest.background?.service_worker) {
+      findings.push('Firefox tidak boleh memakai service worker');
+    }
+  } else if (manifest.background?.type !== 'module') {
+    findings.push('Background worker Chromium seharusnya bertipe module');
+  }
+
+  if (manifest.minimum_chrome_version && browser === 'firefox') {
+    findings.push('minimum_chrome_version tidak berlaku di Firefox');
   }
 }
 
 async function main() {
-  try {
-    await stat(DIST);
-  } catch {
-    console.error('Folder dist belum ada. Jalankan "npm run build" lebih dulu.');
-    process.exit(1);
-  }
+  const targets = [
+    { browser: 'chromium', dir: DIST },
+    { browser: 'firefox', dir: path.join(ROOT, 'dist-firefox') },
+  ];
 
-  const manifest = JSON.parse(await readFile(path.join(DIST, 'manifest.json'), 'utf8'));
-  checkManifest(manifest);
+  let scanned = 0;
+  let hostCount = 0;
 
-  const files = await walk(DIST);
-  for (const file of files) {
-    const source = await readFile(file, 'utf8');
-    for (const { regex, label } of FORBIDDEN_PATTERNS) {
-      if (regex.test(source)) {
-        findings.push(`${label} ditemukan di ${path.relative(DIST, file)}`);
-      }
+  for (const target of targets) {
+    try {
+      await stat(target.dir);
+    } catch {
+      if (target.browser === 'firefox') continue;
+      console.error('Folder dist belum ada. Jalankan "npm run build" lebih dulu.');
+      process.exit(1);
     }
-    if (/https?:\/\//.test(source) && /(?:fetch|src\s*=|href\s*=)/.test(source)) {
-      findings.push(`Referensi URL eksternal mencurigakan di ${path.relative(DIST, file)}`);
+
+    const manifest = JSON.parse(await readFile(path.join(target.dir, 'manifest.json'), 'utf8'));
+    checkManifest(manifest, target.browser);
+    hostCount = Math.max(hostCount, manifest.host_permissions?.length ?? 0);
+
+    const files = await walk(target.dir);
+    scanned += files.length;
+    for (const file of files) {
+      const source = await readFile(file, 'utf8');
+      for (const { regex, label } of FORBIDDEN_PATTERNS) {
+        if (regex.test(source)) {
+          findings.push(`${label} ditemukan di ${path.relative(target.dir, file)}`);
+        }
+      }
+      if (/https?:\/\//.test(source) && /(?:fetch|src\s*=|href\s*=)/.test(source)) {
+        findings.push(`Referensi URL eksternal mencurigakan di ${path.relative(target.dir, file)}`);
+      }
     }
   }
 
@@ -120,7 +144,7 @@ async function main() {
     process.exit(1);
   }
 
-  console.log(`Audit privasi lolos: ${files.length} file JS, ${manifest.host_permissions.length} host permission.`);
+  console.log(`Audit privasi lolos: ${scanned} file JS, ${hostCount} host permission.`);
 }
 
 await main();

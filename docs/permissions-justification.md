@@ -1,6 +1,6 @@
 # Justifikasi Izin Ekstensi
 
-Dokumen ini menjelaskan setiap izin yang diminta Shielded, alasannya, dan mengapa alternatif yang lebih luas ditolak. Dipakai untuk review Chrome Web Store dan audit internal.
+Dokumen ini menjelaskan setiap izin yang diminta Shielded, alasannya, dan mengapa alternatif yang lebih luas ditolak. Dipakai untuk review Chrome Web Store, review addons.mozilla.org (AMO), dan audit internal. Daftar izinnya identik untuk paket Chromium dan Firefox.
 
 ## 1. Ringkasan Izin
 
@@ -61,6 +61,14 @@ Daftar domain:
 
 **Tidak dipakai untuk:** menyuntik skrip dari jaringan, mengeksekusi kode dinamis (`eval`/`new Function` dilarang oleh audit), atau membaca tab di luar 19 pola host yang diminta.
 
+**Catatan Firefox:** `scripting.executeScript` hanya berhasil pada domain yang izin situsnya sudah diberikan pengguna. Bila belum, panggilan ditolak dan dibiarkan gagal secara senyap (proteksi tetap berjalan lewat content script deklaratif setelah halaman dimuat ulang).
+
+### 2.5 Host Permission di Firefox
+
+Firefox MV3 memperlakukan `host_permissions` sebagai izin *opt-in*: pengguna dapat memberi atau mencabutnya per situs, dan content script deklaratif tidak berjalan sebelum izin diberikan. Ini berbeda dari Chromium yang memberikannya saat instalasi.
+
+Konsekuensi yang diterima: pengguna Firefox mungkin perlu mengaktifkan akses situs satu kali lewat `about:addons` → Shielded → Izin. Proteksi tidak meminta izin tambahan di luar 19 pola yang sudah tercantum, dan tidak ada mekanisme `permissions.request()` otomatis.
+
 ## 3. Izin yang Sengaja Tidak Diminta
 
 | Izin | Alasan ditolak |
@@ -70,7 +78,6 @@ Daftar domain:
 | `cookies` | Tidak relevan dan berisiko |
 | `history` | Tidak relevan |
 | `downloads` | Tidak relevan |
-| `scripting` | Content script deklaratif sudah cukup |
 | `management` | Tidak relevan |
 | `notifications` | Tidak ada notifikasi sistem |
 | `idle` | Deteksi fokus cukup via `visibilitychange` / `window blur` |

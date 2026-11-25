@@ -77,6 +77,10 @@ DOM sintetis 3.047 node di Brave (Linux), rata-rata 20 putaran.
 14. **Suntik ke tab lama:** saat ekstensi dipasang/di-reload, `chrome.scripting.executeScript` menyuntik `content.js` ke tab platform yang sudah terbuka. Tanpa ini blur baru muncul setelah refresh manual.
 15. **Tulis pengaturan berurutan:** `saveSettings`/`updateSettings` melewati satu antrean karena Chrome tidak menjamin urutan selesai `storage.local.set`. Tanpa antrean, klik beruntun bisa membuat snapshot lama menang sehingga pengaturan tampak "tidak live".
 16. **Detach saat nonaktif:** observer, interval, dan listener dilepas ketika platform dimatikan; handle overlay dibersihkan.
+17. **Alias API lintas-browser:** bundel memakai `var __psxApi = globalThis.browser || globalThis.chrome` dan esbuild mengganti identifier `chrome`. Di Chromium tetap memakai `chrome`; di Firefox memakai `browser` yang berbasis Promise. Tidak ada `eval`, tidak ada deteksi user-agent, dan tidak ada percabangan kode per browser selain URL halaman pintasan.
+18. **CSP eksplisit:** kedua manifest mencantumkan `script-src 'self'; object-src 'self'` pada `extension_pages`, sehingga skrip inline dan kode jarak jauh ditolak browser.
+19. **Paket bertingkat:** zip rilis menaruh seluruh berkas di dalam satu folder `shielded-<versi>-<browser>` beserta `PASANG.txt`. Ini mencegah pengguna memilih folder induk atau file zip dan mendapat pesan "Tidak dapat memuat manifes".
+20. **Validasi sebelum rilis:** `npm run verify:package` memeriksa JSON manifest, versi terhadap `package.json`, seluruh berkas yang dirujuk (background, content script, popup, ikon), izin di luar daftar, host non-https, dan posisi `manifest.json` di dalam zip.
 
 ## 12.7 Audit Privasi Otomatis
 
@@ -120,3 +124,9 @@ Sebelum unggah ke Chrome Web Store:
 - Tidak ada remote code.
 
 Lihat `privacy-policy.md` dan `permissions-justification.md`.
+
+Untuk Firefox (AMO):
+
+- `browser_specific_settings.gecko.id` tetap dan versi minimum dinyatakan.
+- `data_collection_permissions.required: ["none"]` sesuai kenyataan: tidak ada data yang dikumpulkan.
+- Paket tidak memuat kode jarak jauh dan lolos `web-ext lint` tanpa error.

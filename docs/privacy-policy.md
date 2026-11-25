@@ -1,10 +1,10 @@
 # Kebijakan Privasi — Shielded
 
-> **Berlaku sejak 16 November 2026.** Berlaku untuk Shielded 0.1.16 dan versi sesudahnya.
+> **Berlaku sejak 25 November 2026.** Berlaku untuk Shielded 0.1.17 dan versi sesudahnya.
 
 ## 1. Ringkasan
 
-Shielded adalah ekstensi browser yang menyembunyikan elemen tertentu pada antarmuka pesan web. **Shielded tidak mengumpulkan, menyimpan, mengirim, atau menjual data pengguna.** Semua pemrosesan terjadi di perangkat pengguna.
+Shielded adalah ekstensi browser untuk Chromium (Chrome, Edge, Brave, Opera, Vivaldi) dan Firefox yang menyembunyikan elemen tertentu pada antarmuka pesan web. **Shielded tidak mengumpulkan, menyimpan, mengirim, atau menjual data pengguna.** Semua pemrosesan terjadi di perangkat pengguna.
 
 ## 2. Data yang Kami Simpan
 
@@ -47,6 +47,8 @@ Ekstensi menjalankan skrip di halaman platform yang didukung untuk menambahkan l
 | `commands` (manifest key, bukan izin tambahan) | Mendaftarkan pintasan keyboard |
 
 Tidak ada izin lain yang diminta. `commands` tidak menambah akses ke data atau situs; ia hanya mendaftarkan pintasan keyboard.
+
+Di Firefox, izin situs bersifat *opt-in*: pengguna dapat memberi atau mencabut akses per domain lewat `about:addons`, dan ekstensi tidak meminta izin di luar 19 pola domain yang tercantum.
 
 ## 6. Batasan Perlindungan
 

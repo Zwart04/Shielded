@@ -29,8 +29,12 @@ async function refreshBadgeForTab(tabId: number): Promise<void> {
 }
 
 async function refreshActiveBadge(): Promise<void> {
-  const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-  if (tab?.id) await refreshBadgeForTab(tab.id);
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+    if (tab?.id) await refreshBadgeForTab(tab.id);
+  } catch {
+    // Sebagian browser menolak query tanpa izin host; badge dilewati.
+  }
 }
 
 /**
@@ -41,25 +45,33 @@ async function refreshActiveBadge(): Promise<void> {
  */
 async function injectIntoOpenTabs(): Promise<void> {
   if (!chrome.scripting?.executeScript) return;
-  const tabs = await chrome.tabs.query({ url: [...CONTENT_MATCH_PATTERNS] });
-  await Promise.all(
-    tabs.map((tab) =>
-      tab.id == null
-        ? undefined
-        : chrome.scripting
-            .executeScript({ target: { tabId: tab.id }, files: ['content.js'] })
-            .catch(() => undefined),
-    ),
-  );
+  try {
+    const tabs = await chrome.tabs.query({ url: [...CONTENT_MATCH_PATTERNS] });
+    await Promise.all(
+      tabs.map((tab) =>
+        tab.id == null
+          ? undefined
+          : chrome.scripting
+              .executeScript({ target: { tabId: tab.id }, files: ['content.js'] })
+              .catch(() => undefined),
+      ),
+    );
+  } catch {
+    // Firefox MV3 dapat menolak query/injeksi sebelum izin situs diberikan.
+  }
 }
 
 chrome.runtime.onInstalled.addListener(() => {
   void (async () => {
-    const settings = await loadSettings();
-    await saveSettings(settings);
+    try {
+      const settings = await loadSettings();
+      await saveSettings(settings);
 
-    await injectIntoOpenTabs();
-    await refreshActiveBadge();
+      await injectIntoOpenTabs();
+      await refreshActiveBadge();
+    } catch {
+      // Jangan sampai pemasangan gagal karena satu langkah opsional.
+    }
   })();
 });
 

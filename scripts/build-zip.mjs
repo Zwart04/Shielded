@@ -2,9 +2,14 @@ import { mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import { deflateRawSync } from 'node:zlib';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { installationText, validateExtensionDir } from './validate-extension.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const DIST = path.join(ROOT, 'dist');
+const ARGS = process.argv.slice(2);
+const BROWSER = ARGS.includes('--browser=firefox') ? 'firefox' : 'chromium';
+const FLAT = ARGS.includes('--flat');
+const DIST = path.join(ROOT, BROWSER === 'firefox' ? 'dist-firefox' : 'dist');
+const PKG = JSON.parse(await readFile(path.join(ROOT, 'package.json'), 'utf8'));
 
 /* ---------- CRC32 ---------- */
 const CRC_TABLE = (() => {
@@ -129,27 +134,48 @@ async function exists(target) {
 }
 
 if (!(await exists(DIST))) {
-  console.error('Folder dist belum ada. Jalankan "npm run build" lebih dulu.');
+  console.error(
+    `Folder ${path.basename(DIST)} belum ada. Jalankan "npm run build${BROWSER === 'firefox' ? ':firefox' : ''}" lebih dulu.`,
+  );
   process.exit(1);
 }
 
-const manifest = JSON.parse(await readFile(path.join(DIST, 'manifest.json'), 'utf8'));
-const zipPath = path.join(ROOT, `shielded-${manifest.version}.zip`);
+const { manifest } = await validateExtensionDir(DIST, {
+  browser: BROWSER,
+  expectVersion: PKG.version,
+});
+
+const folder = `shielded-${manifest.version}-${BROWSER}`;
+const zipPath = path.join(ROOT, `${folder}.zip`);
 await rm(zipPath, { force: true });
 
 const files = await walk(DIST);
 const entries = [];
+
 for (const file of files) {
   const info = await stat(file.absolute);
   entries.push({
-    relative: file.relative,
+    relative: FLAT ? file.relative : `${folder}/${file.relative}`,
     data: await readFile(file.absolute),
     mtime: info.mtime,
   });
 }
 
+if (!FLAT) {
+  entries.push({
+    relative: `${folder}/PASANG.txt`,
+    data: Buffer.from(installationText({ browser: BROWSER, version: manifest.version, folder }), 'utf8'),
+    mtime: new Date(),
+  });
+}
+
+entries.sort((a, b) => a.relative.localeCompare(b.relative));
+
 await mkdir(path.dirname(zipPath), { recursive: true });
 const zip = createZip(entries);
 await writeFile(zipPath, zip);
 
-console.log(`Paket dibuat: ${zipPath} (${entries.length} file, ${zip.length} byte)`);
+console.log(
+  `Paket ${BROWSER} dibuat: ${zipPath} (${entries.length} file, ${zip.length} byte)` +
+    `${FLAT ? ' [flat]' : ` [folder: ${folder}]`}`,
+);

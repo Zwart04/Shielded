@@ -24,6 +24,7 @@ Dokumen perencanaan Shielded disusun dalam 15 bagian utama plus dokumen pendukun
 
 - [Kebijakan Privasi](privacy-policy.md)
 - [Justifikasi Izin Ekstensi](permissions-justification.md)
+- [Kompatibilitas Browser](16-kompatibilitas-browser.md)
 - [Runbook Selektor Platform](selectors-runbook.md)
 - [Hasil Verifikasi Selektor](selector-verification-results.md)
 - [Glosarium](glossary.md)

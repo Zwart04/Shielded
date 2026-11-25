@@ -2,7 +2,7 @@
 
 > Semua layar memakai token dari `09-design-system.md`. Tidak ada warna, radius, atau spasi di luar skala.
 
-Ada **dua** permukaan UI di versi 0.1.16: popup (satu-satunya panel pengaturan) dan halaman kebijakan privasi statis. Dashboard dan onboarding sudah dihapus; jangan menambahkannya kembali tanpa alasan produk yang kuat.
+Ada **dua** permukaan UI di versi 0.1.17: popup (satu-satunya panel pengaturan) dan halaman kebijakan privasi statis. Dashboard dan onboarding sudah dihapus; jangan menambahkannya kembali tanpa alasan produk yang kuat.
 
 ---
 

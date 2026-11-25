@@ -1,17 +1,21 @@
 {
   "name": "shielded",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "private": true,
   "license": "GPL-3.0-only",
   "type": "module",
   "description": "Ekstensi privasi visual untuk web chat (Manifest V3)",
   "scripts": {
     "build": "node scripts/build.mjs",
+    "build:firefox": "node scripts/build.mjs --browser=firefox",
     "dev": "node scripts/build.mjs --watch",
+    "dev:firefox": "node scripts/build.mjs --watch --browser=firefox",
     "test": "node --test tests/unit/*.test.ts",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
     "verify:privacy": "node scripts/verify-privacy.mjs",
-    "zip": "node scripts/build-zip.mjs"
+    "verify:package": "node scripts/verify-package.mjs",
+    "zip": "node scripts/build.mjs && node scripts/build-zip.mjs && node scripts/build.mjs --browser=firefox && node scripts/build-zip.mjs --browser=firefox",
+    "zip:store": "node scripts/build.mjs && node scripts/build-zip.mjs --flat"
   },
   "devDependencies": {
     "@types/chrome": "0.3.7",

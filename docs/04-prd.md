@@ -2,7 +2,7 @@
 
 > **Produk:** Shielded — Ekstensi Perlindungan Privasi Pesan Web
 > **Versi dokumen:** 1.0
-> **Platform:** Chromium (Chrome, Edge, Brave)
+> **Platform:** Chromium (Chrome, Edge, Brave, Opera, Vivaldi) dan Firefox
 > **Status:** Siap eksekusi untuk Fase 1–2
 
 ---
@@ -105,12 +105,12 @@ Lihat `02-konsep-dan-posisi-produk.md` bagian 2.5. Ringkasnya: kebocoran visual 
 
 | Browser | Status | Catatan |
 |---|---|---|
-| Chrome (stabil terbaru) | **P0** | Target utama |
-| Edge | P1 | Chromium; perlu uji toko |
-| Brave | P1 | Chromium; perlu uji |
-| Opera / Vivaldi | P2 | Uji ad-hoc |
-| Firefox | P3 | Perbedaan MV3 (event page vs service worker, host permission saat instal) |
-| Safari | Di luar cakupan | API berbeda |
+| Chrome (stabil terbaru) | **P0** | Target utama; diuji muat dari paket rilis |
+| Edge | P1 | Chromium; paket sama, belum diuji di mesin Edge |
+| Brave | P1 | Chromium; diuji penuh (audit blur) |
+| Opera / Vivaldi | P2 | Chromium; uji ad-hoc |
+| Firefox 140+ | P1 | Event page + bundel IIFE; `web-ext lint` bersih, add-on terpasang di Firefox 161. Host permission bersifat opt-in |
+| Safari | Di luar cakupan | API dan format ekstensi berbeda (butuh Xcode) |
 
 ## 4.11 Matriks Kompatibilitas Platform
 

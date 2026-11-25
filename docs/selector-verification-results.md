@@ -108,6 +108,11 @@ halaman platform kosong lalu diperiksa lewat CDP pada Brave yang sama.
 | Suntik ke tab lama (0.1.16) | `chrome.scripting.executeScript` dari popup | `ok`; hanya satu `#psx-style` (tidak menggandakan content script) |
 | Aktifkan tanpa refresh (0.1.16) | platform mati → switch popup diklik | 12 zona muncul di halaman dalam < 1 detik tanpa reload |
 | Popup ditutup seketika (0.1.16) | klik switch lalu `window.close()` | pengaturan tetap tersimpan (`enabled: true`) karena ditulis service worker |
+| Paket Chromium dari zip (0.1.17) | ekstrak `shielded-0.1.17-chromium.zip`, pilih folder hasil ekstrak | service worker `background.js` aktif; ekstensi termuat |
+| Salah pilih folder (0.1.17) | memilih folder induk berisi folder ekstensi | **tidak** ada ekstensi termuat — mereproduksi pesan "Tidak dapat memuat manifes" |
+| Manifest Firefox (0.1.17) | `web-ext lint` pada `dist-firefox` | 0 error, 0 notice; sisa 1 peringatan khusus Android |
+| Pasang di Firefox (0.1.17) | `web-ext run` pada Firefox 161 headless | `Installed .../dist-firefox as a temporary add-on`, id `shielded@zwart04.github.io` |
+| Alias API lintas-browser (0.1.17) | bundel Chromium setelah banner `globalThis.browser \|\| globalThis.chrome` | tidak ada identifier `chrome` tersisa; 12 zona tetap muncul di WhatsApp sintetis |
 
 Legenda status: `Lolos` / `Sebagian` / `Gagal` / `Belum dijalankan`.
 

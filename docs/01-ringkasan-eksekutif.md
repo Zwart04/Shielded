@@ -14,7 +14,7 @@ Alat yang ada di pasaran umumnya menawarkan dua ekstrem: blur seluruh halaman (m
 
 ## 1.2 Solusi
 
-Shielded adalah ekstensi Chromium (Manifest V3) yang:
+Shielded adalah ekstensi Manifest V3 untuk Chromium dan Firefox yang:
 
 - **Menerapkan efek visual** (blur / cover / hide) pada elemen yang dipilih pengguna di area pesan.
 - **Memulihkan tampilan sementara** lewat hover, klik-tahan, atau pintasan keyboard.

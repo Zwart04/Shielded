@@ -21,6 +21,7 @@ import { createSegmented } from '../components/segmented.ts';
 import { createToggle } from '../components/toggle.ts';
 import { showToast } from '../components/toast.ts';
 import { RELEASES_URL, SUPPORT_URL } from '../../shared/links.ts';
+import { SHORTCUTS_FALLBACK_URL, SHORTCUTS_URL } from '../../shared/browser-api.ts';
 import type { RuntimeMessage } from '../../shared/messaging.ts';
 
 const LEVELS: readonly ProtectionLevel[] = ['normal', 'privacy', 'maximum'];
@@ -280,7 +281,11 @@ async function main(): Promise<void> {
       el('span', { className: 'po-link-value', text: 'Alt+Shift+S' }),
     ]);
     shortcuts.addEventListener('click', () => {
-      void chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
+      // Firefox tidak mengenal chrome://; buka halaman add-ons, lalu cadangan
+      // ke artikel dukungan bila halaman internal ditolak.
+      void chrome.tabs.create({ url: SHORTCUTS_URL }).catch(() => {
+        void chrome.tabs.create({ url: SHORTCUTS_FALLBACK_URL }).catch(() => undefined);
+      });
     });
 
     const privacy = el('button', { className: 'po-link', attrs: { type: 'button' } }, [

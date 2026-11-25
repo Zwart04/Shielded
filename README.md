@@ -5,6 +5,8 @@
 [![Rilis](https://img.shields.io/github/v/release/Zwart04/Shielded?style=flat-square)](https://github.com/Zwart04/Shielded/releases/latest)
 ![Manifest V3](https://img.shields.io/badge/Manifest-V3-4c8bf5?style=flat-square)
 ![Chrome 110+](https://img.shields.io/badge/Chrome-110%2B-1f9d55?style=flat-square)
+![Edge 110+](https://img.shields.io/badge/Edge-110%2B-1f9d55?style=flat-square)
+![Firefox 140+](https://img.shields.io/badge/Firefox-140%2B-1f9d55?style=flat-square)
 ![7 platform](https://img.shields.io/badge/platform-7-8b5cf6?style=flat-square)
 ![Tanpa telemetri](https://img.shields.io/badge/telemetri-tidak%20ada-c98a52?style=flat-square)
 [![Lisensi: GPL v3](https://img.shields.io/badge/lisensi-GPL--3.0-2f6f4e?style=flat-square)](LICENSE)
@@ -77,19 +79,42 @@ Perubahan 0.1.3–0.1.7 (gating khusus route DM, panel Chats Facebook, isi perca
 
 ## Instalasi
 
-Shielded dimuat sebagai **unpacked extension** (belum dipublikasikan di Web Store).
+Shielded belum dipublikasikan di Chrome Web Store atau addons.mozilla.org. Ekstensi dimuat sebagai **unpacked** (Chromium) atau **temporary add-on** (Firefox).
 
-### Cara 1 — dari rilis (tanpa Node.js)
+### Kompatibilitas browser
 
-1. Unduh `shielded-0.1.16.zip` dari [halaman Releases](https://github.com/Zwart04/Shielded/releases/latest).
-2. Ekstrak zip ke folder tetap, misalnya `~/Shielded`.
-3. Buka `chrome://extensions` (juga berlaku di Brave, Edge, dan Vivaldi).
-4. Nyalakan **Mode developer** di kanan atas.
-5. Klik **Muat yang belum dibuka**, lalu pilih folder hasil ekstrak (folder yang berisi `manifest.json`).
+| Browser | Paket | Status |
+|---|---|---|
+| Chrome 110+ | `shielded-<versi>-chromium.zip` | Didukung |
+| Edge 110+ | `shielded-<versi>-chromium.zip` | Didukung (mesin Chromium yang sama) |
+| Brave, Opera, Vivaldi | `shielded-<versi>-chromium.zip` | Didukung |
+| Firefox 140+ | `shielded-<versi>-firefox.zip` | Didukung (manifest lolos `web-ext lint`, add-on terpasang di Firefox 161) |
+| Safari (macOS/iOS) | — | Belum didukung; perlu konversi lewat Xcode |
+| Firefox for Android | — | Tidak ditargetkan |
+
+### Chromium — Chrome, Edge, Brave, Opera, Vivaldi
+
+1. Unduh `shielded-<versi>-chromium.zip` dari [halaman Releases](https://github.com/Zwart04/Shielded/releases/latest).
+2. Ekstrak zip. Akan muncul satu folder, misalnya `shielded-0.1.17-chromium`.
+3. Buka halaman ekstensi: `chrome://extensions`, `edge://extensions`, `brave://extensions`, `opera://extensions`, atau `vivaldi://extensions`.
+4. Nyalakan **Mode developer** / **Developer mode** di kanan atas.
+5. Klik **Muat yang belum dikemas** / **Load unpacked**, lalu pilih **folder hasil ekstrak** — folder yang berisi `manifest.json`.
 
 <img src="docs/images/extensions.png" alt="Halaman ekstensi dengan Mode developer aktif, tombol Muat yang belum dibuka, dan kartu Shielded" width="820">
 
 6. Sematkan ikon Shielded ke toolbar agar popup mudah dibuka.
+
+> **Jika muncul “Tidak dapat memuat manifes”:** browser tidak menemukan `manifest.json` tepat di folder yang dipilih. Jangan pilih file `.zip`, dan jangan pilih folder induknya. Pilih folder `shielded-<versi>-chromium` yang isinya langsung `manifest.json`, `background.js`, dan `content.js`.
+
+### Firefox 140+
+
+1. Unduh `shielded-<versi>-firefox.zip`, lalu ekstrak.
+2. Buka `about:debugging#/runtime/this-firefox`.
+3. Klik **Muat Add-on Sementara** / **Load Temporary Add-on**.
+4. Pilih berkas `manifest.json` **di dalam** folder `shielded-<versi>-firefox`.
+5. Ekstensi aktif sampai Firefox ditutup. Pemasangan permanen di Firefox memerlukan tanda tangan Mozilla (AMO), karena Firefox menolak add-on tidak bertanda tangan.
+
+Firefox MV3 meminta izin situs secara *opt-in*. Bila popup bisa dibuka tetapi blur tidak muncul, buka `about:addons` → **Shielded** → tab **Izin/Permissions** → aktifkan akses untuk WhatsApp Web, Telegram Web, Instagram, Facebook, X, Threads, dan TikTok. Setelah izin diberikan, cukup muat ulang tab platformnya.
 
 ### Cara 2 — dari kode sumber
 
@@ -97,23 +122,25 @@ Shielded dimuat sebagai **unpacked extension** (belum dipublikasikan di Web Stor
 git clone https://github.com/Zwart04/Shielded.git
 cd Shielded
 npm install
-npm run build
+
+npm run build          # Chromium  -> dist/
+npm run build:firefox  # Firefox   -> dist-firefox/
 ```
 
-Lalu pada langkah 5 di atas, pilih folder **`dist/`**. Setelah mengubah kode, jalankan `npm run build` lagi dan klik **Muat ulang** pada kartu Shielded di `chrome://extensions`.
+Lalu pada langkah 5 di atas, pilih folder **`dist/`** (Chromium) atau `dist-firefox/` (Firefox). Setelah mengubah kode, jalankan build lagi dan klik **Muat ulang** pada kartu Shielded.
 
-> Folder `dist/` adalah hasil build. Jangan memilih folder akar proyek — folder itu tidak berisi `manifest.json`.
+> Folder `dist/` dan `dist-firefox/` adalah hasil build. Jangan memilih folder akar proyek — folder itu tidak berisi `manifest.json`.
 
 ### Memperbarui ekstensi
 
-Popup menampilkan versi yang terpasang di baris paling bawah, misalnya `v0.1.16 · Cek update`. Klik tautan itu untuk membuka [halaman rilis GitHub](https://github.com/Zwart04/Shielded/releases/latest); versi terbaru selalu ada di paling atas.
+Popup menampilkan versi yang terpasang di baris paling bawah, misalnya `v0.1.17 · Cek update`. Klik tautan itu untuk membuka [halaman rilis GitHub](https://github.com/Zwart04/Shielded/releases/latest); versi terbaru selalu ada di paling atas.
 
 Chrome tidak mengizinkan ekstensi *unpacked* memperbarui dirinya sendiri, jadi pembaruan tetap dua langkah manual:
 
-1. Unduh `shielded-<versi>.zip` terbaru, lalu ekstrak **menimpa folder lama** (bukan folder baru).
-2. Buka `chrome://extensions`, klik **Muat ulang** pada kartu Shielded.
+1. Unduh paket browser yang sama (`-chromium` atau `-firefox`) versi terbaru, lalu ekstrak **menimpa folder lama** (bukan folder baru).
+2. Buka halaman ekstensi, klik **Muat ulang** pada kartu Shielded (Firefox: muat ulang lewat `about:debugging`).
 
-Preferensi tidak hilang: ID ekstensi diturunkan dari lokasi folder, jadi selama foldernya sama, setelan Anda tetap terbaca. Ekstensi tidak memeriksa versi sendiri dan tidak mengirim permintaan jaringan apa pun; tautan update hanya membuka tab browser biasa.
+Preferensi tidak hilang: ID ekstensi Chromium diturunkan dari lokasi folder, jadi selama foldernya sama, setelan Anda tetap terbaca. Ekstensi tidak memeriksa versi sendiri dan tidak mengirim permintaan jaringan apa pun; tautan update hanya membuka tab browser biasa.
 
 ---
 
@@ -258,12 +285,15 @@ Rincian: [Kebijakan Privasi](docs/privacy-policy.md) dan [Justifikasi Izin](docs
 
 ```bash
 npm install          # pasang dependensi
-npm run dev          # build mode watch
-npm run build        # build ke dist/
+npm run dev          # build Chromium mode watch
+npm run build        # build Chromium ke dist/
+npm run build:firefox  # build Firefox ke dist-firefox/
 npm run typecheck    # TypeScript (aplikasi + tes)
-npm test             # 59 tes unit
+npm test             # 67 tes unit
 npm run verify:privacy  # audit bundle: tidak ada URL jaringan / src=
-npm run zip          # paket rilis shielded-0.1.16.zip
+npm run verify:package  # validasi manifest + struktur kedua paket
+npm run zip          # dua paket rilis: chromium + firefox
+npm run zip:store    # paket Chromium flat (manifest di akar, untuk Web Store)
 ```
 
 ### Struktur proyek
@@ -298,14 +328,14 @@ Detail teknis: [Arsitektur](docs/07-arsitektur-teknis.md) dan [Struktur Proyek](
 | Pemeriksaan | Hasil |
 |---|---|
 | Typecheck | Bersih |
-| Tes unit | 59/59 lulus |
+| Tes unit | 67/67 lulus |
 | Build produksi | Berhasil |
-| Audit privasi | Lolos (3 berkas JS, 19 host permission) |
+| Audit privasi | Lolos (bundel Chromium + Firefox, 19 host permission) |
 | Verifikasi selector live | 6 platform lolos, X sebagian (DOM sintetis untuk perubahan 0.1.3–0.1.7) |
 | Uji bawaan nonaktif | 0 zona saat platform mati; 9 zona saat diaktifkan |
 | Audit manual tampilan | Popup terang/gelap, keadaan aktif/nonaktif, opsi lanjutan |
 
-Yang belum tercakup: pengujian otomatis end-to-end pada halaman platform asli (DOM platform berubah-ubah), verifikasi penuh X, dan uji di Firefox/Safari (ekstensi ini khusus Chromium MV3).
+Yang belum tercakup: pengujian otomatis end-to-end pada halaman platform asli (DOM platform berubah-ubah), verifikasi penuh X, uji blur langsung di Firefox pada akun asli, dan Safari (butuh konversi Xcode).
 
 Hasil lengkap: [Hasil Verifikasi Selector](docs/selector-verification-results.md).
 
@@ -323,6 +353,7 @@ Hasil lengkap: [Hasil Verifikasi Selector](docs/selector-verification-results.md
 | [Hasil Verifikasi Selector](docs/selector-verification-results.md) | Status uji per platform |
 | [Kebijakan Privasi](docs/privacy-policy.md) | Data, izin, dan batasan perlindungan |
 | [Justifikasi Izin](docs/permissions-justification.md) | Alasan tiap permission |
+| [Kompatibilitas Browser](docs/16-kompatibilitas-browser.md) | Target browser, perbedaan manifest, izin situs Firefox |
 | [Runbook Selector](docs/selectors-runbook.md) | Prosedur perbaikan selector |
 
 ---

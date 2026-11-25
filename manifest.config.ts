@@ -1,18 +1,22 @@
 import { CONTENT_MATCH_PATTERNS } from './src/shared/platform-ids.ts';
 
-const manifest = {
+/**
+ * Satu sumber kebenaran untuk manifest. Chromium (Chrome, Edge, Brave, Opera,
+ * Vivaldi) memakai service worker ESM; Firefox belum mendukung
+ * `background.service_worker`, jadi target Firefox memakai event page
+ * `background.scripts` dengan bundel IIFE.
+ */
+export type BrowserTarget = 'chromium' | 'firefox';
+
+export const EXTENSION_VERSION = '0.1.17';
+
+const SHARED = {
   manifest_version: 3,
   name: 'Shielded',
-  version: '0.1.16',
   description:
     'Sembunyikan isi obrolan di WhatsApp, Telegram, Instagram, Facebook, X, Threads, dan TikTok dari layar. Semua diproses lokal.',
-  minimum_chrome_version: '110',
   permissions: ['storage', 'scripting'],
   host_permissions: [...CONTENT_MATCH_PATTERNS],
-  background: {
-    service_worker: 'background.js',
-    type: 'module',
-  },
   action: {
     default_popup: 'ui/popup/index.html',
     default_title: 'Shielded',
@@ -50,6 +54,39 @@ const manifest = {
       description: 'Sembunyikan semua zona segera',
     },
   },
-} as const;
+  // Eksplisit, walau MV3 sudah memakai nilai ini sebagai default. Tidak ada
+  // skrip inline, tidak ada eval, dan tidak ada kode dari jaringan.
+  content_security_policy: {
+    extension_pages: "script-src 'self'; object-src 'self'",
+  },
+};
 
-export default manifest;
+export function createManifest(browser: BrowserTarget = 'chromium') {
+  if (browser === 'firefox') {
+    return {
+      ...SHARED,
+      version: EXTENSION_VERSION,
+      background: { scripts: ['background.js'] },
+      browser_specific_settings: {
+        gecko: {
+          id: 'shielded@zwart04.github.io',
+          strict_min_version: '140.0',
+          // Deklarasi resmi AMO: ekstensi tidak mengumpulkan data apa pun.
+          data_collection_permissions: { required: ['none'] },
+        },
+      },
+    };
+  }
+
+  return {
+    ...SHARED,
+    version: EXTENSION_VERSION,
+    minimum_chrome_version: '110',
+    background: {
+      service_worker: 'background.js',
+      type: 'module',
+    },
+  };
+}
+
+export default createManifest('chromium');
